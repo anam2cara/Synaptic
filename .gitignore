@@ -1,0 +1,34 @@
+# Gradle & Kotlin Caches
+.gradle/
+.kotlin/
+**/kspCaches/
+
+# Build Outputs & Generated Artifacts
+**/build/
+**/.transforms/
+**/generated/
+**/intermediates/
+**/outputs/
+
+# Native C++ / CMake Builds
+**/.cxx/
+**/CMakeFiles/
+
+# IDE & Editor Metadata
+.idea/
+*.iml
+
+# AI Agents & Runtime State
+.agents/
+.artifacts/
+.junie/
+.plans/
+
+# Gradle Wrapper Distribution Binaries
+gradle/gradle-*/
+
+# Embedded/External Dependencies Build Artifacts
+**/pip-stubs/**/build/
+.gradle-userhome/
+*.apk
+*.aab

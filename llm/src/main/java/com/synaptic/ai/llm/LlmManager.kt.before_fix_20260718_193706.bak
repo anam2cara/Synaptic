@@ -1,0 +1,218 @@
+package com.synaptic.ai.llm
+
+import android.content.Context
+import android.util.Log
+import com.synaptic.ai.AppPreferences
+import com.synaptic.ai.data.model.ChatMessage
+import java.io.File
+import java.util.ArrayList
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+
+class LlmManager private constructor() {
+
+    private var context: Context? = null
+
+    private val jni = LlamaJNI()
+    private val executor: ExecutorService = Executors.newSingleThreadExecutor()
+    private val MAX_HISTORY_MESSAGES = 12
+    private val MAX_HISTORY_MESSAGE_CHARS = 1500
+    private val MAX_HISTORY_TOTAL_CHARS = 7000
+    private val MAX_DEVICE_CONTEXT_CHARS = 3000
+
+    private fun writeDiagnostic(tag: String, message: String) {
+        try {
+            val dir = context?.getExternalFilesDir(null)
+            val logFile = File(dir, "diagnostic.log")
+            val timestamp = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", java.util.Locale("id")).format(java.util.Date())
+            logFile.appendText("[$timestamp] [$tag] $message\n")
+        } catch (e: Exception) {
+            Log.e(TAG, "writeDiagnostic gagal: ${e.message}")
+        }
+    }
+
+    var isLoading: Boolean = false
+        private set
+
+    // Antrean callback untuk load yang SEDANG berjalan. Ini guard reentrancy:
+    // mencegah loadModel() yang dipanggil ulang saat load sebelumnya belum selesai
+    // memicu clearCache()+reload native lagi (root cause LOAD_MODEL/CLEAR_CACHE berulang).
+    private val pendingLoadCallbacks = java.util.Collections.synchronizedList(mutableListOf<LoadCallback>())
+
+    interface LoadCallback {
+        fun onSuccess()
+        fun onError(msg: String)
+    }
+
+    interface GenerateCallback {
+        fun onResult(result: String)
+        fun onToken(token: String)
+        fun onComplete(fullResponse: String)
+        fun onError(msg: String?)
+    }
+
+    fun init(ctx: Context) {
+        this.context = ctx.applicationContext
+    }
+
+    fun isLoaded(): Boolean = jni.isLoaded()
+
+    fun loadModel(cb: LoadCallback) {
+        if (jni.isLoaded()) { cb.onSuccess(); return }
+
+        val shouldStartLoad: Boolean
+        synchronized(this) {
+            pendingLoadCallbacks.add(cb)
+            shouldStartLoad = !isLoading
+            if (shouldStartLoad) isLoading = true
+        }
+        if (!shouldStartLoad) {
+            // Sudah ada load yang berjalan di executor. cb sudah diantrekan di atas
+            // dan akan dipanggil saat load itu selesai. TIDAK mulai load baru --
+            // ini yang mencegah reload & clearCache berulang.
+            return
+        }
+
+        val ctx = context ?: run {
+            synchronized(this) { isLoading = false }
+            notifyLoadError("LlmManager belum diinisialisasi")
+            return
+        }
+        executor.execute {
+            try {
+                writeDiagnostic("LOAD_MODEL", "loadModel() dipanggil")
+                // jni.clearCache() SENGAJA DIHAPUS: native loadModel() sudah memanggil
+                // freeStateLocked() yang mereset model+context+KV cache duluan,
+                // jadi clearCache() eksplisit di sini adalah kerja ganda yang sia-sia.
+
+                val path = AppPreferences(ctx).modelPath
+                
+                if (path.isEmpty() || path == "model.gguf" || path.startsWith("/storage/emulated/0/Android/data/com.synaptic.ai/files/models/")) {
+                    try {
+                        val assetManager = ctx.assets
+                        val assetsFiles = assetManager.list("") ?: emptyArray()
+                        val modelInAssets = assetsFiles.find { it.endsWith(".gguf") }
+                        
+                        if (modelInAssets != null) {
+                            val cacheFile = File(ctx.filesDir, modelInAssets)
+                            if (!cacheFile.exists()) {
+                                assetManager.open(modelInAssets).use { input ->
+                                    cacheFile.outputStream().use { output ->
+                                        input.copyTo(output)
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Gagal memproses model dari assets", e)
+                    }
+                }
+
+                val appFilesDir = ctx.getExternalFilesDir("models") ?: File(ctx.filesDir, "models").also { it.mkdirs() }
+                var normalizedPath = path.trim().removeSurrounding("\"").removeSurrounding("'")
+                
+                var modelFile = when {
+                    normalizedPath.contains("/") -> File(normalizedPath)
+                    normalizedPath.isNotEmpty() -> File(appFilesDir, normalizedPath)
+                    else -> appFilesDir
+                }
+
+                if (modelFile.isDirectory) {
+                    val ggufFiles = modelFile.listFiles { f -> f.isFile && f.extension.lowercase() == "gguf" }
+                    if (!ggufFiles.isNullOrEmpty()) {
+                        modelFile = ggufFiles[0]
+                    }
+                }
+
+                if (!modelFile.exists() || modelFile.isDirectory) {
+                    notifyLoadError("Model tidak ditemukan")
+                    return@execute
+                }
+
+                val ok = jni.loadModel(modelFile.absolutePath)
+                if (ok) notifyLoadSuccess() else notifyLoadError("Gagal memuat model native")
+            } catch (e: Exception) {
+                notifyLoadError(e.message ?: "Error tidak diketahui")
+            } finally {
+                synchronized(this) { isLoading = false }
+            }
+        }
+    }
+
+    private fun notifyLoadSuccess() {
+        val callbacks: List<LoadCallback>
+        synchronized(this) {
+            callbacks = pendingLoadCallbacks.toList()
+            pendingLoadCallbacks.clear()
+        }
+        callbacks.forEach { it.onSuccess() }
+    }
+
+    private fun notifyLoadError(msg: String) {
+        val callbacks: List<LoadCallback>
+        synchronized(this) {
+            callbacks = pendingLoadCallbacks.toList()
+            pendingLoadCallbacks.clear()
+        }
+        callbacks.forEach { it.onError(msg) }
+    }
+
+    fun generate(
+        userMessage: String,
+        history: List<ChatMessage>?,
+        memories: String? = null,
+        deviceContext: String? = null,
+        cb: GenerateCallback
+    ) {
+        if (!jni.isLoaded()) {
+            cb.onError("Model belum dimuat")
+            return
+        }
+
+        executor.execute {
+            try {
+                val prompt = buildPrompt(userMessage, history, memories, deviceContext)
+                jni.generateStream(prompt, 768, object : LlamaJNI.StreamCallback {
+                    override fun onToken(token: String) {
+                        cb.onToken(token)
+                    }
+
+                    override fun onComplete() {
+                        cb.onComplete("") // Logic rangkuman diabaikan sementara untuk simplifikasi modularisasi
+                    }
+
+                    override fun onError(message: String) {
+                        cb.onError(message)
+                    }
+                })
+            } catch (e: Exception) {
+                cb.onError(e.message)
+            }
+        }
+    }
+
+    private fun buildPrompt(userMessage: String, history: List<ChatMessage>?, memories: String?, deviceContext: String?): String {
+        return buildString {
+            appendLine("Kamu asisten AI Synaptic.")
+            if (memories != null) appendLine("Memories:\n$memories")
+            history?.forEach { msg ->
+                appendLine("${msg.role}: ${msg.content}")
+            }
+            if (deviceContext != null) appendLine("Context:\n$deviceContext")
+            appendLine("User: $userMessage")
+            append("Assistant: ")
+        }
+    }
+
+    companion object {
+        private const val TAG = "LlmManager"
+        @Volatile
+        private var instance: LlmManager? = null
+
+        fun getInstance(): LlmManager {
+            return instance ?: synchronized(this) {
+                instance ?: LlmManager().also { instance = it }
+            }
+        }
+    }
+}

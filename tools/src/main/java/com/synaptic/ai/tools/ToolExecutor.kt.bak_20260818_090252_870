@@ -1,0 +1,511 @@
+package com.synaptic.ai.tools
+
+import android.app.ActivityManager
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.util.Log
+import com.synaptic.ai.AppPreferences
+import com.synaptic.ai.monitor.DeviceMonitor
+import com.synaptic.ai.diagnostic.PerformanceAnalyzer
+import com.synaptic.ai.accessibility.SynapticAccessibilityService
+import java.util.concurrent.Executors
+
+class ToolExecutor(context: Context) {
+
+    private val context: Context = context.applicationContext
+
+    private val deviceMonitor = DeviceMonitor(
+        context,
+        shellRunner = { command: String -> ShellExecutor.run(command) }
+    )
+
+    private val performanceAnalyzer = PerformanceAnalyzer()
+    private val prefs = AppPreferences(context)
+
+    interface ToolResult {
+        val output: String
+        val isSuccess: Boolean
+        val stderr: String
+        val exitCode: Int
+    }
+
+    fun execute(toolName: String, args: String): ToolResult {
+        val normalizedName = toolName.trim().lowercase()
+        val definition = ToolRegistry.get(normalizedName)
+
+        Log.d(
+            TAG,
+            "EXECUTE => tool=$normalizedName permission=${definition?.permission}"
+        )
+
+        if (definition == null) {
+            return makeResult(
+                false,
+                "Tool tidak dikenal: $normalizedName",
+                "",
+                -1
+            )
+        }
+
+        val validationError = ToolRegistry.validate(normalizedName, args)
+        if (validationError != null) {
+            return makeResult(false, validationError, "", -1)
+        }
+
+        return when (normalizedName) {
+            "device_status" -> executeDeviceStatus()
+            "device_analysis" -> executeDeviceAnalysis()
+            "shell" -> executeShell(extractJsonString(args, "command"))
+            "python" -> executePython(extractJsonString(args, "code"))
+            "list_processes" -> executeListProcesses()
+            "read_screen" -> executeReadScreen()
+            "read_logs" -> executeReadLogs()
+            else -> makeResult(false, "Tool belum memiliki executor: $normalizedName", "", -1)
+        }
+    }
+
+    private fun extractJsonString(args: String, key: String): String {
+        return try {
+            val obj = org.json.JSONObject(args)
+            obj.optString(key, "")
+        } catch (_: Exception) {
+            ""
+        }
+    }
+
+    fun getToolDefinition(toolName: String): ToolRegistry.ToolDefinition? {
+        return ToolRegistry.get(toolName)
+    }
+
+    fun requiresConfirmation(toolName: String): Boolean {
+        return ToolRegistry.get(toolName)?.requiresConfirmation == true
+    }
+
+    fun requiresShizuku(toolName: String): Boolean {
+        return ToolRegistry.get(toolName)?.permission == ToolRegistry.Permission.SHIZUKU
+    }
+    private fun executePython(code: String): ToolResult {
+        if (code.isBlank()) {
+            return makeResult(false, "Kode Python kosong.", "", -1)
+        }
+
+        val escapedCode = code.replace("'", "'\\''")
+        val command = "sh -c \"python3 -c '$escapedCode'\""
+        Log.d(TAG, "Executing Python code via Shizuku")
+
+        return executeShell(command)
+    }
+
+    private fun executeReadLogs(): ToolResult {
+        return executeShell("logcat -d -v brief *:E *:W | tail -n 50")
+    }
+
+    private fun executeDeviceStatus(): ToolResult {
+        return try {
+            val snap = deviceMonitor.getSnapshot()
+
+            val interpretation = buildString {
+                appendLine(snap.toReadableString())
+                appendLine()
+                appendLine("[Analisis Real-time]:")
+
+                when {
+                    snap.ramUsedPercent > 90 ->
+                        appendLine("- RAM Kritis! Segera periksa aplikasi/proses yang aktif.")
+
+                    snap.ramUsedPercent > 75 ->
+                        appendLine("- Penggunaan RAM cukup tinggi.")
+
+                    else ->
+                        appendLine("- Penggunaan RAM Normal (${snap.ramUsedPercent.toInt()}%).")
+                }
+
+                appendLine(
+                    "- Suhu terukur: ${snap.cpuTempCelsius}°C; " +
+                    "sensor thermal belum diidentifikasi secara spesifik."
+                )
+
+                if (snap.batteryLevel < 15 && !snap.isCharging) {
+                    appendLine("- Baterai sangat lemah, segera hubungkan ke charger.")
+                }
+            }
+
+            makeResult(true, interpretation, "", 0)
+
+        } catch (e: Exception) {
+            makeResult(
+                false,
+                "Gagal baca status device: ${e.message}",
+                e.stackTraceToString(),
+                1
+            )
+        }
+    }
+
+    private fun executeShell(command: String?): ToolResult {
+        if (command.isNullOrBlank()) {
+            return makeResult(false, "Perintah kosong.")
+        }
+
+        for (blocked in HARDCODED_BLACKLIST) {
+            if (command.contains(blocked)) {
+                return makeResult(
+                    false,
+                    "Perintah diblokir karena berbahaya: $blocked"
+                )
+            }
+        }
+
+        val res = ShellExecutor.runWithResult(command)
+
+        val resultText =
+            if (res.output.isNotEmpty()) {
+                res.output
+            } else if (res.isSuccess) {
+                "(Berhasil, tanpa output)"
+            } else {
+                "(Gagal, tanpa output)"
+            }
+
+        return makeResult(
+            res.isSuccess,
+            resultText,
+            "",
+            res.exitCode
+        )
+    }
+
+    /**
+     * Mengambil evidence proses secara realtime.
+     *
+     * Sumber utama:
+     * - PackageManager: menentukan package non-system/user-installed.
+     * - ActivityManager: proses yang terlihat oleh framework Android.
+     *
+     * Fallback:
+     * - Shizuku/ps untuk mendapatkan proses tambahan yang tidak terlihat
+     *   dari ActivityManager.
+     *
+     * Tidak ada interpretasi heuristik RSS atau daftar package hardcoded.
+     */
+    private fun executeListProcesses(): ToolResult {
+        return try {
+            val pm = context.packageManager
+            val am =
+                context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+
+            val userPackagesByUid = mutableMapOf<Int, MutableSet<String>>()
+
+            for (app in pm.getInstalledApplications(0)) {
+                val flags = app.flags
+
+                val isUserInstalled =
+                    (flags and ApplicationInfo.FLAG_SYSTEM) == 0 &&
+                    (flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0
+
+                if (isUserInstalled) {
+                    userPackagesByUid
+                        .getOrPut(app.uid) { linkedSetOf() }
+                        .add(app.packageName)
+                }
+            }
+
+            data class ProcessEvidence(
+                val pid: Int,
+                val uid: Int,
+                val processName: String,
+                val packageNames: List<String>,
+                val state: String,
+                val source: String
+            )
+
+            val evidence = linkedMapOf<String, ProcessEvidence>()
+
+            // SOURCE 1: ActivityManager
+            try {
+                val runningProcesses = am?.runningAppProcesses.orEmpty()
+
+                for (process in runningProcesses) {
+                    val packages = userPackagesByUid[process.uid]
+                        ?.toList()
+                        .orEmpty()
+
+                    if (packages.isEmpty()) {
+                        continue
+                    }
+
+                    val state = when (process.importance) {
+                        ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND ->
+                            "FOREGROUND"
+
+                        ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND_SERVICE ->
+                            "FOREGROUND_SERVICE"
+
+                        ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE ->
+                            "VISIBLE"
+
+                        ActivityManager.RunningAppProcessInfo.IMPORTANCE_PERCEPTIBLE ->
+                            "PERCEPTIBLE"
+
+                        ActivityManager.RunningAppProcessInfo.IMPORTANCE_SERVICE ->
+                            "SERVICE"
+
+                        ActivityManager.RunningAppProcessInfo.IMPORTANCE_CACHED ->
+                            "CACHED"
+
+                        else ->
+                            "UNKNOWN"
+                    }
+
+                    val key = "${process.uid}:${process.pid}"
+
+                    evidence[key] = ProcessEvidence(
+                        pid = process.pid,
+                        uid = process.uid,
+                        processName = process.processName,
+                        packageNames = packages,
+                        state = state,
+                        source = "ActivityManager"
+                    )
+                }
+
+            } catch (e: Exception) {
+                Log.w(
+                    TAG,
+                    "ActivityManager process query gagal: ${e.message}"
+                )
+            }
+
+            // SOURCE 2: Shizuku fallback
+            try {
+                val shell = ShellExecutor.runWithResult(
+                    "ps -A -o pid,uid,stat,name"
+                )
+
+                if (shell.isSuccess && shell.output.isNotBlank()) {
+                    for (line in shell.output.lines().drop(1)) {
+                        val parts = line.trim().split(Regex("\\s+"))
+
+                        if (parts.size < 4) {
+                            continue
+                        }
+
+                        val pid = parts[0].toIntOrNull() ?: continue
+                        val uid = parts[1].toIntOrNull() ?: continue
+                        val stat = parts[2]
+
+                        val processName =
+                            parts.drop(3).joinToString(" ")
+
+                        val packages = userPackagesByUid[uid]
+                            ?.toList()
+                            .orEmpty()
+
+                        if (packages.isEmpty()) {
+                            continue
+                        }
+
+                        val key = "$uid:$pid"
+
+                        if (!evidence.containsKey(key)) {
+                            evidence[key] = ProcessEvidence(
+                                pid = pid,
+                                uid = uid,
+                                processName = processName,
+                                packageNames = packages,
+                                state = stat,
+                                source = "Shizuku/ps"
+                            )
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                Log.w(
+                    TAG,
+                    "Shizuku process fallback gagal: ${e.message}"
+                )
+            }
+
+            val output = buildString {
+                appendLine("[REALTIME_ANDROID_PROCESS_EVIDENCE]")
+                appendLine(
+                    "SOURCE=PackageManager + ActivityManager + ShizukuFallback"
+                )
+                appendLine(
+                    "USER_APP_PROCESS_COUNT=${evidence.size}"
+                )
+                appendLine()
+
+                if (evidence.isEmpty()) {
+                    appendLine("STATUS=NO_USER_APP_PROCESS_DATA")
+                    appendLine(
+                        "MESSAGE=Android tidak memberikan data proses " +
+                        "user-app yang dapat diverifikasi."
+                    )
+                } else {
+                    evidence.values
+                        .sortedWith(
+                            compareBy<ProcessEvidence>(
+                                { it.packageNames.joinToString(",") },
+                                { it.pid }
+                            )
+                        )
+                        .forEach { process ->
+                            appendLine(
+                                "PID=${process.pid} " +
+                                "UID=${process.uid} " +
+                                "PROCESS=${process.processName} " +
+                                "PACKAGES=${process.packageNames.joinToString(",")} " +
+                                "STATE=${process.state} " +
+                                "SOURCE=${process.source}"
+                            )
+                        }
+                }
+
+                appendLine()
+                appendLine(
+                    "RULE=Hanya package non-system yang memiliki " +
+                    "proses aktif pada saat query."
+                )
+            }
+
+            makeResult(true, output, "", 0)
+
+        } catch (e: Exception) {
+            Log.e(TAG, "list_processes gagal", e)
+
+            makeResult(
+                false,
+                "REALTIME_PROCESS_QUERY_FAILED: ${e.message}",
+                e.stackTraceToString(),
+                1
+            )
+        }
+    }
+
+    private fun executeReadScreen(): ToolResult {
+        Log.d("SynapticA11y", "executeReadScreen CALLED")
+
+        val service = SynapticAccessibilityService.instance
+
+        if (service == null) {
+            Log.d("SynapticA11y", "Accessibility Service NULL")
+
+            return makeResult(
+                false,
+                "Accessibility Service belum aktif."
+            )
+        }
+
+        val dump = service.dumpCurrentScreen()
+
+        Log.d(
+            "SynapticA11y",
+            "SCREEN_DUMP:\n$dump"
+        )
+
+        return makeResult(true, dump)
+    }
+
+    private fun executeDeviceAnalysis(): ToolResult {
+        return try {
+            val snapshot = deviceMonitor.getSnapshot()
+            val analysis = performanceAnalyzer.analyze(snapshot)
+
+            val text = buildString {
+                appendLine("Severity: ${analysis.severity}")
+                appendLine()
+                appendLine(analysis.summary)
+
+                if (analysis.recommendations.isNotEmpty()) {
+                    appendLine()
+                    appendLine("Rekomendasi:")
+
+                    analysis.recommendations.forEach {
+                        appendLine("- $it")
+                    }
+                }
+            }
+
+            makeResult(true, text, "", 0)
+
+        } catch (e: Exception) {
+            makeResult(
+                false,
+                "Analisis gagal: ${e.message}"
+            )
+        }
+    }
+
+    private fun makeResult(
+        success: Boolean,
+        outputText: String,
+        stderrText: String = "",
+        exitCodeVal: Int = if (success) 0 else 1
+    ): ToolResult {
+        return object : ToolResult {
+            override val output: String = outputText
+            override val isSuccess: Boolean = success
+            override val stderr: String = stderrText
+            override val exitCode: Int = exitCodeVal
+        }
+    }
+
+    fun getDeviceDiagnosticContext(): String {
+        val s = deviceMonitor.getSnapshot()
+        val analysis = performanceAnalyzer.analyze(s)
+
+        return """
+[DEVICE_ANALYSIS]
+
+SEVERITY=${analysis.severity}
+
+SUMMARY=${analysis.summary}
+
+RECOMMENDATIONS=${analysis.recommendations.joinToString(" | ")}
+
+[DEVICE_DIAGNOSTICS]
+
+RAM_USED_PERCENT=${s.ramUsedPercent}
+CPU_USAGE_PERCENT=${s.cpuUsagePercent}
+CPU_TEMP_C=${s.cpuTempCelsius}
+
+BATTERY_LEVEL=${s.batteryLevel}
+BATTERY_TEMP_C=${s.batteryTempCelsius}
+IS_CHARGING=${s.isCharging}
+
+STORAGE_FREE_BYTES=${s.storageFreeBytes}
+STORAGE_TOTAL_BYTES=${s.storageTotalBytes}
+
+GPU_MODEL=${s.gpuModel}
+GPU_BUSY_PERCENT=${s.gpuBusyPercent}
+GPU_TEMPERATURE_C=${s.gpuTemperatureCelsius}
+GPU_FAULTS_RAW=${s.gpuFaults}
+GPU_FAULT_PROCESSES_RAW=${s.gpuFaultProcesses}
+GPU_RESET_COUNT_RAW=${s.gpuResetCount}
+
+UPTIME_MS=${s.uptimeMs}
+
+RUNNING_PROCESS_COUNT=${s.runningProcessCount}
+FOREGROUND_APP=${s.foregroundApp}
+""".trimIndent()
+    }
+
+    companion object {
+        private const val TAG = "ToolExecutor"
+
+        private val HARDCODED_BLACKLIST = setOf(
+            "rm -rf /",
+            "rm -rf /*",
+            "format",
+            "mkfs",
+            "dd if=",
+            ":(){ :|:& };:",
+            "chmod 777 /",
+            "reboot",
+            "shutdown"
+        )
+    }
+}
+

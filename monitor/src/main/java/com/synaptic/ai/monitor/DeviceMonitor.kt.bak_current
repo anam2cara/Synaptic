@@ -1,0 +1,202 @@
+package com.synaptic.ai.monitor
+
+import android.app.ActivityManager
+import android.app.usage.UsageStatsManager
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.BatteryManager
+import android.os.SystemClock
+import android.util.Log
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+
+/**
+ * Membaca kondisi hardware device secara real-time.
+ * Diproteksi agar tidak crash di Android modern meskipun akses /proc/stat diblokir.
+ */
+class DeviceMonitor(context: Context) {
+
+    private val context: Context = context.applicationContext
+    private var prevCpuTimes: LongArray? = null
+
+    class DeviceSnapshot {
+        var ramFreeBytes: Long = 0
+        var ramTotalBytes: Long = 0
+        var ramUsedPercent: Float = 0f
+        var cpuUsagePercent: Float = 0f
+        var cpuTempCelsius: Float = 0f
+        var batteryLevel: Int = 0
+        var batteryTempCelsius: Float = 0f
+        var isCharging: Boolean = false
+        var storageFreeBytes: Long = 0
+        var storageTotalBytes: Long = 0
+        var uptimeMs: Long = 0
+
+        var runningProcessCount: Int = 0
+        var foregroundApp: String = "unknown"
+
+        fun toReadableString(): String {
+            return String.format(
+                "RAM: %.1f%% terpakai (%.1f/%.1f GB)\n" +
+                    "CPU: %.1f%% | Suhu: %.1fÂ°C\n" +
+                    "Baterai: %d%% | Suhu: %.1fÂ°C%s\n" +
+                    "Storage: %.1f GB tersisa dari %.1f GB",
+                ramUsedPercent,
+                (ramTotalBytes - ramFreeBytes) / 1e9f,
+                ramTotalBytes / 1e9f,
+                cpuUsagePercent,
+                cpuTempCelsius,
+                batteryLevel,
+                batteryTempCelsius,
+                if (isCharging) " (charging)" else "",
+                storageFreeBytes / 1e9f,
+                storageTotalBytes / 1e9f
+            )
+        }
+    }
+
+    fun getSnapshot(): DeviceSnapshot {
+        val snap = DeviceSnapshot()
+        readRam(snap)
+        readCpu(snap)
+        readTemperature(snap)
+        readBattery(snap)
+        readStorage(snap)
+        readProcessInfo(snap)
+        snap.uptimeMs = SystemClock.elapsedRealtime()
+        return snap
+    }
+
+    private fun readRam(snap: DeviceSnapshot) {
+        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+        val memInfo = ActivityManager.MemoryInfo()
+        if (am != null) {
+            am.getMemoryInfo(memInfo)
+            snap.ramFreeBytes = memInfo.availMem
+            snap.ramTotalBytes = memInfo.totalMem
+            snap.ramUsedPercent = (1f - memInfo.availMem.toFloat() / memInfo.totalMem) * 100f
+        }
+    }
+
+    private fun readCpu(snap: DeviceSnapshot) {
+        try {
+            BufferedReader(FileReader("/proc/stat")).use { br ->
+                val line = br.readLine()
+                if (line == null) {
+                    snap.cpuUsagePercent = 0.0f
+                    return
+                }
+
+                val parts = line.trim().split(Regex("\\s+"))
+                // Validasi: Pastikan data cukup dan baris diawali dengan kata "cpu"
+                if (parts.size >= 5 && parts[0].startsWith("cpu")) {
+                    val user = parts[1].toLong()
+                    val nice = parts[2].toLong()
+                    val system = parts[3].toLong()
+                    val idle = parts[4].toLong()
+                    val total = user + nice + system + idle
+                    val active = total - idle
+
+                    val prev = prevCpuTimes
+                    if (prev != null) {
+                        val prevTotal = prev[0]
+                        val prevActive = prev[1]
+                        val deltaTotal = total - prevTotal
+                        val deltaActive = active - prevActive
+                        if (deltaTotal > 0) {
+                            snap.cpuUsagePercent = deltaActive.toFloat() / deltaTotal * 100f
+                        }
+                    }
+                    prevCpuTimes = longArrayOf(total, active)
+                } else {
+                    snap.cpuUsagePercent = 0.0f
+                }
+            }
+        } catch (e: Exception) {
+            // Menangkap semua Exception (termasuk SecurityException dari SELinux Android Baru)
+            Log.w(TAG, "Akses /proc/stat dibatasi oleh OS: ${e.message}")
+            snap.cpuUsagePercent = 0f // /proc/stat diblokir SELinux, fallback ke 0
+        }
+    }
+
+    private fun readTemperature(snap: DeviceSnapshot) {
+        val thermalPaths = arrayOf(
+            "/sys/class/thermal/thermal_zone0/temp",
+            "/sys/class/thermal/thermal_zone1/temp",
+            "/sys/class/thermal/thermal_zone2/temp"
+        )
+        for (path in thermalPaths) {
+            try {
+                BufferedReader(FileReader(path)).use { br ->
+                    val line = br.readLine()
+                    if (line != null) {
+                        val raw = line.trim().toFloat()
+                        snap.cpuTempCelsius = if (raw > 1000) raw / 1000f else raw
+                        if (snap.cpuTempCelsius > 0 && snap.cpuTempCelsius < 100) return
+                    }
+                }
+            } catch (ignored: Exception) {
+            }
+        }
+    }
+
+    private fun readBattery(snap: DeviceSnapshot) {
+        val filter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+        val intent = context.registerReceiver(null, filter) ?: return
+        snap.batteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+        val temp = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0)
+        snap.batteryTempCelsius = temp / 10f
+        val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+        snap.isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+            status == BatteryManager.BATTERY_STATUS_FULL
+    }
+
+    private fun readStorage(snap: DeviceSnapshot) {
+        val storage = context.filesDir
+        snap.storageFreeBytes = storage.freeSpace
+        snap.storageTotalBytes = storage.totalSpace
+    }
+
+
+    private fun readProcessInfo(snap: DeviceSnapshot) {
+        try {
+            val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+
+            snap.runningProcessCount =
+                am?.runningAppProcesses?.size ?: 0
+
+            try {
+                val usm = context.getSystemService(Context.USAGE_STATS_SERVICE)
+                        as UsageStatsManager
+
+                val end = System.currentTimeMillis()
+                val start = end - (10 * 60 * 1000)
+
+                val stats = usm.queryUsageStats(
+                    UsageStatsManager.INTERVAL_DAILY,
+                    start,
+                    end
+                )
+
+                val top = stats.maxByOrNull { it.lastTimeUsed }
+
+                if (top != null) {
+                    snap.foregroundApp = top.packageName
+                }
+            } catch (_: Exception) {
+            }
+
+        } catch (_: Exception) {
+        }
+    }
+
+    companion object {
+        private const val TAG = "DeviceMonitor"
+    }
+}
+
+
+
+

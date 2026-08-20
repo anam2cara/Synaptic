@@ -1,0 +1,295 @@
+package com.synaptic.ai.tools
+
+import android.content.Context
+import android.util.Log
+import com.synaptic.ai.AppPreferences
+import com.synaptic.ai.monitor.DeviceMonitor
+import com.synaptic.ai.diagnostic.PerformanceAnalyzer
+import com.synaptic.ai.accessibility.SynapticAccessibilityService
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.util.concurrent.TimeUnit
+import rikka.shizuku.Shizuku
+
+/**
+ * Eksekutor tool call dari LLM.
+ * Setiap tool yang bisa dipanggil LLM harus terdaftar dan dieksekusi di sini.
+ * Konfirmasi user dilakukan di layer ViewModel sebelum memanggil execute().
+ */
+class ToolExecutor(context: Context) {
+
+    private val context: Context = context.applicationContext
+    private val deviceMonitor = DeviceMonitor(context)
+    private val performanceAnalyzer = PerformanceAnalyzer()
+    private val prefs = AppPreferences()
+
+    interface ToolResult {
+        val output: String
+        val isSuccess: Boolean
+        val stderr: String
+        val exitCode: Int
+    }
+
+
+
+    /**
+     * Eksekusi tool call dari LLM.
+     * @param toolName nama tool: "shell", "device_status", "list_processes"
+     * @param args argumen tool dalam bentuk JSON string atau plain string
+     */
+    fun execute(toolName: String, args: String): ToolResult {
+
+        Log.d(
+            "ToolExecutor",
+            "EXECUTE => $toolName"
+        )
+
+        return when (toolName) {
+            "device_status" -> executeDeviceStatus()
+            "device_analysis" -> executeDeviceAnalysis()
+            "shell" -> executeShell(args)
+            "python" -> executePython(args)
+            "list_processes" -> executeListProcesses()
+            "read_screen" -> executeReadScreen()
+            "read_logs" -> executeReadLogs()
+            else -> makeResult(false, "Tool tidak dikenal: $toolName", "", -1)
+        }
+    }
+
+    private fun executePython(code: String): ToolResult {
+        if (code.isBlank()) return makeResult(false, "Kode Python kosong.", "", -1)
+        
+        // Eksekusi kode Python melalui Shizuku Shell
+        // Kita mem-pipe kode ke interpreter python3
+        val escapedCode = code.replace("'", "'\\''")
+        val command = "sh -c \"python3 -c '$escapedCode'\""
+        
+        Log.d(TAG, "Executing Python code via Shizuku")
+        return executeShell(command)
+    }
+
+    private fun executeReadLogs(): ToolResult {
+        // Mengambil 50 baris log terakhir yang relevan (Error/Warning atau Synaptic)
+        return executeShell("logcat -d -v brief *:E *:W | tail -n 50")
+    }
+
+    private fun executeDeviceStatus(): ToolResult {
+        return try {
+            val snap = deviceMonitor.getSnapshot()
+            makeResult(true, snap.toReadableString(), "", 0)
+        } catch (e: Exception) {
+            makeResult(false, "Gagal baca status device: ${e.message}", e.stackTraceToString(), 1)
+        }
+    }
+
+    private fun executeShell(command: String?): ToolResult {
+        if (command.isNullOrBlank()) {
+            return makeResult(false, "Perintah kosong.")
+        }
+
+        // Cek hardcoded blacklist
+        for (blocked in HARDCODED_BLACKLIST) {
+            if (command.contains(blocked)) {
+                return makeResult(false, "Perintah diblokir karena berbahaya: $blocked")
+            }
+        }
+
+        return try {
+            val process = if (
+    ShizukuState.available &&
+    ShizukuState.granted
+) {
+
+    Shizuku.newProcess(
+        arrayOf("sh","-c",command),
+        null,
+        null
+    )
+
+} else {
+
+    ProcessBuilder(
+        "sh",
+        "-c",
+        command
+    )
+        .redirectErrorStream(true)
+        .start()
+}
+            
+
+            // Batas waktu 10 detik
+            val finished = process.waitFor(10, TimeUnit.SECONDS)
+            if (!finished) {
+                process.destroyForcibly()
+                return makeResult(false, "Timeout: perintah terlalu lama.")
+            }
+
+            val output = StringBuilder()
+            BufferedReader(InputStreamReader(process.inputStream)).use { br ->
+                var line: String?
+                var lineCount = 0
+                while (br.readLine().also { line = it } != null && lineCount < 100) {
+                    output.append(line).append("\n")
+                    lineCount++
+                }
+            }
+
+            val exitCode = process.exitValue()
+            val success = exitCode == 0
+            var result = output.toString().trim()
+            if (result.isEmpty()) result = if (success) "(Berhasil, tanpa output)" else "(Gagal, tanpa output)"
+            makeResult(success, result, "", exitCode)
+        } catch (e: Exception) {
+            Log.e(TAG, "Shell exec error", e)
+            makeResult(false, "Error eksekusi: ${e.message}")
+        }
+    }
+
+    private fun executeListProcesses(): ToolResult {
+        return executeShell("ps -A -o pid,pcpu,rss,name --sort=-rss | head -20")
+    }
+
+    private fun executeReadScreen(): ToolResult {
+
+        Log.d(
+            "SynapticA11y",
+            "executeReadScreen CALLED"
+        )
+
+        val service =
+            SynapticAccessibilityService.instance
+
+        if (service == null) {
+
+            Log.d(
+                "SynapticA11y",
+                "Accessibility Service NULL"
+            )
+
+            return makeResult(
+                false,
+                "Accessibility Service belum aktif."
+            )
+        }
+
+        val dump =
+            service.dumpCurrentScreen()
+
+        Log.d(
+            "SynapticA11y",
+            "SCREEN_DUMP:`n$dump"
+        )
+
+        return makeResult(
+            true,
+            dump
+        )
+    }
+
+    
+    private fun executeDeviceAnalysis(): ToolResult {
+
+        return try {
+
+            val snapshot = deviceMonitor.getSnapshot()
+
+            val analysis =
+                performanceAnalyzer.analyze(snapshot)
+
+            val text = buildString {
+
+                appendLine("Severity: " + analysis.severity)
+                appendLine()
+
+                appendLine(analysis.summary)
+
+                if (analysis.recommendations.isNotEmpty()) {
+
+                    appendLine()
+                    appendLine("Rekomendasi:")
+
+                    analysis.recommendations.forEach {
+                        appendLine("- " + it)
+                    }
+                }
+            }
+
+            makeResult(true, text, "", 0)
+
+        } catch (e: Exception) {
+
+            makeResult(
+                false,
+                "Analisis gagal: " + e.message
+            )
+        }
+    }
+
+    private fun makeResult(success: Boolean, outputText: String, stderrText: String = "", exitCodeVal: Int = if (success) 0 else 1): ToolResult {
+        return object : ToolResult {
+            override val output: String = outputText
+            override val isSuccess: Boolean = success
+            override val stderr: String = stderrText
+            override val exitCode: Int = exitCodeVal
+        }
+    }
+
+
+    }
+
+
+    fun getDeviceDiagnosticContext(): String {
+
+        val s = deviceMonitor.getSnapshot()
+
+        val analysis =
+            performanceAnalyzer.analyze(s)
+
+        return """
+[DEVICE_ANALYSIS]
+
+SEVERITY=${analysis.severity}
+
+SUMMARY=${analysis.summary}
+
+RECOMMENDATIONS=${analysis.recommendations.joinToString(" | ")}
+
+[DEVICE_DIAGNOSTICS]
+
+RAM_USED_PERCENT=${s.ramUsedPercent}
+CPU_USAGE_PERCENT=${s.cpuUsagePercent}
+CPU_TEMP_C=${s.cpuTempCelsius}
+
+BATTERY_LEVEL=${s.batteryLevel}
+BATTERY_TEMP_C=${s.batteryTempCelsius}
+IS_CHARGING=${s.isCharging}
+
+STORAGE_FREE_BYTES=${s.storageFreeBytes}
+STORAGE_TOTAL_BYTES=${s.storageTotalBytes}
+
+UPTIME_MS=${s.uptimeMs}
+
+RUNNING_PROCESS_COUNT=${s.runningProcessCount}
+FOREGROUND_APP=${s.foregroundApp}
+""".trimIndent()
+    }
+
+    companion object {
+        private const val TAG = "ToolExecutor"
+
+        // Command yang selalu diblokir â€” tidak bisa di-whitelist
+        private val HARDCODED_BLACKLIST = setOf(
+            "rm -rf /", "rm -rf /*", "format", "mkfs", "dd if=",
+            ":(){ :|:& };:", "chmod 777 /", "reboot", "shutdown"
+        )
+    }
+}
+
+
+
+
+
+
+
+

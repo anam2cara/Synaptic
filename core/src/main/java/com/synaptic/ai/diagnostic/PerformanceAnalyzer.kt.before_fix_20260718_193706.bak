@@ -1,0 +1,84 @@
+package com.synaptic.ai.diagnostic
+
+import com.synaptic.ai.core.model.DeviceSnapshot
+
+class PerformanceAnalyzer {
+
+    enum class Severity {
+        NORMAL,
+        WARNING,
+        CRITICAL
+    }
+
+    data class AnalysisResult(
+        val severity: Severity,
+        val summary: String,
+        val recommendations: List<String>
+    )
+
+    fun analyze(
+        snapshot: DeviceSnapshot
+    ): AnalysisResult {
+
+        val issues = mutableListOf<String>()
+        val fixes = mutableListOf<String>()
+
+        var severity = Severity.NORMAL
+
+        if (snapshot.ramUsedPercent >= 90f) {
+            severity = Severity.CRITICAL
+            issues += "Penggunaan RAM sangat tinggi (${snapshot.ramUsedPercent.toInt()}%)"
+            fixes += "Tutup aplikasi yang tidak digunakan"
+        } else if (snapshot.ramUsedPercent >= 75f) {
+            severity = maxSeverity(severity, Severity.WARNING)
+            issues += "Penggunaan RAM tinggi (${snapshot.ramUsedPercent.toInt()}%)"
+        }
+
+        if (snapshot.cpuUsagePercent >= 80f) {
+            severity = Severity.CRITICAL
+            issues += "CPU sangat sibuk (${snapshot.cpuUsagePercent.toInt()}%)"
+            fixes += "Periksa aplikasi yang berjalan di latar belakang"
+        } else if (snapshot.cpuUsagePercent >= 60f) {
+            severity = maxSeverity(severity, Severity.WARNING)
+            issues += "CPU cukup tinggi (${snapshot.cpuUsagePercent.toInt()}%)"
+        }
+
+        if (snapshot.batteryLevel <= 10) {
+            severity = maxSeverity(severity, Severity.CRITICAL)
+            issues += "Baterai kritis (${snapshot.batteryLevel}%)"
+            fixes += "Segera isi daya perangkat"
+        }
+
+        if (snapshot.batteryTempCelsius >= 45f) {
+            severity = maxSeverity(severity, Severity.CRITICAL)
+            issues += "Suhu baterai tinggi (${snapshot.batteryTempCelsius}�C)"
+            fixes += "Kurangi beban perangkat sementara"
+        }
+
+        if (issues.isEmpty()) {
+            return AnalysisResult(
+                Severity.NORMAL,
+                "Performa perangkat normal.",
+                emptyList()
+            )
+        }
+
+        return AnalysisResult(
+            severity,
+            issues.joinToString("; "),
+            fixes.distinct()
+        )
+    }
+
+    private fun maxSeverity(
+        current: Severity,
+        next: Severity
+    ): Severity {
+
+        return if (next.ordinal > current.ordinal)
+            next
+        else
+            current
+    }
+}
+

@@ -1,0 +1,251 @@
+#include <jni.h>
+#include <string>
+#include <vector>
+#include <thread>
+#include <atomic>
+#include <android/log.h>
+#include "llama.h"
+
+#define TAG "SynapticJNI"
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
+
+// --- State global ---
+struct LlamaState {
+    llama_model   * model         = nullptr;
+    llama_context * ctx           = nullptr;
+    llama_sampler * sampler       = nullptr;
+    bool            loaded        = false;
+    int32_t         n_past        = 0;                   // token yang sudah ada di KV Cache
+    std::vector<llama_token> cached_tokens;              // snapshot prompt+output terakhir
+};
+
+static LlamaState g_state;
+static bool g_backendInit = false;
+static std::atomic<bool> g_abort{false};
+
+static void llama_log_callback_android(ggml_log_level level, const char* text, void* /*user_data*/) {
+    if (level == GGML_LOG_LEVEL_ERROR) LOGE("%s", text);
+    else                               LOGI("%s", text);
+}
+
+static std::string jstring2str(JNIEnv* env, jstring jstr) {
+    if (!jstr) return "";
+    const char* chars = env->GetStringUTFChars(jstr, nullptr);
+    std::string result(chars);
+    env->ReleaseStringUTFChars(jstr, chars);
+    return result;
+}
+
+static void freeStateLocked() {
+    if (g_state.sampler) { llama_sampler_free(g_state.sampler); g_state.sampler = nullptr; }
+    if (g_state.ctx)     { llama_free(g_state.ctx);             g_state.ctx     = nullptr; }
+    if (g_state.model)   { llama_model_free(g_state.model);     g_state.model   = nullptr; }
+    g_state.loaded = false;
+    g_state.n_past = 0;
+    g_state.cached_tokens.clear();
+}
+
+extern "C" {
+
+JNIEXPORT jboolean JNICALL
+Java_com_synaptic_ai_llm_LlamaJNI_loadModel(JNIEnv* env, jobject, jstring modelPath) {
+    const char* path = env->GetStringUTFChars(modelPath, nullptr);
+    LOGI("Loading model: %s", path);
+    freeStateLocked();
+    if (!g_backendInit) {
+        llama_log_set(llama_log_callback_android, nullptr);
+        llama_backend_init();
+        g_backendInit = true;
+    }
+    llama_model_params mparams = llama_model_default_params();
+    mparams.n_gpu_layers = 0;
+    g_state.model = llama_model_load_from_file(path, mparams);
+    env->ReleaseStringUTFChars(modelPath, path);
+    if (!g_state.model) {
+        LOGE("Gagal load model (file rusak / format tidak didukung / RAM kurang)");
+        return JNI_FALSE;
+    }
+    unsigned int hwThreads = std::thread::hardware_concurrency();
+
+    int nThreads;
+
+    if (hwThreads >= 8)
+        nThreads = 6;
+    else if (hwThreads >= 6)
+        nThreads = 4;
+    else
+        nThreads = 2;
+    llama_context_params cparams = llama_context_default_params();
+    cparams.n_ctx           = 4096;   // diperbesar: cukup untuk memori + history + output
+    cparams.n_threads       = nThreads;
+    cparams.n_threads_batch = nThreads;
+    g_state.ctx = llama_init_from_model(g_state.model, cparams);
+    if (!g_state.ctx) {
+        LOGE("Gagal membuat context");
+        llama_model_free(g_state.model);
+        g_state.model = nullptr;
+        return JNI_FALSE;
+    }
+    llama_sampler_chain_params sparams = llama_sampler_chain_default_params();
+    g_state.sampler = llama_sampler_chain_init(sparams);
+    llama_sampler_chain_add(g_state.sampler, llama_sampler_init_temp(0.4f));
+    llama_sampler_chain_add(g_state.sampler, llama_sampler_init_top_p(0.95f, 1));
+    llama_sampler_chain_add(g_state.sampler, llama_sampler_init_dist(LLAMA_DEFAULT_SEED));
+    g_state.loaded = true;
+    LOGI("Model loaded OK. ctx=%d threads=%d", cparams.n_ctx, nThreads);
+    return JNI_TRUE;
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_synaptic_ai_llm_LlamaJNI_generate(JNIEnv* env, jobject, jstring prompt, jint maxTokens) {
+    if (!g_state.loaded) {
+        return env->NewStringUTF("[ERROR] Model belum dimuat");
+    }
+
+    g_abort.store(false);
+    std::string p = jstring2str(env, prompt);
+    const llama_vocab* vocab = llama_model_get_vocab(g_state.model);
+
+    // 1. Tokenize full prompt
+    std::vector<llama_token> tokens((int32_t)p.size() + 64);
+    int n_tokens = llama_tokenize(vocab, p.c_str(), (int32_t)p.size(),
+                                   tokens.data(), (int32_t)tokens.size(), true, true);
+    if (n_tokens < 0) {
+        tokens.resize(-n_tokens);
+        n_tokens = llama_tokenize(vocab, p.c_str(), (int32_t)p.size(),
+                                   tokens.data(), (int32_t)tokens.size(), true, true);
+    }
+    if (n_tokens <= 0) return env->NewStringUTF("[ERROR] Tokenize gagal");
+    tokens.resize(n_tokens);
+
+    int32_t limit = (maxTokens > 0 && maxTokens <= 4096) ? maxTokens : 512;
+    int32_t n_ctx = (int32_t)llama_n_ctx(g_state.ctx);
+
+    // 2. Cari common prefix antara prompt baru vs cache
+    int32_t common_len = 0;
+    {
+        int32_t min_len = (int32_t)std::min(tokens.size(), g_state.cached_tokens.size());
+        for (int32_t i = 0; i < min_len; i++) {
+            if (tokens[i] == g_state.cached_tokens[i]) common_len++;
+            else break;
+        }
+    }
+
+    // 3. Guard: clear hanya jika prompt sendiri sudah melebihi context
+    if (n_tokens >= n_ctx - 64) {
+        LOGI("Prompt terlalu panjang (%d token), clear KV Cache", n_tokens);
+        llama_memory_clear(llama_get_memory(g_state.ctx), true);
+        g_state.n_past = 0;
+        g_state.cached_tokens.clear();
+        common_len = 0;
+    }
+    // Batasi output agar tidak melampaui sisa context yang tersedia
+    {
+        int32_t available = n_ctx - n_tokens - 64;
+        if (available <= 0) return env->NewStringUTF("[ERROR] Prompt terlalu panjang");
+        if (limit > available) limit = available;
+    }
+
+    // 4. Pangkas KV Cache jika cache lama lebih panjang dari common prefix
+    if (common_len < g_state.n_past) {
+        llama_memory_seq_rm(llama_get_memory(g_state.ctx), 0, common_len, -1);
+        g_state.n_past = common_len;
+        LOGI("KV Cache dipangkas ke %d token", common_len);
+    }
+
+    // 5. Decode HANYA token baru (suffix setelah common prefix)
+    //    Token lama sudah ada di KV Cache â€” tidak perlu decode ulang
+    if (common_len < n_tokens) {
+        int32_t n_new = n_tokens - common_len;
+        llama_batch batch = llama_batch_init(n_new, 0, 1);
+        for (int32_t i = 0; i < n_new; i++) {
+            batch.token[i]     = tokens[common_len + i];
+            batch.pos[i]       = g_state.n_past + i;   // posisi eksplisit â€” ini yang fix bug lama
+            batch.n_seq_id[i]  = 1;
+            batch.seq_id[i][0] = 0;
+            batch.logits[i]    = (i == n_new - 1) ? 1 : 0; // hanya token terakhir butuh logits
+        }
+        batch.n_tokens = n_new;
+        int rc = llama_decode(g_state.ctx, batch);
+        llama_batch_free(batch);
+        if (rc != 0) {
+            LOGE("llama_decode gagal untuk prompt (%d token baru)", n_new);
+            return env->NewStringUTF("[ERROR] Decode gagal");
+        }
+        g_state.n_past += n_new;
+        LOGI("Decoded %d token baru | cache hit: %d token", n_new, common_len);
+    } else {
+        LOGI("Full cache hit: %d token, skip decode prompt", common_len);
+    }
+
+    // Simpan snapshot token prompt untuk perbandingan di pemanggilan berikutnya
+    g_state.cached_tokens = tokens;
+
+    // 6. Sample token jawaban
+    llama_sampler_reset(g_state.sampler);
+    std::string result;
+
+    // Pre-alokasi batch untuk generated tokens (reuse, efisiensi)
+    llama_batch step_batch = llama_batch_init(1, 0, 1);
+    step_batch.n_seq_id[0]  = 1;
+    step_batch.seq_id[0][0] = 0;
+    step_batch.logits[0]    = 1;
+    step_batch.n_tokens     = 1;
+
+    for (int i = 0; i < limit; i++) {
+        llama_token new_token = llama_sampler_sample(g_state.sampler, g_state.ctx, -1);
+        llama_sampler_accept(g_state.sampler, new_token);
+
+        if (g_abort.load() || llama_vocab_is_eog(vocab, new_token)) break;
+
+        char buf[256] = {0};
+        int len = llama_token_to_piece(vocab, new_token, buf, sizeof(buf) - 1, 0, false);
+        if (len > 0) { buf[len] = '\0'; result += buf; }
+
+        // Decode token ini dengan posisi EKSPLISIT (bukan 0 seperti kode lama)
+        step_batch.token[0] = new_token;
+        step_batch.pos[0]   = g_state.n_past;
+        if (llama_decode(g_state.ctx, step_batch) != 0) {
+            LOGE("llama_decode gagal pada generated token ke-%d", i);
+            break;
+        }
+        g_state.n_past++;
+        g_state.cached_tokens.push_back(new_token);
+    }
+
+    llama_batch_free(step_batch);
+    return env->NewStringUTF(result.c_str());
+}
+
+JNIEXPORT void JNICALL
+Java_com_synaptic_ai_llm_LlamaJNI_clearCache(JNIEnv*, jobject) {
+    if (g_state.ctx) {
+        llama_memory_clear(llama_get_memory(g_state.ctx), true);
+    }
+    g_state.n_past = 0;
+    g_state.cached_tokens.clear();
+    LOGI("KV Cache cleared (session switch)");
+}
+
+JNIEXPORT void JNICALL
+Java_com_synaptic_ai_llm_LlamaJNI_freeModel(JNIEnv*, jobject) {
+    freeStateLocked();
+    LOGI("Model freed");
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_synaptic_ai_llm_LlamaJNI_isLoaded(JNIEnv*, jobject) {
+    return g_state.loaded ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT void JNICALL
+Java_com_synaptic_ai_llm_LlamaJNI_stopGeneration(JNIEnv*, jobject) {
+    g_abort.store(true);
+    LOGI("stopGeneration: abort flag set");
+}
+
+} // extern "C"
+
+
+

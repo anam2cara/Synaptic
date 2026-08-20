@@ -1,0 +1,55 @@
+plugins {
+    id 'com.android.library'
+    id 'com.google.devtools.ksp'
+}
+
+android {
+    namespace 'com.synaptic.ai.core'
+    //noinspection GradleDependency
+    compileSdk 35
+
+    defaultConfig {
+        minSdk 26
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+        }
+    }
+}
+
+dependencies {
+    //noinspection GradleDependency
+    implementation 'androidx.core:core-ktx:1.13.1'
+    //noinspection GradleDependency
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    
+    // Room
+    //noinspection GradleDependency
+    api 'androidx.room:room-runtime:2.6.1'
+    //noinspection GradleDependency
+    api 'androidx.room:room-ktx:2.6.1'
+    //noinspection GradleDependency
+    ksp 'androidx.room:room-compiler:2.6.1'
+    
+    // JSON
+    //noinspection NewerVersionAvailable
+    api 'com.google.code.gson:gson:2.11.0'
+    
+    // Crypto (for SecurePrefs)
+    //noinspection GradleDependency
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+}

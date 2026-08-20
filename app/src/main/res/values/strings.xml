@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Synaptic</string>
+    <string name="chat_hint">Chat with Synaptic...</string>
+    <string name="btn_send">Kirim</string>
+    <string name="btn_stop">Stop</string>
+    <string name="model_loading">Memuat model AI...</string>
+    <string name="model_downloading">Mengunduh model AI (%1$d%%)</string>
+    <string name="model_not_found">Model belum ada. Unduh sekarang?</string>
+    <string name="confirm_execute">Synaptic akan menjalankan perintah ini:\n\n%1$s\n\nLanjutkan?</string>
+    <string name="btn_confirm">Jalankan</string>
+    <string name="btn_cancel">Batal</string>
+    <string name="whitelist_blocked">Perintah ini diblokir oleh whitelist kamu.</string>
+    <string name="emergency_stop">Semua proses Synaptic dihentikan.</string>
+    <string name="nav_chat">Chat</string>
+    <string name="nav_settings">Pengaturan</string>
+    <string name="nav_logs">Log</string>
+
+    <!-- New strings -->
+    <string name="menu_desc">Menu</string>
+    <string name="ai_profile_desc">AI Profile</string>
+    <string name="welcome_title">Synaptic</string>
+    <string name="welcome_subtitle">Apa yang bisa saya bantu?</string>
+    <string name="stats_title">Statistik Sistem</string>
+    <string name="loading_stats">Memuat data...</string>
+    <string name="settings_title">Pengaturan</string>
+    <string name="settings_placeholder">Opsi pengaturan akan muncul di sini.</string>
+    <string name="terminal_title">Synaptic Terminal</string>
+    <string name="accessibility_service_description">Synaptic AI Administrator</string>
+</resources>

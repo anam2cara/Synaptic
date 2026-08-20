@@ -1,0 +1,217 @@
+#include <jni.h>
+#include <string>
+#include <vector>
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <exception>
+#include <android/log.h>
+#include "llama.h"
+#include "ggml.h"
+#include "ggml-backend.h"
+
+#define TAG "SynapticJNI"
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
+
+struct LlamaState {
+    llama_model   * model   = nullptr;
+    llama_context * ctx     = nullptr;
+    llama_sampler * sampler = nullptr;
+    bool            loaded  = false;
+    int32_t         n_past  = 0;
+};
+
+static LlamaState g_state;
+static std::mutex g_stateMutex;
+static std::atomic<bool> g_abort{false};
+
+static void freeStateLocked() {
+    if (g_state.sampler) { llama_sampler_free(g_state.sampler); g_state.sampler = nullptr; }
+    if (g_state.ctx)     { llama_free(g_state.ctx);             g_state.ctx     = nullptr; }
+    if (g_state.model)   { llama_model_free(g_state.model);     g_state.model   = nullptr; }
+    g_state.loaded = false;
+    g_state.n_past = 0;
+}
+
+extern "C" {
+
+JNIEXPORT jboolean JNICALL
+Java_com_synaptic_ai_llm_LlamaJNI_loadModel(JNIEnv* env, jobject, jstring modelPath, jboolean tryGpu) {
+    std::lock_guard<std::mutex> lock(g_stateMutex);
+    const char* path = env->GetStringUTFChars(modelPath, nullptr);
+    freeStateLocked();
+
+    LOGI("loadModel: Starting...");
+    llama_backend_init();
+
+    llama_model_params mparams = llama_model_default_params();
+    mparams.use_mmap = true;
+    // Pindah ke CPU ONLY untuk baseline stabilitas sesuai saran user
+    mparams.n_gpu_layers = 0;
+
+    g_state.model = llama_model_load_from_file(path, mparams);
+    env->ReleaseStringUTFChars(modelPath, path);
+    if (!g_state.model) { LOGE("loadModel: Failed to load model"); return JNI_FALSE; }
+
+    llama_context_params cparams = llama_context_default_params();
+    cparams.n_ctx   = 2048;
+    cparams.n_threads = 4;
+    cparams.n_threads_batch = 4;
+
+    g_state.ctx = llama_init_from_model(g_state.model, cparams);
+    if (!g_state.ctx) { LOGE("loadModel: Failed to init context"); return JNI_FALSE; }
+
+    // Canary test: backend Vulkan pada beberapa GPU mobile bisa "berhasil" saat
+    // load tapi throw uncaught exception (-> SIGABRT) saat decode pertama,
+    // terutama pada partial offload (layer tercampur CPU+GPU). Kita paksa satu
+    // decode kecil di sini supaya kegagalan terdeteksi SEBELUM diklaim sukses,
+    // sehingga jalur fallback-ke-CPU di LlmManager.kt benar-benar terpakai.
+    if (tryGpu) {
+        try {
+            const llama_vocab* cvocab = llama_model_get_vocab(g_state.model);
+            llama_token canaryTok = llama_vocab_bos(cvocab);
+            llama_batch cbatch = llama_batch_init(1, 0, 1);
+            cbatch.n_tokens = 1;
+            cbatch.token[0] = canaryTok;
+            cbatch.pos[0] = 0;
+            cbatch.n_seq_id[0] = 1;
+            cbatch.seq_id[0][0] = 0;
+            cbatch.logits[0] = true;
+            int crc = llama_decode(g_state.ctx, cbatch);
+            llama_batch_free(cbatch);
+            llama_memory_clear(llama_get_memory(g_state.ctx), true);
+            g_state.n_past = 0;
+            if (crc != 0) {
+                LOGE("loadModel: Canary GPU decode gagal (rc=%d), fallback ke CPU", crc);
+                freeStateLocked();
+                return JNI_FALSE;
+            }
+        } catch (const std::exception& e) {
+            LOGE("loadModel: Canary GPU decode exception: %s, fallback ke CPU", e.what());
+            freeStateLocked();
+            return JNI_FALSE;
+        } catch (...) {
+            LOGE("loadModel: Canary GPU decode unknown exception, fallback ke CPU");
+            freeStateLocked();
+            return JNI_FALSE;
+        }
+    }
+
+    g_state.sampler = llama_sampler_chain_init(llama_sampler_chain_default_params());
+    llama_sampler_chain_add(g_state.sampler, llama_sampler_init_temp(0.7f));
+    llama_sampler_chain_add(g_state.sampler, llama_sampler_init_dist(42));
+
+    g_state.loaded = true;
+    LOGI("loadModel: Success (GPU=%d)", mparams.n_gpu_layers);
+    return JNI_TRUE;
+}
+
+JNIEXPORT void JNICALL
+Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring prompt, jstring grammar, jint maxTokens, jobject callback) {
+    LOGI("generateStream: Called");
+    std::unique_lock<std::mutex> lock(g_stateMutex);
+    if (!g_state.loaded || !g_state.ctx) { LOGE("generateStream: Model not ready"); return; }
+
+    jclass cbClass = env->GetObjectClass(callback);
+    jmethodID onToken = env->GetMethodID(cbClass, "onToken", "(Ljava/lang/String;)V");
+    jmethodID onComplete = env->GetMethodID(cbClass, "onComplete", "()V");
+    jmethodID onError = env->GetMethodID(cbClass, "onError", "(Ljava/lang/String;)V");
+
+    const char* pStr = env->GetStringUTFChars(prompt, nullptr);
+    const llama_vocab* vocab = llama_model_get_vocab(g_state.model);
+
+    std::vector<llama_token> tokens(strlen(pStr) + 64);
+    int n_tokens = llama_tokenize(vocab, pStr, strlen(pStr), tokens.data(), tokens.size(), true, true);
+    env->ReleaseStringUTFChars(prompt, pStr);
+    if (n_tokens <= 0) { LOGE("generateStream: Tokenize failed"); return; }
+    tokens.resize(n_tokens);
+
+    // KV Cache Reset
+    llama_memory_clear(llama_get_memory(g_state.ctx), true);
+    g_state.n_past = 0;
+
+    // Prefill
+    LOGI("generateStream: Prefilling %d tokens...", n_tokens);
+    llama_batch batch = llama_batch_init(n_tokens, 0, 1);
+    batch.n_tokens = n_tokens;
+    for (int i = 0; i < n_tokens; i++) {
+        batch.token[i] = tokens[i];
+        batch.pos[i] = i;
+        batch.n_seq_id[i] = 1;
+        batch.seq_id[i][0] = 0;
+        batch.logits[i] = (i == n_tokens - 1);
+    }
+    int rc = -1;
+    bool decodeThrew = false;
+    std::string decodeErr;
+    try {
+        rc = llama_decode(g_state.ctx, batch);
+    } catch (const std::exception& e) {
+        decodeThrew = true;
+        decodeErr = e.what();
+    } catch (...) {
+        decodeThrew = true;
+        decodeErr = "unknown native exception";
+    }
+    llama_batch_free(batch);
+    if (decodeThrew || rc != 0) {
+        LOGE("generateStream: Decode failed (rc=%d, threw=%d, %s)", rc, decodeThrew ? 1 : 0, decodeErr.c_str());
+        std::string msg = decodeThrew ? ("Native decode exception: " + decodeErr) : "Native decode failed";
+        jstring emsg = env->NewStringUTF(msg.c_str());
+        env->CallVoidMethod(callback, onError, emsg);
+        env->DeleteLocalRef(emsg);
+        return;
+    }
+    g_state.n_past = n_tokens;
+    LOGI("generateStream: Prefill done.");
+
+    // Loop
+    g_abort.store(false);
+    llama_batch s_batch = llama_batch_init(1, 0, 1);
+    s_batch.n_tokens = 1;
+    s_batch.n_seq_id[0] = 1;
+    s_batch.seq_id[0][0] = 0;
+    s_batch.logits[0] = true;
+
+    for (int i = 0; i < maxTokens; i++) {
+        if (g_abort.load()) { LOGI("generateStream: Abort requested"); break; }
+
+        llama_token id = llama_sampler_sample(g_state.sampler, g_state.ctx, -1);
+        llama_sampler_accept(g_state.sampler, id);
+        if (llama_vocab_is_eog(vocab, id)) { LOGI("generateStream: EOG reached"); break; }
+
+        char buf[256];
+        int n = llama_token_to_piece(vocab, id, buf, sizeof(buf), 0, false);
+        if (n > 0) {
+            jstring jpiece = env->NewStringUTF(std::string(buf, n).c_str());
+            if (jpiece) { env->CallVoidMethod(callback, onToken, jpiece); env->DeleteLocalRef(jpiece); }
+        }
+
+        s_batch.token[0] = id;
+        s_batch.pos[0] = g_state.n_past++;
+        bool tokOk;
+        try {
+            tokOk = (llama_decode(g_state.ctx, s_batch) == 0);
+        } catch (const std::exception& e) {
+            LOGE("generateStream: Token decode exception: %s", e.what());
+            tokOk = false;
+        } catch (...) {
+            LOGE("generateStream: Token decode unknown exception");
+            tokOk = false;
+        }
+        if (!tokOk) { LOGE("generateStream: Token decode failed"); break; }
+    }
+
+    llama_batch_free(s_batch);
+    LOGI("generateStream: Completed.");
+    env->CallVoidMethod(callback, onComplete);
+    env->DeleteLocalRef(cbClass);
+}
+
+JNIEXPORT void JNICALL Java_com_synaptic_ai_llm_LlamaJNI_stopGeneration(JNIEnv*, jobject) { g_abort.store(true); }
+JNIEXPORT void JNICALL Java_com_synaptic_ai_llm_LlamaJNI_freeModel(JNIEnv*, jobject) { std::lock_guard<std::mutex> lock(g_stateMutex); freeStateLocked(); }
+JNIEXPORT jboolean JNICALL Java_com_synaptic_ai_llm_LlamaJNI_isLoaded(JNIEnv*, jobject) { return g_state.loaded; }
+JNIEXPORT void JNICALL Java_com_synaptic_ai_llm_LlamaJNI_clearCache(JNIEnv*, jobject) { if (g_state.ctx) llama_memory_clear(llama_get_memory(g_state.ctx), true); g_state.n_past = 0; }
+
+}
