@@ -38,4 +38,7 @@ local.properties
 gradle/gradle-daemon-jvm.properties
 diag_native_build_*.log
 tree_source.txt
-*.bak
+*.bak*
+_vulkan_rebuild_log.txt
+full_log.txt
+last_log.txt
