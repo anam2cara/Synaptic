@@ -1,4 +1,4 @@
-﻿package com.synaptic.ai.tools
+package com.synaptic.ai.tools
 
 import android.content.pm.PackageManager
 import rikka.shizuku.Shizuku
@@ -20,7 +20,7 @@ object ShizukuHelper {
     fun init() {
         try {
             Shizuku.addRequestPermissionResultListener(permissionListener)
-            Shizuku.addBinderReceivedListener {
+            Shizuku.addBinderReceivedListenerSticky {
                 updateState()
             }
         } catch (_: Exception) {}

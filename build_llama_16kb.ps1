@@ -22,7 +22,7 @@ $VULKAN_SDK      = $env:VULKAN_SDK
 $VULKAN_INCLUDE  = Join-Path $VULKAN_SDK "Include"
 $SPIRV_HEADERS   = Join-Path $VULKAN_SDK "Lib\cmake\SPIRV-Headers"
 $VULKAN_GLSLC    = Join-Path $VULKAN_SDK "Bin\glslc.exe"
-$VULKAN_LIBRARY  = Join-Path $NDK "toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\lib\aarch64-linux-android\26\libvulkan.so"
+$VULKAN_LIBRARY  = Join-Path $NDK "toolchains\llvm\prebuilt\windows-x86_64\sysroot\usr\lib\aarch64-linux-android\29\libvulkan.so"
 $ANDROID_TOOLCHAIN = Join-Path $NDK "build\cmake\android.toolchain.cmake"
 
 $checks = @(
@@ -138,7 +138,7 @@ Write-Host "  Configure OK." -ForegroundColor Green
 
 Write-Host "`n[4/5] Building..." -ForegroundColor Cyan
 $start = Get-Date
-& $CMAKE_EXE --build $LLAMA_BLD --config Release --parallel
+& $CMAKE_EXE --build $LLAMA_BLD --config Release --parallel 3
 if ($LASTEXITCODE -ne 0) { throw "Build GAGAL! (exit code $LASTEXITCODE)" }
 $elapsed = ((Get-Date) - $start).ToString("mm\:ss")
 Write-Host "  Build selesai dalam $elapsed." -ForegroundColor Green

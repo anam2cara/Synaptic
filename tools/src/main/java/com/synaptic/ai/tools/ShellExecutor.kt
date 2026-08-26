@@ -27,6 +27,7 @@ object ShellExecutor {
         if (ShizukuHelper.isShizukuAvailable() && ShizukuHelper.hasPermission()) {
             return try {
                 Log.d(TAG, "Menjalankan via Shizuku: $command")
+                @Suppress("DEPRECATION")
                 val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
                 readProcessOutput(process, timeoutMs)
             } catch (e: Exception) {

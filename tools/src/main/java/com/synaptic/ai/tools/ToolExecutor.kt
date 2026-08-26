@@ -8,6 +8,8 @@ import com.synaptic.ai.AppPreferences
 import com.synaptic.ai.monitor.DeviceMonitor
 import com.synaptic.ai.diagnostic.PerformanceAnalyzer
 import com.synaptic.ai.accessibility.SynapticAccessibilityService
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.concurrent.Executors
 
 class ToolExecutor(context: Context) {
@@ -18,9 +20,14 @@ class ToolExecutor(context: Context) {
         context,
         shellRunner = { command: String -> ShellExecutor.run(command) }
     )
+    
+    fun getDeviceMonitor(): DeviceMonitor = deviceMonitor
 
     private val performanceAnalyzer = PerformanceAnalyzer()
     private val prefs = AppPreferences(context)
+
+    private var cachedUserPackages: Map<Int, Set<String>>? = null
+    private var lastPackageCacheTime: Long = 0
 
     interface ToolResult {
         val output: String
@@ -60,6 +67,10 @@ class ToolExecutor(context: Context) {
             "list_processes" -> executeListProcesses()
             "read_screen" -> executeReadScreen()
             "read_logs" -> executeReadLogs()
+            "native_backend_status" -> executeNativeBackendStatus()
+            "pgvector_status" -> executePgVectorStatus()
+            "n8n_status" -> executeN8nStatus()
+            "n8n_trigger" -> executeN8nTrigger(extractJsonString(args, "payload"))
             else -> makeResult(false, "Tool belum memiliki executor: $normalizedName", "", -1)
         }
     }
@@ -98,6 +109,76 @@ class ToolExecutor(context: Context) {
 
     private fun executeReadLogs(): ToolResult {
         return executeShell("logcat -d -v brief *:E *:W | tail -n 50")
+    }
+
+    private fun executeNativeBackendStatus(): ToolResult {
+        val output = buildString {
+            appendLine("LLM lokal: on-demand")
+            appendLine("Server llama.cpp: nonaktif")
+            appendLine("Backend GPU: ${if (prefs.useGpuBackend) "Vulkan aktif" else "dinonaktifkan dari preferensi"}")
+            appendLine("Vulkan debug: OFF pada build script")
+            appendLine("OpenCL: didukung jika libggml-opencl.so tersedia di APK")
+            appendLine("Mode eksekusi: native JNI langsung, bukan koneksi server")
+        }
+        return makeResult(true, output, "", 0)
+    }
+
+    private fun executePgVectorStatus(): ToolResult {
+        val configured = prefs.pgVectorUrl.isNotBlank()
+        val output = buildString {
+            appendLine("PostgreSQL/pgVector: ${if (configured) "terkonfigurasi" else "belum dikonfigurasi"}")
+            appendLine("URL: ${prefs.pgVectorUrl.ifBlank { "(kosong)" }}")
+            appendLine("API key: ${if (prefs.pgVectorApiKey.isBlank()) "(kosong)" else "tersimpan"}")
+            appendLine("Catatan: integrasi ini opsional dan hanya dipakai saat diminta, bukan background service.")
+        }
+        return makeResult(true, output, "", 0)
+    }
+
+    private fun executeN8nStatus(): ToolResult {
+        val configured = prefs.n8nWebhookUrl.isNotBlank()
+        val output = buildString {
+            appendLine("n8n: ${if (configured) "terkonfigurasi" else "belum dikonfigurasi"}")
+            appendLine("Webhook: ${prefs.n8nWebhookUrl.ifBlank { "(kosong)" }}")
+            appendLine("API key: ${if (prefs.n8nApiKey.isBlank()) "(kosong)" else "tersimpan"}")
+            appendLine("Catatan: webhook hanya dipanggil setelah aksi dikonfirmasi.")
+        }
+        return makeResult(true, output, "", 0)
+    }
+
+    private fun executeN8nTrigger(payload: String): ToolResult {
+        val webhook = prefs.n8nWebhookUrl
+        if (webhook.isBlank()) {
+            return makeResult(false, "Webhook n8n belum dikonfigurasi.", "", 1)
+        }
+
+        return try {
+            val connection = (URL(webhook).openConnection() as HttpURLConnection).apply {
+                requestMethod = "POST"
+                connectTimeout = 5000
+                readTimeout = 10000
+                doOutput = true
+                setRequestProperty("Content-Type", "application/json; charset=utf-8")
+                if (prefs.n8nApiKey.isNotBlank()) {
+                    setRequestProperty("Authorization", "Bearer ${prefs.n8nApiKey}")
+                }
+            }
+
+            val body = if (payload.trim().startsWith("{")) payload else """{"message":${org.json.JSONObject.quote(payload)}}"""
+            connection.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
+
+            val code = connection.responseCode
+            val stream = if (code in 200..299) connection.inputStream else connection.errorStream
+            val response = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
+
+            makeResult(
+                code in 200..299,
+                if (response.isBlank()) "n8n HTTP $code" else "n8n HTTP $code\n$response",
+                "",
+                code
+            )
+        } catch (e: Exception) {
+            makeResult(false, "Gagal memanggil n8n: ${e.message}", e.stackTraceToString(), 1)
+        }
     }
 
     private fun executeDeviceStatus(args: String): ToolResult {
@@ -177,20 +258,26 @@ class ToolExecutor(context: Context) {
             val am =
                 context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
 
-            val userPackagesByUid = mutableMapOf<Int, MutableSet<String>>()
-
-            for (app in pm.getInstalledApplications(0)) {
-                val flags = app.flags
-
-                val isUserInstalled =
-                    (flags and ApplicationInfo.FLAG_SYSTEM) == 0 &&
-                    (flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0
-
-                if (isUserInstalled) {
-                    userPackagesByUid
-                        .getOrPut(app.uid) { linkedSetOf() }
-                        .add(app.packageName)
+            val userPackagesByUid = if (cachedUserPackages != null && System.currentTimeMillis() - lastPackageCacheTime < 60000) {
+                cachedUserPackages!!
+            } else {
+                val map = mutableMapOf<Int, MutableSet<String>>()
+                try {
+                    val apps = pm.getInstalledApplications(0)
+                    for (app in apps) {
+                        val flags = app.flags
+                        val isUserInstalled = (flags and ApplicationInfo.FLAG_SYSTEM) == 0 &&
+                                              (flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0
+                        if (isUserInstalled) {
+                            map.getOrPut(app.uid) { mutableSetOf() }.add(app.packageName)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Gagal ambil daftar aplikasi: ${e.message}")
                 }
+                cachedUserPackages = map
+                lastPackageCacheTime = System.currentTimeMillis()
+                map
             }
 
             data class ProcessEvidence(
@@ -259,55 +346,44 @@ class ToolExecutor(context: Context) {
                 )
             }
 
-            // SOURCE 2: Shizuku fallback
-            try {
-                val shell = ShellExecutor.runWithResult(
-                    "ps -A -o pid,uid,stat,name"
-                )
+            // SOURCE 2: Shizuku fallback (Hanya jika ActivityManager tidak memberikan data atau ingin lebih detail)
+            // Optimasi: Lewati jika sudah ada evidence foreground dari AM untuk menghemat waktu
+            val hasForeground = evidence.values.any { it.state == "FOREGROUND" }
+            if (!hasForeground) {
+                try {
+                    val shell = ShellExecutor.runWithResult(
+                        "ps -A -o pid,uid,stat,name"
+                    )
 
-                if (shell.isSuccess && shell.output.isNotBlank()) {
-                    for (line in shell.output.lines().drop(1)) {
-                        val parts = line.trim().split(Regex("\\s+"))
+                    if (shell.isSuccess && shell.output.isNotBlank()) {
+                        for (line in shell.output.lines().drop(1)) {
+                            val parts = line.trim().split(Regex("\\s+"))
+                            if (parts.size < 4) continue
 
-                        if (parts.size < 4) {
-                            continue
-                        }
+                            val pid = parts[0].toIntOrNull() ?: continue
+                            val uid = parts[1].toIntOrNull() ?: continue
+                            val stat = parts[2]
+                            val processName = parts.drop(3).joinToString(" ")
 
-                        val pid = parts[0].toIntOrNull() ?: continue
-                        val uid = parts[1].toIntOrNull() ?: continue
-                        val stat = parts[2]
+                            val packages = userPackagesByUid[uid]?.toList().orEmpty()
+                            if (packages.isEmpty()) continue
 
-                        val processName =
-                            parts.drop(3).joinToString(" ")
-
-                        val packages = userPackagesByUid[uid]
-                            ?.toList()
-                            .orEmpty()
-
-                        if (packages.isEmpty()) {
-                            continue
-                        }
-
-                        val key = "$uid:$pid"
-
-                        if (!evidence.containsKey(key)) {
-                            evidence[key] = ProcessEvidence(
-                                pid = pid,
-                                uid = uid,
-                                processName = processName,
-                                packageNames = packages,
-                                state = stat,
-                                source = "Shizuku/ps"
-                            )
+                            val key = "$uid:$pid"
+                            if (!evidence.containsKey(key)) {
+                                evidence[key] = ProcessEvidence(
+                                    pid = pid,
+                                    uid = uid,
+                                    processName = processName,
+                                    packageNames = packages,
+                                    state = stat,
+                                    source = "Shizuku/ps"
+                                )
+                            }
                         }
                     }
+                } catch (e: Exception) {
+                    Log.w(TAG, "Shizuku process fallback gagal: ${e.message}")
                 }
-
-            } catch (e: Exception) {
-                Log.w(
-                    TAG,
-                    "Shizuku process fallback gagal: ${e.message}"
-                )
             }
 
             val output = buildString {
@@ -327,23 +403,29 @@ class ToolExecutor(context: Context) {
                         "user-app yang dapat diverifikasi."
                     )
                 } else {
-                    evidence.values
+                    // Optimasi: Urutkan dan batasi agar tidak membebani context window LLM
+                    val sortedEvidence = evidence.values
                         .sortedWith(
-                            compareBy<ProcessEvidence>(
-                                { it.packageNames.joinToString(",") },
-                                { it.pid }
-                            )
+                            compareByDescending<ProcessEvidence> { it.state == "FOREGROUND" }
+                                .thenByDescending { it.state == "FOREGROUND_SERVICE" }
+                                .thenBy { it.packageNames.joinToString(",") }
                         )
-                        .forEach { process ->
-                            appendLine(
-                                "PID=${process.pid} " +
-                                "UID=${process.uid} " +
-                                "PROCESS=${process.processName} " +
-                                "PACKAGES=${process.packageNames.joinToString(",")} " +
-                                "STATE=${process.state} " +
-                                "SOURCE=${process.source}"
-                            )
-                        }
+                        .take(25)
+
+                    sortedEvidence.forEach { process ->
+                        appendLine(
+                            "PID=${process.pid} " +
+                            "UID=${process.uid} " +
+                            "PROCESS=${process.processName} " +
+                            "PACKAGES=${process.packageNames.joinToString(",")} " +
+                            "STATE=${process.state} " +
+                            "SOURCE=${process.source}"
+                        )
+                    }
+
+                    if (evidence.size > 25) {
+                        appendLine("... (dan ${evidence.size - 25} proses lainnya diabaikan demi efisiensi)")
+                    }
                 }
 
                 appendLine()
@@ -439,39 +521,19 @@ class ToolExecutor(context: Context) {
         val s = deviceMonitor.getSnapshot()
         val analysis = performanceAnalyzer.analyze(s)
 
+        // Ultra-compact format untuk mempercepat prefill LLM
         return """
-[DEVICE_ANALYSIS]
-
-SEVERITY=${analysis.severity}
-
-SUMMARY=${analysis.summary}
-
-RECOMMENDATIONS=${analysis.recommendations.joinToString(" | ")}
-
-[DEVICE_DIAGNOSTICS]
-
-RAM_USED_PERCENT=${s.ramUsedPercent}
-CPU_USAGE_PERCENT=${s.cpuUsagePercent}
-CPU_TEMP_C=${s.cpuTempCelsius}
-
-BATTERY_LEVEL=${s.batteryLevel}
-BATTERY_TEMP_C=${s.batteryTempCelsius}
-IS_CHARGING=${s.isCharging}
-
-STORAGE_FREE_BYTES=${s.storageFreeBytes}
-STORAGE_TOTAL_BYTES=${s.storageTotalBytes}
-
-GPU_MODEL=${s.gpuModel}
-GPU_BUSY_PERCENT=${s.gpuBusyPercent}
-GPU_TEMPERATURE_C=${s.gpuTemperatureCelsius}
-GPU_FAULTS_RAW=${s.gpuFaults}
-GPU_FAULT_PROCESSES_RAW=${s.gpuFaultProcesses}
-GPU_RESET_COUNT_RAW=${s.gpuResetCount}
-
-UPTIME_MS=${s.uptimeMs}
-
-RUNNING_PROCESS_COUNT=${s.runningProcessCount}
-FOREGROUND_APP=${s.foregroundApp}
+[SYS]
+SEV=${analysis.severity}
+SUM=${analysis.summary}
+REC=${analysis.recommendations.joinToString("|")}
+[DATA]
+RAM=${s.ramUsedPercent}%|${String.format("%.1f", s.ramFreeBytes/1e9f)}G free
+CPU=${s.cpuUsagePercent}%|${s.cpuTempCelsius}C
+BAT=${s.batteryLevel}%|${s.batteryTempCelsius}C|CHG=${s.isCharging}
+STO=${String.format("%.1f", s.storageFreeBytes/1e9f)}G free
+GPU=${s.gpuModel}|${s.gpuBusyPercent}%|${s.gpuTemperatureCelsius}C
+UP=${s.uptimeMs}ms|PROC=${s.runningProcessCount}|APP=${s.foregroundApp}
 """.trimIndent()
     }
 

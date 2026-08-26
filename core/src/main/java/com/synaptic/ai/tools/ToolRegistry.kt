@@ -64,6 +64,36 @@ object ToolRegistry {
         ),
 
         ToolDefinition(
+            name = "native_backend_status",
+            description = "Tampilkan status backend native lokal: Vulkan, OpenCL, server mode, dan pemakaian LLM on-demand.",
+            permission = Permission.NONE,
+            directRoute = true
+        ),
+
+        ToolDefinition(
+            name = "pgvector_status",
+            description = "Tampilkan status konfigurasi PostgreSQL/pgVector opsional.",
+            permission = Permission.NONE,
+            directRoute = true
+        ),
+
+        ToolDefinition(
+            name = "n8n_status",
+            description = "Tampilkan status konfigurasi n8n opsional.",
+            permission = Permission.NONE,
+            directRoute = true
+        ),
+
+        ToolDefinition(
+            name = "n8n_trigger",
+            description = "Trigger webhook n8n yang sudah dikonfigurasi.",
+            argumentExample = """{"payload":"..."}""",
+            permission = Permission.NONE,
+            requiresConfirmation = true,
+            directRoute = false
+        ),
+
+        ToolDefinition(
             name = "shell",
             description = "Jalankan perintah shell Android.",
             argumentExample = """{"command":"..."}""",

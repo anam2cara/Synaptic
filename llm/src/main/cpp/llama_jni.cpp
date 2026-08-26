@@ -4,6 +4,8 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <algorithm>
+#include <cstring>
 #include <android/log.h>
 #include "llama.h"
 #include "ggml.h"
@@ -192,7 +194,7 @@ Java_com_synaptic_ai_llm_LlamaJNI_loadModel(JNIEnv* env, jobject, jstring modelP
 
     llama_model_params mparams = llama_model_default_params();
     mparams.use_mmap = true;
-    mparams.n_gpu_layers = 1; // Canary: offload 1 layer ke GPU
+    mparams.n_gpu_layers = tryGpu ? 999 : 0; // Offload semua layer ke GPU (999 = konvensi llama.cpp untuk "semua layer")
     
     // Explicitly select the Vulkan device for model offloading.
     ggml_backend_dev_t vulkanDevice = nullptr;
@@ -234,7 +236,7 @@ Java_com_synaptic_ai_llm_LlamaJNI_loadModel(JNIEnv* env, jobject, jstring modelP
         llama_supports_gpu_offload() ? 1 : 0
     );
 
-    if (vulkanDevice) {
+    if (tryGpu && vulkanDevice) {
         LOGI(
             "[STAGE: GPU] Selected device=%s type=%d",
             ggml_backend_dev_name(vulkanDevice),
@@ -251,10 +253,12 @@ Java_com_synaptic_ai_llm_LlamaJNI_loadModel(JNIEnv* env, jobject, jstring modelP
         LOGI(
             "[STAGE: GPU] Vulkan device explicitly assigned to model params."
         );
-    } else {
+    } else if (tryGpu) {
         LOGI(
             "[STAGE: GPU] Vulkan device NOT FOUND; default device selection."
         );
+    } else {
+        LOGI("[STAGE: GPU] GPU backend disabled by Kotlin preference.");
     }
 
     g_state.model = llama_model_load_from_file(path, mparams);
@@ -267,21 +271,39 @@ Java_com_synaptic_ai_llm_LlamaJNI_loadModel(JNIEnv* env, jobject, jstring modelP
     cparams.n_threads_batch = 4;
 
     g_state.ctx = llama_init_from_model(g_state.model, cparams);
-    if (!g_state.ctx) return JNI_FALSE;
+    if (!g_state.ctx) {
+        freeStateLocked();
+        return JNI_FALSE;
+    }
 
     g_state.loaded = true;
-    LOGI("[STAGE: LOAD] Sukses di CPU-Only Mode.");
+    LOGI("[STAGE: LOAD] Success. gpu_layers=%d", mparams.n_gpu_layers);
     return JNI_TRUE;
 }
 
 JNIEXPORT void JNICALL
 Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring prompt, jstring grammar, jint maxTokens, jobject callback) {
     std::unique_lock<std::mutex> lock(g_stateMutex);
-    if (!g_state.loaded) return;
-
     jclass cbClass = env->GetObjectClass(callback);
     jmethodID onToken = env->GetMethodID(cbClass, "onToken", "(Ljava/lang/String;)V");
     jmethodID onComplete = env->GetMethodID(cbClass, "onComplete", "()V");
+    jmethodID onError = env->GetMethodID(cbClass, "onError", "(Ljava/lang/String;)V");
+
+    auto emitError = [&](const char * message) {
+        if (onError) {
+            jstring jm = env->NewStringUTF(message);
+            if (jm) {
+                env->CallVoidMethod(callback, onError, jm);
+                env->DeleteLocalRef(jm);
+            }
+        }
+    };
+
+    if (!g_state.loaded) {
+        emitError("Model native belum dimuat");
+        env->DeleteLocalRef(cbClass);
+        return;
+    }
 
     const char* pStr = env->GetStringUTFChars(prompt, nullptr);
     const llama_vocab* vocab = llama_model_get_vocab(g_state.model);
@@ -289,7 +311,11 @@ Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring p
     std::vector<llama_token> tokens(strlen(pStr) + 64);
     int n_tokens = llama_tokenize(vocab, pStr, strlen(pStr), tokens.data(), tokens.size(), true, true);
     env->ReleaseStringUTFChars(prompt, pStr);
-    if (n_tokens <= 0) return;
+    if (n_tokens <= 0) {
+        emitError("Tokenisasi prompt gagal");
+        env->DeleteLocalRef(cbClass);
+        return;
+    }
 
     // Reset Sampler & Memory TOTAL
     if (g_state.sampler) llama_sampler_free(g_state.sampler);
@@ -339,6 +365,8 @@ Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring p
                 processed,
                 decodeResult
             );
+            emitError("Native prefill gagal");
+            env->DeleteLocalRef(cbClass);
             return;
         }
 
@@ -361,7 +389,9 @@ Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring p
     s_batch.seq_id[0][0] = 0;
     s_batch.logits[0] = true;
 
-    for (int i = 0; i < 256; i++) {
+    const int generationLimit = std::min(std::max(static_cast<int>(maxTokens), 1), 384);
+
+    for (int i = 0; i < generationLimit; i++) {
         if (g_abort.load()) break;
         llama_token id = llama_sampler_sample(g_state.sampler, g_state.ctx, -1);
         llama_sampler_accept(g_state.sampler, id);
@@ -380,7 +410,12 @@ Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring p
         }
         s_batch.token[0] = id;
         s_batch.pos[0] = g_state.n_past++;
-        if (llama_decode(g_state.ctx, s_batch) != 0) break;
+        if (llama_decode(g_state.ctx, s_batch) != 0) {
+            emitError("Native decode gagal saat generate");
+            llama_batch_free(s_batch);
+            env->DeleteLocalRef(cbClass);
+            return;
+        }
     }
     llama_batch_free(s_batch);
     LOGI("[STAGE: GEN] Selesai.");

@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.synaptic.ai.llm'
+    namespace = 'com.synaptic.ai.llm'
     compileSdk 35
 
     defaultConfig {
@@ -22,7 +22,7 @@ android {
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
-            version "3.22.1"
+            version = "3.22.1"
         }
     }
 

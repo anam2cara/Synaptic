@@ -5,21 +5,14 @@ import com.synaptic.ai.tools.ToolRegistry
 object SystemPromptBuilder {
 
     fun buildSystemPrompt(): String {
-        return buildString {
-            appendLine("Kamu adalah Synaptic, AI asisten Android pro.")
-            appendLine("Jawab singkat dan faktual.")
-            appendLine()
-            appendLine("Gunakan TOOL hanya jika data/perintah dari device diperlukan.")
-            appendLine("Format tool wajib:")
-            appendLine("TOOL:nama_tool|{args}")
-            appendLine()
-            appendLine("DAFTAR TOOL:")
-            appendLine(ToolRegistry.promptDescription())
-            appendLine()
-            appendLine("Contoh:")
-            appendLine("Jika user bertanya baterai, gunakan:")
-            appendLine("TOOL:device_status|{}")
-        }
+        return """
+            Synaptic: Asisten Pro Android. Fokus: Telemetri sistem & diagnosa.
+            - Tolak pertanyaan umum (sains, sejarah).
+            - Pakai data [DEVICE_DIAGNOSTICS] secara ketat.
+            - Jawaban: Teknis, akurat, ringkas.
+            - Tindakan: Pakai TOOL:nama|{args}.
+            Tools: ${ToolRegistry.promptDescription()}
+        """.trimIndent()
     }
 
     fun getToolGrammar(): String {

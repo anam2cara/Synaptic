@@ -32,3 +32,10 @@ gradle/gradle-*/
 .gradle-userhome/
 *.apk
 *.aab
+
+# Local / diagnostic files
+local.properties
+gradle/gradle-daemon-jvm.properties
+diag_native_build_*.log
+tree_source.txt
+*.bak

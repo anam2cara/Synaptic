@@ -109,7 +109,26 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             Log.e(TAG, "writeDiagnostic gagal: ${e.message}")
         }
     }
-    private fun routeRequest(userMessage: String): String? {
+    private data class RoutedRequest(
+        val toolName: String,
+        val argsJson: String = "{}"
+    )
+
+    private fun isRelevantToSystem(text: String): Boolean {
+        val keywords = listOf(
+            "batre", "baterai", "battery", "ram", "memori", "memory",
+            "cpu", "prosesor", "processor", "gpu", "vulkan", "grafik",
+            "suhu", "panas", "thermal", "storage", "penyimpanan", "ruang",
+            "berjalan", "proses", "process", "app", "aplikasi", "lemot",
+            "lambat", "boros", "cepat", "habis", "status", "kondisi",
+            "kesehatan", "performa", "kinerja", "analis", "diagnos",
+            "log", "error", "crash", "layar", "screen", "system", "sistem"
+        )
+        val textLower = text.lowercase(Locale("id"))
+        return keywords.any { textLower.contains(it) }
+    }
+
+    private fun routeRequest(userMessage: String): RoutedRequest? {
         val text = userMessage.lowercase(Locale("id"))
         val cleaned = text.trim()
 
@@ -123,16 +142,25 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
             cleaned.contains("proses") ||
                 cleaned.contains("process") ||
-                cleaned.contains("aplikasi boros") ||
-                cleaned.contains("yang berjalan") ||
-            (cleaned.contains("aplikasi") && cleaned.contains("berjalan")) ||
-                cleaned.contains("berjalan di latar belakang") ||
-                cleaned.contains("berjalan dilatarbelakang") ||
-                (cleaned.contains("aplikasi") && cleaned.contains("latar belakang")) ||
-                (cleaned.contains("app") && cleaned.contains("background")) ||
-                ((cleaned.contains("app") || cleaned.contains("aplikasi")) &&
-                    (cleaned.contains("ram") || cleaned.contains("boros") ||
-                     cleaned.contains("paling banyak") || cleaned.contains("berat"))) -> "list_processes"
+                cleaned.contains("aplikasi") ||
+                cleaned.contains("app") ||
+                cleaned.contains("foreground") ||
+                cleaned.contains("background") ||
+                cleaned.contains("berjalan") ||
+                cleaned.contains("membebani") ||
+                cleaned.contains("boros") ||
+                cleaned.contains("lemot") ||
+                cleaned.contains("lambat") -> {
+                    if (cleaned.contains("proses") || cleaned.contains("jalan") || 
+                        cleaned.contains("foreground") || cleaned.contains("background") ||
+                        cleaned.contains("boros") || cleaned.contains("membebani")) {
+                        "list_processes"
+                    } else if (cleaned.contains("lambat") || cleaned.contains("lemot")) {
+                        "device_analysis"
+                    } else {
+                        null
+                    }
+                }
 
             cleaned.contains("device status") ||
                 cleaned.contains("status device") ||
@@ -147,8 +175,8 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 cleaned.contains("diagnosis") ||
                 cleaned.contains("analisis") ||
                 cleaned.contains("analis") ||
-                cleaned.contains("kenapa lambat") ||
-                cleaned.contains("kenapa lemot") ||
+                cleaned.contains("lambat") ||
+                cleaned.contains("lemot") ||
                 cleaned.contains("device health") -> "device_analysis"
 
             cleaned.contains("layar") ||
@@ -163,15 +191,42 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 cleaned.contains("crash") ||
                 cleaned.contains("stacktrace") -> "read_logs"
 
+            cleaned.contains("vulkan") ||
+                cleaned.contains("gpu backend") ||
+                cleaned.contains("opencl") ||
+                cleaned.contains("backend native") -> "native_backend_status"
+
+            cleaned.contains("postgres") ||
+                cleaned.contains("postgresql") ||
+                cleaned.contains("pgvector") ||
+                cleaned.contains("vector db") ||
+                cleaned.contains("database vector") -> "pgvector_status"
+
+            cleaned.contains("n8n") ||
+                cleaned.contains("workflow") ||
+                cleaned.contains("automation") -> "n8n_status"
+
             else -> null
+        }
+
+        val routedRequest = routedTool?.let { tool ->
+            RoutedRequest(
+                toolName = tool,
+                argsJson = when (tool) {
+                    "device_status" -> JSONObject()
+                        .put("scope", resolveDeviceStatusScope(userMessage))
+                        .toString()
+                    else -> "{}"
+                }
+            )
         }
 
         writeDiagnostic(
             "ROUTE_REQUEST",
-            "userMessage=$userMessage routedTool=$routedTool"
+            "userMessage=$userMessage routedTool=${routedRequest?.toolName} args=${routedRequest?.argsJson}"
         )
 
-        return routedTool
+        return routedRequest
     }
 
     private fun resolveDeviceStatusScope(userMessage: String): String {
@@ -183,16 +238,6 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             text.contains("suhu") -> "thermal"
             else -> "all"
         }
-    }
-
-    private fun shouldAttachDeviceContext(userMessage: String): Boolean {
-        val text = userMessage.lowercase(Locale("id"))
-        return listOf(
-            "batre", "baterai", "battery", "ram", "cpu", "suhu",
-            "storage", "penyimpanan", "proses", "process", "log",
-            "error", "crash", "layar", "screen", "device", "status",
-            "kondisi", "analisis", "diagnosa", "diagnosis"
-        ).any { text.contains(it) }
     }
 
     private fun shouldBypassLlmForTool(toolName: String): Boolean {
@@ -349,33 +394,27 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Execute tool directly without LLM roundtrip
-    private fun executeToolDirect(toolName: String, currentId: String, userMessage: String) {
-        Log.d(TAG, "HYBRID ROUTE: Direct execution of $toolName")
+    private fun executeToolDirect(request: RoutedRequest, currentId: String, userMessage: String) {
+        Log.d(TAG, "HYBRID ROUTE: Direct execution of ${request.toolName}")
         _uiState.postValue(UiState.GENERATING)
         
         backgroundExecutor.execute {
             writeDiagnostic(
                 "DIRECT_TOOL_START",
-                "tool=$toolName userMessage=$userMessage"
+                "tool=${request.toolName} userMessage=$userMessage"
             )
 
-            val directArgs = if (toolName == "device_status") {
-                JSONObject().put("scope", resolveDeviceStatusScope(userMessage)).toString()
-            } else {
-                "{}"
-            }
-
-            val result = toolExecutor.execute(toolName, directArgs)
+            val result = toolExecutor.execute(request.toolName, request.argsJson)
 
             writeDiagnostic(
                 "DIRECT_TOOL_RESULT",
-                "tool=$toolName " +
+                "tool=${request.toolName} " +
                     "success=${result.isSuccess} " +
                     "exit=${result.exitCode} " +
                     "output=${result.output.replace("\n", "\\n")}"
             )
             
-            val log = ActionLog("$toolName: $directArgs", result.output, result.isSuccess, currentId)
+            val log = ActionLog("${request.toolName}: ${request.argsJson}", result.output, result.isSuccess, currentId)
             db.actionLogDao().insert(log)
             
             val responseText = if (result.isSuccess) {
@@ -542,7 +581,31 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
         
-        // HYBRID ROUTER: Cek apakah bisa dijawab instan tanpa LLM
+        // GATEKEEPER: Tolak pertanyaan umum secara instan
+        if (!isRelevantToSystem(text)) {
+            val userMsg = ChatMessage(currentId, "user", text.trim())
+            backgroundExecutor.execute {
+                db.chatDao().insert(userMsg)
+                saveAssistantMessage("Maaf, saya adalah asisten khusus sistem Android. Saya hanya dapat menjawab pertanyaan terkait kondisi perangkat, performa, dan diagnosa teknis HP Anda.")
+                refreshSessions()
+            }
+            _uiState.value = UiState.IDLE
+            return
+        }
+
+        // HYBRID ROUTER: Cek apakah bisa dijawab instan dengan Expert Template
+        val expertResponse = ExpertResponseEngine.generateExpertResponse(text, toolExecutor.getDeviceMonitor().getSnapshot())
+        if (expertResponse != null) {
+            val userMsg = ChatMessage(currentId, "user", text.trim())
+            backgroundExecutor.execute {
+                db.chatDao().insert(userMsg)
+                saveAssistantMessage(expertResponse)
+                refreshSessions()
+            }
+            return
+        }
+
+        // HYBRID ROUTER: Cek apakah bisa dijawab instan via tool (Lama)
         val directTool = routeRequest(text)
         if (directTool != null) {
             val userMsg = ChatMessage(currentId, "user", text.trim())
@@ -603,11 +666,12 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private fun generateAiResponse(currentId: String, text: String) {
         val history = db.chatDao().getMessagesSync(currentId).dropLast(1).takeLast(12)
         val memories = loadMemoriesAsText()
-        val deviceContext = if (shouldAttachDeviceContext(text)) {
-            toolExecutor.getDeviceDiagnosticContext()
-        } else {
-            null
-        }
+        
+        // Selalu sertakan konteks perangkat agar AI sinkron dengan kondisi real-time
+        // kecuali jika user secara eksplisit bicara hal yang sama sekali tidak butuh data.
+        // Namun untuk akurasi maksimal, kita selalu panggil snapshot terbaru.
+        val deviceContext = toolExecutor.getDeviceDiagnosticContext()
+        
         generateWithHistory(currentId, text, history, memories, deviceContext, 0)
     }
 
@@ -865,7 +929,6 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     }
-
 
 
 

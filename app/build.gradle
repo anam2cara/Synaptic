@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace 'com.synaptic.ai'
+    namespace = 'com.synaptic.ai'
     compileSdk 35
 
     defaultConfig {
@@ -50,7 +50,13 @@ android {
     }
 
     buildFeatures {
-        compose true
+        compose = true
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = []
+        }
     }
 }
 

@@ -30,15 +30,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.synaptic.ai.AppPreferences
 import com.synaptic.ai.SynapticApp
 import com.synaptic.ai.tools.ShizukuHelper
-import com.synaptic.ai.ui.DashboardScreen
 import com.synaptic.ai.ui.SynapticColors
 import com.synaptic.ai.ui.SynapticTheme
 import com.synaptic.ai.ui.logcat.LogcatActivity
 import com.synaptic.ai.ui.shell.ShellScreen
+import com.synaptic.ai.ui.overview.OverviewScreen
+import com.synaptic.ai.ui.features.FeaturesScreen
+import com.synaptic.ai.ui.settings.SettingsScreen
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import java.io.File
 import kotlinx.coroutines.launch
 
 class ChatActivity : ComponentActivity() {
@@ -57,8 +63,10 @@ const val EXTRA_DEMO_MODE = "demoMode"
 
 sealed class Screen(val label: String, val icon: ImageVector) {
     object Chat : Screen("Chat", Icons.Default.ChatBubble)
-    object Dashboard : Screen("Dashboard", Icons.Default.Dashboard)
     object Shell : Screen("Shell", Icons.Default.Terminal)
+    object Overview : Screen("Overview", Icons.Default.ScreenshotMonitor)
+    object Features : Screen("Features", Icons.Default.Apps)
+    object Settings : Screen("Settings", Icons.Default.Settings)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -67,6 +75,29 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Chat) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    
+    var isImporting by remember { mutableStateOf(false) }
+    
+    val modelPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            scope.launch {
+                isImporting = true
+                val fileName = it.lastPathSegment?.substringAfterLast('/') ?: "imported_model.gguf"
+                val result = ImportModelHelper.importModel(context, it, fileName)
+                isImporting = false
+                
+                result.onSuccess { path ->
+                    Toast.makeText(context, "Model berhasil diimpor: ${File(path).name}", Toast.LENGTH_LONG).show()
+                    viewModel.initModel() // Reload model
+                }.onFailure { e ->
+                    Toast.makeText(context, "Gagal impor: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
     val sessions by viewModel.sessionSummaries.observeAsState(emptyList())
     
     val isKeyboardVisible = WindowInsets.isImeVisible
@@ -75,7 +106,7 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
     var newSessionName by remember { mutableStateOf("") }
     var showSettingsDialog by remember { mutableStateOf(false) }
     
-    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
             if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
@@ -92,9 +123,8 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
     }
     
     LaunchedEffect(demoMode) {
-        if (!demoMode) {
-            viewModel.initModel()
-        }
+        // LLM sengaja tidak dipreload. Model hanya dimuat saat router tidak bisa
+        // menjawab dengan telemetry/rule lokal.
     }
 
     if (sessionToRename != null) {
@@ -205,10 +235,31 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                 HorizontalDivider(color = Color.White.copy(alpha = 0.05f))
                 
                 NavigationDrawerItem(
-                    label = { Text("Pengaturan Aplikasi", fontSize = 16.sp) },
+                    label = { Text("Pengaturan Model GGUF", fontSize = 16.sp) },
                     selected = false,
                     onClick = { scope.launch { drawerState.close() }; showSettingsDialog = true },
                     icon = { Icon(Icons.Default.Settings, null, modifier = Modifier.size(24.dp)) },
+                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent)
+                )
+
+                NavigationDrawerItem(
+                    label = { 
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(if (isImporting) "Sedang mengimpor..." else "Import Model GGUF", fontSize = 16.sp)
+                            if (isImporting) {
+                                Spacer(Modifier.width(12.dp))
+                                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = SynapticColors.Accent)
+                            }
+                        }
+                    },
+                    selected = false,
+                    onClick = { 
+                        if (!isImporting) {
+                            scope.launch { drawerState.close() }
+                            modelPicker.launch("application/octet-stream")
+                        }
+                    },
+                    icon = { Icon(Icons.Default.CloudUpload, null, modifier = Modifier.size(24.dp)) },
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent)
                 )
             }
@@ -243,7 +294,7 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                             tonalElevation = 0.dp,
                             windowInsets = WindowInsets(0, 0, 0, 0)
                         ) {
-                            listOf(Screen.Chat, Screen.Dashboard, Screen.Shell).forEach { screen ->
+                            listOf(Screen.Chat, Screen.Shell, Screen.Features, Screen.Overview, Screen.Settings).forEach { screen ->
                                 val selected = currentScreen == screen
                                 NavigationBarItem(
                                     selected = selected,
@@ -259,7 +310,8 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                                     label = {
                                         Text(
                                             text = screen.label,
-                                            fontSize = 11.sp,
+                                            fontSize = 9.sp,
+                                            maxLines = 1,
                                             color = if (selected) SynapticColors.Accent else SynapticColors.Text2.copy(alpha = 0.38f)
                                         )
                                     },
@@ -280,8 +332,10 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                 Box(modifier = Modifier.padding(padding).fillMaxSize().background(SynapticColors.Background)) {
                     when (currentScreen) {
                         Screen.Chat -> ChatScreen(viewModel, demoMode = demoMode)
-                        Screen.Dashboard -> DashboardScreen()
                         Screen.Shell -> ShellScreen()
+                        Screen.Overview -> OverviewScreen()
+                        Screen.Features -> FeaturesScreen()
+                        Screen.Settings -> SettingsScreen()
                     }
                 }
             }

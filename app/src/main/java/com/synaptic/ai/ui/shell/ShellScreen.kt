@@ -2,6 +2,9 @@ package com.synaptic.ai.ui.shell
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -14,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -22,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.synaptic.ai.ui.Badge
 import com.synaptic.ai.ui.SynapticColors
 
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -32,6 +38,8 @@ fun ShellScreen(viewModel: ShellViewModel = viewModel()) {
     val isShizukuActive by viewModel.isShizukuActive.observeAsState(false)
     val terminalOutput by viewModel.terminalOutput.collectAsState()
     var inputText by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
         viewModel.checkShizuku()
@@ -41,6 +49,7 @@ fun ShellScreen(viewModel: ShellViewModel = viewModel()) {
         modifier = Modifier
             .fillMaxSize()
             .background(SynapticColors.Background)
+            .imePadding() // Memastikan input naik saat keyboard muncul
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -51,7 +60,11 @@ fun ShellScreen(viewModel: ShellViewModel = viewModel()) {
             }
             Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 listOf("pm trim-caches 999G", "dumpsys battery", "top -n 1 -b").forEach {
-                    SuggestionChip(it) { viewModel.runCommand(it) }
+                    SuggestionChip(it) { 
+                        viewModel.runCommand(it)
+                        focusRequester.requestFocus()
+                        keyboardController?.show()
+                    }
                 }
             }
             CommandInput(
@@ -60,7 +73,11 @@ fun ShellScreen(viewModel: ShellViewModel = viewModel()) {
                 onSend = { 
                     viewModel.runCommand(inputText)
                     inputText = ""
+                    // Paksa keyboard tetap terbuka dan fokus
+                    focusRequester.requestFocus()
+                    keyboardController?.show()
                 },
+                focusRequester = focusRequester,
                 enabled = true
             )
         } else {
@@ -90,6 +107,15 @@ fun ShellScreen(viewModel: ShellViewModel = viewModel()) {
 
 @Composable
 private fun TerminalOutput(lines: List<String>) {
+    val listState = rememberLazyListState()
+    
+    // Auto-scroll ke bawah saat ada output baru
+    LaunchedEffect(lines.size) {
+        if (lines.isNotEmpty()) {
+            listState.animateScrollToItem(lines.size - 1)
+        }
+    }
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = SynapticColors.Surface1
@@ -102,13 +128,14 @@ private fun TerminalOutput(lines: List<String>) {
         )
     ) {
         SelectionContainer {
-            Column(
+            LazyColumn(
+                state = listState,
                 modifier = Modifier
-                    .padding(horizontal = 14.dp, vertical = 12.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .fillMaxSize()
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                lines.forEach { line ->
+                items(lines) { line ->
                     val isPrompt = line.startsWith("synaptic@android $")
                     val isError =
                         line.startsWith("Error:", ignoreCase = true) ||
@@ -139,7 +166,9 @@ private fun TerminalOutput(lines: List<String>) {
             }
         }
     }
-}@Composable
+}
+
+@Composable
 private fun SuggestionChip(text: String, onClick: () -> Unit) {
     Surface(
         color = SynapticColors.Surface2,
@@ -161,6 +190,7 @@ private fun CommandInput(
     value: String = "",
     onValueChange: (String) -> Unit = {},
     onSend: () -> Unit = {},
+    focusRequester: FocusRequester = remember { FocusRequester() },
     enabled: Boolean
 ) {
     Row(
@@ -183,9 +213,13 @@ private fun CommandInput(
                 fontSize = 15.sp,
                 fontFamily = FontFamily.Monospace
             ),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .focusRequester(focusRequester),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-            keyboardActions = KeyboardActions(onSend = { onSend() }),
+            keyboardActions = KeyboardActions(onSend = { 
+                if (value.isNotBlank()) onSend() 
+            }),
             decorationBox = { innerTextField ->
                 if (value.isEmpty()) {
                     Text(

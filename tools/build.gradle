@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.synaptic.ai.tools'
+    namespace = 'com.synaptic.ai.tools'
     compileSdk 35
 
     defaultConfig {

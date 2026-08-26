@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.synaptic.ai.core'
+    namespace = 'com.synaptic.ai.core'
     //noinspection GradleDependency
     compileSdk 35
 

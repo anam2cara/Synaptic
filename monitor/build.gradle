@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.synaptic.ai.monitor'
+    namespace = 'com.synaptic.ai.monitor'
     compileSdk 35
 
     defaultConfig {

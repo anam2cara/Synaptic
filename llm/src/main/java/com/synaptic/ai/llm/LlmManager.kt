@@ -193,18 +193,11 @@ class LlmManager private constructor() {
                 }
 
                 val loadStartMs = System.currentTimeMillis()
-                // Mencoba memuat model ke GPU (Vulkan) dulu.
-                // Canary test dilakukan di sisi Native (llama_jni.cpp).
-                // Jika fail, jni.loadModel mengembalikan false dan kita fallback ke CPU.
-                var ok = jni.loadModel(modelFile.absolutePath, true)
-                
-                if (!ok) {
-                    writeDiagnostic("GPU_FALLBACK", "Gagal memuat via GPU, mencoba CPU...")
-                    ok = jni.loadModel(modelFile.absolutePath, false)
-                }
+                val useGpu = AppPreferences(ctx).useGpuBackend
+                val ok = jni.loadModel(modelFile.absolutePath, useGpu)
 
                 val loadElapsedMs = System.currentTimeMillis() - loadStartMs
-                writeDiagnostic("LOAD_MODEL_TIMING", "elapsed_ms=$loadElapsedMs ok=$ok")
+                writeDiagnostic("LOAD_MODEL_TIMING", "elapsed_ms=$loadElapsedMs ok=$ok gpu=$useGpu")
                 if (ok) notifyLoadSuccess() else notifyLoadError("Gagal memuat model native")
             } catch (e: Exception) {
                 notifyLoadError(e.message ?: "Error tidak diketahui")
@@ -268,8 +261,7 @@ class LlmManager private constructor() {
                     override fun onComplete() {
                         val genElapsedMs = System.currentTimeMillis() - genStartMs
                         val tps = if (genElapsedMs > 0) (genTokenCount * 1000.0 / genElapsedMs) else 0.0
-                        val engine = if (jni.isLoaded()) "GPU/Vulkan" else "CPU"
-                        writeDiagnostic("GENERATE_TIMING", "tokens=$genTokenCount elapsed_ms=$genElapsedMs tps=%.2f engine=$engine".format(tps))
+                        writeDiagnostic("GENERATE_TIMING", "tokens=$genTokenCount elapsed_ms=$genElapsedMs tps=%.2f engine=VulkanOnDemand".format(tps))
                         cb.onComplete(accumulatedResponse.toString())
                     }
 

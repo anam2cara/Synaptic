@@ -714,8 +714,10 @@ private fun PreviewBottomNav() {
         ) {
             listOf(
                 Screen.Chat,
-                Screen.Dashboard,
-                Screen.Shell
+                Screen.Shell,
+                Screen.Features,
+                Screen.Overview,
+                Screen.Settings
             ).forEach { screen ->
                 val selected = screen == Screen.Chat
                 NavigationBarItem(
@@ -732,7 +734,8 @@ private fun PreviewBottomNav() {
                     label = {
                         Text(
                             text = screen.label,
-                            fontSize = 11.sp,
+                            fontSize = 9.sp,
+                            maxLines = 1,
                             color = if (selected) SynapticColors.Accent else SynapticColors.Text2.copy(alpha = 0.38f)
                         )
                     },
