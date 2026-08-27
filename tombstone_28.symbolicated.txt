@@ -1,0 +1,94 @@
+********** Crash dump: **********
+Build fingerprint: 'samsung/a36xqnaxx/a36xq:16/BP4A.251205.006/A366BXXSBCZG1_OLMBCZG1:user/release-keys'
+Abort message: 'terminating due to uncaught exception of type vk::DeviceLostError: vk::Queue::submit: ErrorDeviceLost'
+#00 0x00000000000757a8 /apex/com.android.runtime/lib64/bionic/libc.so (abort+160) (BuildId: 1253948024ce7eda9f9634b60ccd7f4b)
+#01 0x00000000000ea53c /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+                                                                                                                               abort_message
+                                                                                                                               out/lib/device-libcxx-aarch64-ndk-cxx/out/llvm-project/libcxxabi/src/abort_message.cpp:78:5
+#02 0x00000000000e9b94 /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+                                                                                                                               demangling_terminate_handler()
+                                                                                                                               out/lib/device-libcxx-aarch64-ndk-cxx/out/llvm-project/libcxxabi/src/cxa_default_handlers.cpp:72:9
+#03 0x0000000000073324 /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+                                                                                                                               ggml_uncaught_exception()
+                                                                                                                               D:/Documents/projek_build_apk_saya/llama-b9592-src/ggml/src/ggml.cpp:11:9
+#04 0x00000000000ea058 /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+                                                                                                                               std::__terminate(void (*)())
+                                                                                                                               out/lib/device-libcxx-aarch64-ndk-cxx/out/llvm-project/libcxxabi/src/cxa_handlers.cpp:59:9
+#05 0x000000000010463c /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+                                                                                                                               __cxxabiv1::failed_throw(__cxxabiv1::__cxa_exception*)
+                                                                                                                               out/lib/device-libcxx-aarch64-ndk-cxx/out/llvm-project/libcxxabi/src/cxa_exception.cpp:152:5
+#06 0x0000000000104618 /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+                                                                                                                               __cxa_throw
+                                                                                                                               out/lib/device-libcxx-aarch64-ndk-cxx/out/llvm-project/libcxxabi/src/cxa_exception.cpp:294:5
+#07 0x000000000462c33c /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+                                                                                                                                 vk::detail::throwResultException(vk::Result, char const*)
+                                                                                                                                 C:/VulkanSDK/1.4.350.0/Include/vulkan/vulkan.hpp:0:74
+                                                                                                                                 vk::detail::resultCheck(vk::Result, char const*)
+                                                                                                                                 C:/VulkanSDK/1.4.350.0/Include/vulkan/vulkan.hpp:9035:9
+                                                                                                                                 void vk::Queue::submit<vk::detail::DispatchLoaderDynamic, true>(vk::ArrayProxy<vk::SubmitInfo const> const&, vk::Fence, vk::detail::DispatchLoaderDynamic const&) const
+                                                                                                                                 C:/VulkanSDK/1.4.350.0/Include/vulkan/vulkan_funcs.hpp:922:5
+                                                                                                                                 ggml_vk_submit(std::__ndk1::shared_ptr<vk_context_struct>&, vk::Fence)
+                                                                                                                                 D:/Documents/projek_build_apk_saya/llama-b9592-src/ggml/src/ggml-vulkan/ggml-vulkan.cpp:2735:22
+#08 0x000000000463f5b8 /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+                                                                                                                                 ggml_vk_synchronize(ggml_backend_vk_context*)
+                                                                                                                                 D:/Documents/projek_build_apk_saya/llama-b9592-src/ggml/src/ggml-vulkan/ggml-vulkan.cpp:15099:9
+#09 0x0000000004635b74 /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+                                                                                                                                 ggml_backend_vk_synchronize(ggml_backend*)
+                                                                                                                                 D:/Documents/projek_build_apk_saya/llama-b9592-src/ggml/src/ggml-vulkan/ggml-vulkan.cpp:15143:5
+#10 0x000000000007c234 /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+                                                                                                                               ggml_backend_synchronize
+                                                                                                                               D:/Documents/projek_build_apk_saya/llama-b9592-src/ggml/src/ggml-backend.cpp:420:5
+                                                                                                                               ggml_backend_sched_compute_splits(ggml_backend_sched*)
+                                                                                                                               D:/Documents/projek_build_apk_saya/llama-b9592-src/ggml/src/ggml-backend.cpp:1565:21
+                                                                                                                               ggml_backend_sched_graph_compute_async
+                                                                                                                               D:/Documents/projek_build_apk_saya/llama-b9592-src/ggml/src/ggml-backend.cpp:1901:12
+#11 0x000000000010d844 /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+                                                                                                                           llama_context::graph_compute(ggml_cgraph*, bool)
+                                                                                                                           D:/Documents/projek_build_apk_saya/llama-b9592-src/src/llama-context.cpp:2345:19
+#12 0x000000000010d474 /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+                                                                                                                           llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)
+                                                                                                                           D:/Documents/projek_build_apk_saya/llama-b9592-src/src/llama-context.cpp:1329:25
+#13 0x000000000010ed14 /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+                                                                                                                           llama_context::decode(llama_batch const&)
+                                                                                                                           D:/Documents/projek_build_apk_saya/llama-b9592-src/src/llama-context.cpp:1807:28
+#14 0x000000000011477c /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libllama.so (offset 0x61a4000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+                                                                                                                           llama_decode
+                                                                                                                           D:/Documents/projek_build_apk_saya/llama-b9592-src/src/llama-context.cpp:3948:26
+WARNING: Mismatched build id for D:\Documents\projek_build_apk_saya\Synaptic\llm\build\intermediates\cxx\Debug\1l4g145h\obj\arm64-v8a\libllamajni.so
+WARNING:   Expected c253b63ab95710f9d8fa39c76e4a5f3ad202a381
+WARNING:   Found    2f8d11d299672a7172e6e116477297fff379de4b
+#15 0x0000000000006f90 /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libllamajni.so (offset 0x65f0000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1200) (BuildId: c253b63ab95710f9d8fa39c76e4a5f3ad202a381)
+#16 0x00000000002b03a0 /apex/com.android.art/lib64/libart.so (art_quick_generic_jni_trampoline+144) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#17 0x0000000000298f94 /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+612) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#18 0x000000000087ba64 /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+1620) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#19 0x00000000006fda90 /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+580) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#20 0x00000000002fcc98 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#21 0x0000000000003294 [anon:dalvik-classes6.dex extract...com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+#22 0x0000000000278dc4 /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+372) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#23 0x00000000002c3c18 /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<true>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+1992) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#24 0x0000000000700220 /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+10708) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#25 0x00000000002fcc98 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#26 0x000000000000230c [anon:dalvik-classes6.dex extract...com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+#27 0x000000000087bd10 /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2304) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#28 0x00000000006fde94 /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+1608) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#29 0x00000000002fcc98 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#30 0x0000000000263c20 /apex/com.android.art/javalib/core-oj.jar (java.util.concurrent.ThreadPoolExecutor.runWorker+0)
+#31 0x000000000087bd10 /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2304) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#32 0x00000000006fda90 /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+580) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#33 0x00000000002fcc98 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#34 0x0000000000262ac4 /apex/com.android.art/javalib/core-oj.jar (java.util.concurrent.ThreadPoolExecutor$Worker.run+0)
+#35 0x000000000087bd10 /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2304) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#36 0x00000000006fde94 /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+1608) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#37 0x00000000002fcc98 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#38 0x000000000011e1a0 /apex/com.android.art/javalib/core-oj.jar (java.lang.Thread.run+0)
+#39 0x00000000002fc8d0 /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238.llvm.6848007882488385806)+360) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#40 0x00000000002fc254 /apex/com.android.art/lib64/libart.so (artQuickToInterpreterBridge+916) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#41 0x00000000002b04d8 /apex/com.android.art/lib64/libart.so (art_quick_to_interpreter_bridge+88) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#42 0x0000000000298f94 /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+612) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#43 0x000000000029738c /apex/com.android.art/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+148) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#44 0x00000000004d5fd0 /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallback(void*)+1384) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#45 0x00000000004d5a54 /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallbackWithUffdGc(void*)+12) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#46 0x00000000000866ec /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*) (.__uniq.67847048707805468364044055584648682506)+184) (BuildId: 1253948024ce7eda9f9634b60ccd7f4b)
+#47 0x000000000007900c /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+68) (BuildId: 1253948024ce7eda9f9634b60ccd7f4b)
+Crash dump is completed
+

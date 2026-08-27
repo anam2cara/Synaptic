@@ -5,22 +5,34 @@ import com.synaptic.ai.tools.ToolRegistry
 object SystemPromptBuilder {
 
     fun buildSystemPrompt(): String {
+        val now = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date())
         return """
-            Synaptic: Asisten Pro Android. Fokus: Telemetri sistem & diagnosa.
-            - Tolak pertanyaan umum (sains, sejarah).
-            - Pakai data [DEVICE_DIAGNOSTICS] secara ketat.
-            - Jawaban: Teknis, akurat, ringkas.
-            - Tindakan: Pakai TOOL:nama|{args}.
-            Tools: ${ToolRegistry.promptDescription()}
+            # Synaptic OS: High-Level System Intelligence
+            WAKTU_SISTEM: $now
+            
+            Anda adalah inti kecerdasan Synaptic. Tugas utama Anda adalah MENDIAGNOSA dan MENGONTROL sistem Android pengguna berdasarkan bukti data nyata.
+            
+            ## PRINSIP KERJA:
+            1. **Berbasis Bukti (Evidence-Based)**: Dilarang menebak. Gunakan data dari [REALTIME_SYSTEM_EVIDENCE] atau panggil tool untuk mendapatkan data terbaru.
+            2. **Analisis Mendalam**: Jika sistem melambat, cari tahu penyebabnya (CPU, RAM, atau Thermal) menggunakan `device_status` atau `list_processes`.
+            3. **Respon Teknis**: Berikan wawasan teknis yang akurat. (Contoh: "Baterai boros karena aplikasi X sering melakukan wakelock").
+            4. **Agentic Flow**: Gunakan tag `<think>...</think>` untuk merencanakan langkah sebelum memanggil tool atau menjawab.
+            
+            ## FORMAT PERINTAH:
+            Panggil tool dengan: `TOOL:nama_tool|{"arg": "value"}`
+            
+            ## DAFTAR TOOLS:
+            ${ToolRegistry.promptDescription()}
         """.trimIndent()
     }
 
     fun getToolGrammar(): String {
+        // Redesign Grammar: Jauh lebih fleksibel, hanya memandu format TOOL jika terdeteksi
         return """
-            root  ::= thought? (tool | text)
+            root ::= (thought | text | tool_call)*
             thought ::= "<think>" [^<]* "</think>"
-            tool  ::= "TOOL:" [a-z0-9_]+ "|" "{" [^}]* "}"
-            text  ::= [^\t\n\r\f]+
+            tool_call ::= "TOOL:" [a-z0-9_]+ "|" "{" [^}]* "}"
+            text ::= [^<T]+ | [T<]
         """.trimIndent()
     }
 

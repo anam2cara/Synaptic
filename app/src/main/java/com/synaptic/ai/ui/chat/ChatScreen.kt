@@ -104,7 +104,7 @@ fun ChatScreen(viewModel: ChatViewModel, demoMode: Boolean = false) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SynapticColors.Background)
+            .background(MaterialTheme.colorScheme.background)
             .imePadding()
     ) {
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
@@ -114,8 +114,8 @@ fun ChatScreen(viewModel: ChatViewModel, demoMode: Boolean = false) {
                 LazyColumn(
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(messages, key = { it.id }) { message ->
                         ChatBubble(
@@ -141,7 +141,7 @@ fun ChatScreen(viewModel: ChatViewModel, demoMode: Boolean = false) {
                 visible = showScrollToBottom,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 12.dp),
+                    .padding(bottom = 16.dp),
                 enter = fadeIn() + scaleIn(),
                 exit = fadeOut() + scaleOut()
             ) {
@@ -155,9 +155,9 @@ fun ChatScreen(viewModel: ChatViewModel, demoMode: Boolean = false) {
                         }
                     },
                     shape = CircleShape,
-                    containerColor = SynapticColors.Surface2,
-                    contentColor = SynapticColors.Accent,
-                    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 3.dp)
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 2.dp)
                 ) {
                     Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Scroll ke bawah")
                 }
@@ -204,28 +204,38 @@ fun ChatScreen(viewModel: ChatViewModel, demoMode: Boolean = false) {
 @Composable
 private fun ChatEmptyState() {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier
-                .size(52.dp)
-                .clip(RoundedCornerShape(14.dp))
-                .background(SynapticColors.Surface2),
-            contentAlignment = Alignment.Center
+        Surface(
+            modifier = Modifier.size(64.dp),
+            shape = RoundedCornerShape(20.dp),
+            color = MaterialTheme.colorScheme.primaryContainer
         ) {
-            Icon(Icons.Default.Psychology, null, tint = SynapticColors.Accent, modifier = Modifier.size(26.dp))
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    Icons.Default.Psychology, 
+                    null, 
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer, 
+                    modifier = Modifier.size(32.dp)
+                )
+            }
         }
-        Spacer(Modifier.height(10.dp))
-        Text("Apa yang bisa saya bantu?", color = SynapticColors.Text1, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+        Spacer(Modifier.height(20.dp))
         Text(
-            "Tanya apa saja, upload file,\natau cek kondisi device kamu.",
-            color = SynapticColors.Text3,
-            fontSize = 11.sp,
+            "Apa yang bisa saya bantu?", 
+            color = MaterialTheme.colorScheme.onBackground, 
+            fontSize = 20.sp, 
+            fontWeight = FontWeight.Black
+        )
+        Text(
+            "Tanya apa saja, lampirkan file, atau pantau performa perangkat Anda secara real-time.",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 14.sp,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            lineHeight = 16.sp,
-            modifier = Modifier.padding(top = 8.dp)
+            lineHeight = 20.sp,
+            modifier = Modifier.padding(top = 12.dp)
         )
     }
 }
@@ -336,10 +346,10 @@ private fun ChatBubble(
         SimpleDateFormat("d MMM yyyy, HH:mm", Locale("id")).format(Date(message.timestamp))
     }
     val bubbleShape = RoundedCornerShape(
-        topStart = 13.dp,
-        topEnd = 13.dp,
-        bottomStart = if (isUser) 13.dp else 3.dp,
-        bottomEnd = if (isUser) 3.dp else 13.dp
+        topStart = 18.dp,
+        topEnd = 18.dp,
+        bottomStart = if (isUser) 18.dp else 4.dp,
+        bottomEnd = if (isUser) 4.dp else 18.dp
     )
 
     Column(
@@ -349,26 +359,28 @@ private fun ChatBubble(
         Box {
             Column(
                 modifier = Modifier
-                    .widthIn(max = 292.dp)
+                    .widthIn(max = 300.dp)
                     .wrapContentWidth()
                     .clip(bubbleShape)
-                    .background(if (isUser) SynapticColors.Accent2 else SynapticColors.Surface2)
-                    .border(1.dp, SynapticColors.Border2, bubbleShape)
+                    .background(
+                        if (isUser) MaterialTheme.colorScheme.primary 
+                        else MaterialTheme.colorScheme.surfaceVariant
+                    )
                     .combinedClickable(
                         enabled = !isStreaming && !isEditing,
                         onClick = {},
                         onLongClick = { showMenu = true }
                     )
-                    .padding(horizontal = 11.dp, vertical = 8.dp)
+                    .padding(horizontal = 14.dp, vertical = 10.dp)
             ) {
                 if (!isUser) {
                     Text(
                         text = "SYNAPTIC",
-                        color = SynapticColors.Accent,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = 0.6.sp,
-                        modifier = Modifier.padding(bottom = 3.dp)
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 1.sp,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }
 
@@ -380,8 +392,8 @@ private fun ChatBubble(
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
+                            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent
                         )
@@ -392,7 +404,7 @@ private fun ChatBubble(
                         horizontalArrangement = Arrangement.End
                     ) {
                         TextButton(onClick = { isEditing = false }) {
-                            Text("Batal", color = Color.White)
+                            Text("Batal", color = MaterialTheme.colorScheme.onPrimary)
                         }
                         TextButton(
                             onClick = {
@@ -400,13 +412,14 @@ private fun ChatBubble(
                                 isEditing = false
                             }
                         ) {
-                            Text("Simpan", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text("Simpan", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
                         }
                     }
                 } else {
-                    val contentColor = if (isUser) Color.White else SynapticColors.Text1
-                    val contentSize = 14.sp
-                    val contentLineHeight = 20.sp
+                    val contentColor = if (isUser) MaterialTheme.colorScheme.onPrimary 
+                                     else MaterialTheme.colorScheme.onSurfaceVariant
+                    val contentSize = 15.sp
+                    val contentLineHeight = 22.sp
 
                     if (isStreaming) {
                         Text(
@@ -502,51 +515,47 @@ private fun ChatBubble(
 }
 @Composable
 private fun ConfirmBar(command: String, onConfirm: () -> Unit, onCancel: () -> Unit) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = SynapticColors.Surface2),
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(0.dp), // confirm-bar (rect)
-        border = BorderStroke(1.dp, SynapticColors.Border2)
+        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
-        Column(modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp)) {
-            Text("Synaptic akan menjalankan:", color = SynapticColors.Text2, fontSize = 11.sp)
-            Spacer(Modifier.height(2.dp))
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                "Synaptic akan menjalankan:", 
+                color = MaterialTheme.colorScheme.onSurfaceVariant, 
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(Modifier.height(8.dp))
             Surface(
-                color = SynapticColors.Surface3,
-                shape = RoundedCornerShape(5.dp),
-                modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = command,
-                    color = SynapticColors.Warning,
-                    fontSize = 10.sp,
-                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(12.dp),
                     fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                 )
             }
-            Spacer(Modifier.height(6.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Spacer(Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Button(
                     onClick = onConfirm,
-                    colors = ButtonDefaults.buttonColors(containerColor = SynapticColors.Accent),
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 5.dp),
-                    modifier = Modifier.height(28.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.height(36.dp)
                 ) {
-                    Text(
-                        "Jalankan",
-                        fontSize = 11.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    Text("Jalankan", fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(7.dp))
-                        .clickable { onCancel() }
-                        .padding(horizontal = 8.dp, vertical = 5.dp)
+                OutlinedButton(
+                    onClick = onCancel,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.height(36.dp)
                 ) {
-                    Text("Batal", fontSize = 11.sp, color = SynapticColors.Text3)
+                    Text("Batal", fontSize = 13.sp)
                 }
             }
         }
@@ -566,81 +575,88 @@ private fun ChatInputBar(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(24.dp),
-        color = SynapticColors.Surface1,
-        border = BorderStroke(1.dp, SynapticColors.Border2)
+            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 12.dp),
+        shape = RoundedCornerShape(28.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        tonalElevation = 2.dp
     ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.Bottom
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 2.dp),
-                verticalAlignment = Alignment.CenterVertically
+            IconButton(
+                onClick = {
+                    Toast.makeText(context, "Fitur Lampiran segera hadir", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.size(40.dp)
             ) {
-                IconButton(
-                    onClick = {
-                        Log.d("SynapticUI", "Plus action clicked")
-                        Toast.makeText(context, "Fitur Lampiran akan segera hadir", Toast.LENGTH_SHORT).show()
-                    },
-                    modifier = Modifier.size(30.dp)
-                ) {
-                    Icon(Icons.Default.Add, null, tint = SynapticColors.Text2, modifier = Modifier.size(20.dp))
-                }
+                Icon(
+                    Icons.Default.Add, 
+                    null, 
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
 
-                Box(
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = 40.dp, max = 120.dp),
+                placeholder = { 
+                    Text(
+                        "Tanya Synaptic...", 
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        fontSize = 15.sp
+                    ) 
+                },
+                textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    cursorColor = MaterialTheme.colorScheme.primary
+                )
+            )
+
+            if (isGenerating) {
+                Surface(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 4.dp)
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .clickable { onStop() },
+                    color = MaterialTheme.colorScheme.errorContainer
                 ) {
-                    TextField(
-                        value = text,
-                        onValueChange = { text = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 42.dp),
-                        placeholder = { Text("Tanya Synaptic...", color = SynapticColors.Text3, fontSize = 14.sp) },
-                        singleLine = true,
-                        maxLines = 1,
-                        textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            cursorColor = SynapticColors.Accent,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.Default.Stop, 
+                            null, 
+                            tint = MaterialTheme.colorScheme.onErrorContainer, 
+                            modifier = Modifier.size(20.dp)
                         )
-                    )
-                }
-
-                if (isGenerating) {
-                    Box(
-                        modifier = Modifier
-                            .size(34.dp)
-                            .clip(CircleShape)
-                            .background(SynapticColors.Danger)
-                            .clickable { onStop() },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.Stop, null, tint = Color.White, modifier = Modifier.size(18.dp))
                     }
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .size(34.dp)
-                            .clip(CircleShape)
-                            .background(if (text.isNotBlank()) SynapticColors.Accent else SynapticColors.Surface3)
-                            .clickable(enabled = text.isNotBlank()) {
-                                onSend(text)
-                                text = ""
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.ArrowUpward, null, tint = Color.White, modifier = Modifier.size(18.dp))
+                }
+            } else {
+                Surface(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .clickable(enabled = text.isNotBlank()) {
+                            onSend(text)
+                            text = ""
+                        },
+                    color = if (text.isNotBlank()) MaterialTheme.colorScheme.primary 
+                            else MaterialTheme.colorScheme.surface
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.Default.ArrowUpward, 
+                            null, 
+                            tint = if (text.isNotBlank()) MaterialTheme.colorScheme.onPrimary 
+                                   else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f),
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
             }
@@ -715,8 +731,6 @@ private fun PreviewBottomNav() {
             listOf(
                 Screen.Chat,
                 Screen.Shell,
-                Screen.Features,
-                Screen.Overview,
                 Screen.Settings
             ).forEach { screen ->
                 val selected = screen == Screen.Chat

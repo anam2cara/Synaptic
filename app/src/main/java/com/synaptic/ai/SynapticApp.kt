@@ -23,6 +23,16 @@ class SynapticApp : Application() {
         ShizukuHelper.init()
     }
 
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        LlmManager.getInstance().onTrimMemory(level)
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        LlmManager.getInstance().freeModel()
+    }
+
     fun getSecurePrefs(): SharedPreferences? = securePrefs
     fun getDatabase(): SynapticDatabase? = database
 

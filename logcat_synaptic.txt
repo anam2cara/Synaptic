@@ -1,0 +1,526 @@
+
+08-27 08:01:19.313 29179 29383 E AndroidRuntime: FATAL EXCEPTION: Thread-13
+08-27 08:01:19.313 29179 29383 E AndroidRuntime: Process: ai.mlc.mlcchat, PID: 29179
+08-27 08:01:19.313 29179 29385 E AndroidRuntime: FATAL EXCEPTION: Thread-15
+08-27 08:01:19.313 29179 29385 E AndroidRuntime: Process: ai.mlc.mlcchat, PID: 29179
+08-27 09:40:34.202 10360 10931 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 10931 (pool-4-thread-3), pid 10360 (com.synaptic.ai)
+08-27 09:40:35.341 10937 10937 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 09:40:35.341 10937 10937 F DEBUG   : pid: 10360, tid: 10931, name: pool-4-thread-3  >>> com.synaptic.ai <<<
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #01 pc 00000000000ea53c  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #02 pc 00000000000e9b94  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #03 pc 0000000000073324  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #04 pc 00000000000ea058  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #05 pc 000000000010463c  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #06 pc 0000000000104618  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #07 pc 000000000462c33c  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #08 pc 000000000463f5b8  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #09 pc 0000000004635b74  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #10 pc 000000000007c234  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libggml-base.so (offset 0x12b4000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #11 pc 000000000010d844  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #12 pc 000000000010d474  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #13 pc 000000000010ed14  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #14 pc 000000000011477c  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libllama.so (offset 0x61a4000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #15 pc 0000000000006f90  /data/app/~~yP1FLxxqubJB-JsuiOXi_Q==/com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk!libllamajni.so (offset 0x65f0000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1200) (BuildId: c253b63ab95710f9d8fa39c76e4a5f3ad202a381)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #21 pc 0000000000003294  [anon:dalvik-classes6.dex extract...com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 09:40:35.342 10937 10937 F DEBUG   :       #26 pc 000000000000230c  [anon:dalvik-classes6.dex extract...com.synaptic.ai-WB2f4FdvWjyfxsFkdX54qQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 09:48:06.055 12213 12472 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 12472 (pool-4-thread-2), pid 12213 (com.synaptic.ai)
+08-27 09:48:06.764 12481 12481 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 09:48:06.764 12481 12481 F DEBUG   : pid: 12213, tid: 12472, name: pool-4-thread-2  >>> com.synaptic.ai <<<
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #01 pc 00000000000ea53c  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #02 pc 00000000000e9b94  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #03 pc 0000000000073324  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #04 pc 00000000000ea058  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #05 pc 000000000010463c  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #06 pc 0000000000104618  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #07 pc 000000000462c33c  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #08 pc 000000000463f5b8  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #09 pc 0000000004635b74  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #10 pc 000000000007c234  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #11 pc 000000000010d844  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #12 pc 000000000010d474  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #13 pc 000000000010ed14  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #14 pc 000000000011477c  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libllama.so (offset 0x61a4000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #15 pc 0000000000006f90  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libllamajni.so (offset 0x65f0000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1200) (BuildId: c253b63ab95710f9d8fa39c76e4a5f3ad202a381)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #21 pc 0000000000003294  [anon:dalvik-classes6.dex extract...com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 09:48:06.765 12481 12481 F DEBUG   :       #26 pc 000000000000230c  [anon:dalvik-classes6.dex extract...com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 09:48:53.946 12537 12812 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 12812 (pool-4-thread-2), pid 12537 (com.synaptic.ai)
+08-27 09:48:54.410 12823 12823 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 09:48:54.410 12823 12823 F DEBUG   : pid: 12537, tid: 12812, name: pool-4-thread-2  >>> com.synaptic.ai <<<
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #01 pc 00000000000ea53c  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #02 pc 00000000000e9b94  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #03 pc 0000000000073324  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #04 pc 00000000000ea058  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #05 pc 000000000010463c  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #06 pc 0000000000104618  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #07 pc 000000000462c33c  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #08 pc 000000000463f5b8  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #09 pc 0000000004635b74  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #10 pc 000000000007c234  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libggml-base.so (offset 0x12b4000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #11 pc 000000000010d844  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #12 pc 000000000010d474  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #13 pc 000000000010ed14  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #14 pc 000000000011477c  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libllama.so (offset 0x61a4000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #15 pc 0000000000006f90  /data/app/~~oQ3s0H3QVEpG4-Owq_P8lQ==/com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk!libllamajni.so (offset 0x65f0000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1200) (BuildId: c253b63ab95710f9d8fa39c76e4a5f3ad202a381)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #21 pc 0000000000003294  [anon:dalvik-classes6.dex extract...com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 09:48:54.410 12823 12823 F DEBUG   :       #26 pc 000000000000230c  [anon:dalvik-classes6.dex extract...com.synaptic.ai-25IYnEcvab8n6BIWO14xRQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 09:59:35.556 13529 13781 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 13781 (pool-4-thread-2), pid 13529 (com.synaptic.ai)
+08-27 09:59:36.032 14021 14021 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 09:59:36.032 14021 14021 F DEBUG   : pid: 13529, tid: 13781, name: pool-4-thread-2  >>> com.synaptic.ai <<<
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #01 pc 00000000000ea53c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #02 pc 00000000000e9b94  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #03 pc 0000000000073324  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #04 pc 00000000000ea058  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #05 pc 000000000010463c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #06 pc 0000000000104618  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #07 pc 000000000462c33c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-vulkan.so (offset 0xfdc000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #08 pc 000000000463f5b8  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-vulkan.so (offset 0xfdc000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #09 pc 0000000004635b74  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-vulkan.so (offset 0xfdc000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #10 pc 000000000007c234  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #11 pc 000000000010d844  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #12 pc 000000000010d474  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #13 pc 000000000010ed14  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #14 pc 000000000011477c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #15 pc 0000000000006f90  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllamajni.so (offset 0xac0000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1200) (BuildId: 14ada38fe2b7a8beb5a6502782bcb7f13a9a922c)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #21 pc 0000000000003294  [anon:dalvik-classes6.dex extract...com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 09:59:36.033 14021 14021 F DEBUG   :       #26 pc 000000000000230c  [anon:dalvik-classes6.dex extract...com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 10:00:33.849 14111 14295 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 14295 (pool-4-thread-2), pid 14111 (com.synaptic.ai)
+08-27 10:00:34.391 14304 14304 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 10:00:34.391 14304 14304 F DEBUG   : pid: 14111, tid: 14295, name: pool-4-thread-2  >>> com.synaptic.ai <<<
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #01 pc 00000000000ea53c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #02 pc 00000000000e9b94  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #03 pc 0000000000073324  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #04 pc 00000000000ea058  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #05 pc 000000000010463c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #06 pc 0000000000104618  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #07 pc 000000000462c33c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-vulkan.so (offset 0xfdc000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #08 pc 000000000463f5b8  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-vulkan.so (offset 0xfdc000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #09 pc 0000000004635b74  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-vulkan.so (offset 0xfdc000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #10 pc 000000000007c234  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #11 pc 000000000010d844  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #12 pc 000000000010d474  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #13 pc 000000000010ed14  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #14 pc 000000000011477c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #15 pc 0000000000006f90  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllamajni.so (offset 0xac0000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1200) (BuildId: 14ada38fe2b7a8beb5a6502782bcb7f13a9a922c)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #21 pc 0000000000003294  [anon:dalvik-classes6.dex extract...com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 10:00:34.392 14304 14304 F DEBUG   :       #26 pc 000000000000230c  [anon:dalvik-classes6.dex extract...com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 10:01:53.661 14389 14546 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 14546 (pool-4-thread-2), pid 14389 (com.synaptic.ai)
+08-27 10:01:54.301 14564 14564 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 10:01:54.301 14564 14564 F DEBUG   : pid: 14389, tid: 14546, name: pool-4-thread-2  >>> com.synaptic.ai <<<
+08-27 10:01:54.301 14564 14564 F DEBUG   :       #01 pc 00000000000ea53c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:01:54.301 14564 14564 F DEBUG   :       #02 pc 00000000000e9b94  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:01:54.301 14564 14564 F DEBUG   :       #03 pc 0000000000073324  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #04 pc 00000000000ea058  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #05 pc 000000000010463c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #06 pc 0000000000104618  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #07 pc 000000000462c33c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-vulkan.so (offset 0xfdc000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #08 pc 000000000463f5b8  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-vulkan.so (offset 0xfdc000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #09 pc 0000000004635b74  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-vulkan.so (offset 0xfdc000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #10 pc 000000000007c234  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libggml-base.so (offset 0x9ac000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #11 pc 000000000010d844  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #12 pc 000000000010d474  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #13 pc 000000000010ed14  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #14 pc 000000000011477c  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllama.so (offset 0x728000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #15 pc 0000000000006f90  /data/app/~~lSjBU0DyJdufF79VUlPIhQ==/com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk!libllamajni.so (offset 0xac0000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1200) (BuildId: 14ada38fe2b7a8beb5a6502782bcb7f13a9a922c)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #21 pc 0000000000003294  [anon:dalvik-classes6.dex extract...com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 10:01:54.302 14564 14564 F DEBUG   :       #26 pc 000000000000230c  [anon:dalvik-classes6.dex extract...com.synaptic.ai-XcIc5QPExAGImnTZMqqzhQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 10:10:02.141 15280 15538 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 15538 (pool-4-thread-2), pid 15280 (com.synaptic.ai)
+08-27 10:10:02.841 15549 15549 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 10:10:02.841 15549 15549 F DEBUG   : pid: 15280, tid: 15538, name: pool-4-thread-2  >>> com.synaptic.ai <<<
+08-27 10:10:02.841 15549 15549 F DEBUG   :       #01 pc 00000000000ea53c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:10:02.841 15549 15549 F DEBUG   :       #02 pc 00000000000e9b94  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:10:02.841 15549 15549 F DEBUG   :       #03 pc 0000000000073324  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:10:02.841 15549 15549 F DEBUG   :       #04 pc 00000000000ea058  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:10:02.841 15549 15549 F DEBUG   :       #05 pc 000000000010463c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:10:02.841 15549 15549 F DEBUG   :       #06 pc 0000000000104618  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:10:02.841 15549 15549 F DEBUG   :       #07 pc 000000000462c33c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:10:02.841 15549 15549 F DEBUG   :       #08 pc 000000000463f5b8  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:10:02.841 15549 15549 F DEBUG   :       #09 pc 0000000004635b74  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:10:02.841 15549 15549 F DEBUG   :       #10 pc 000000000007c234  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:10:02.842 15549 15549 F DEBUG   :       #11 pc 000000000010d844  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:10:02.842 15549 15549 F DEBUG   :       #12 pc 000000000010d474  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:10:02.842 15549 15549 F DEBUG   :       #13 pc 000000000010ed14  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:10:02.842 15549 15549 F DEBUG   :       #14 pc 000000000011477c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:10:02.842 15549 15549 F DEBUG   :       #15 pc 0000000000007924  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllamajni.so (offset 0x6428000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1436) (BuildId: e1d891846337a87f4428bcf4796a9de54b31cddc)
+08-27 10:10:02.842 15549 15549 F DEBUG   :       #21 pc 0000000000003294  [anon:dalvik-classes6.dex extract...com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 10:10:02.842 15549 15549 F DEBUG   :       #26 pc 000000000000230c  [anon:dalvik-classes6.dex extract...com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 10:37:48.103 17129 17542 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 17542 (pool-4-thread-2), pid 17129 (com.synaptic.ai)
+08-27 10:37:48.688 17554 17554 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 10:37:48.688 17554 17554 F DEBUG   : pid: 17129, tid: 17542, name: pool-4-thread-2  >>> com.synaptic.ai <<<
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #01 pc 00000000000ea53c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #02 pc 00000000000e9b94  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #03 pc 0000000000073324  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #04 pc 00000000000ea058  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #05 pc 000000000010463c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #06 pc 0000000000104618  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #07 pc 000000000462c33c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #08 pc 000000000463f5b8  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #09 pc 0000000004635b74  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #10 pc 000000000007c234  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #11 pc 000000000010d844  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #12 pc 000000000010d474  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #13 pc 000000000010ed14  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #14 pc 000000000011477c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #15 pc 0000000000007924  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllamajni.so (offset 0x6428000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1436) (BuildId: e1d891846337a87f4428bcf4796a9de54b31cddc)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #21 pc 0000000000003294  [anon:dalvik-classes6.dex extract...com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 10:37:48.689 17554 17554 F DEBUG   :       #26 pc 000000000000230c  [anon:dalvik-classes6.dex extract...com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 10:38:12.124 17601 17763 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 17763 (pool-4-thread-2), pid 17601 (com.synaptic.ai)
+08-27 10:38:12.585 17775 17775 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 10:38:12.585 17775 17775 F DEBUG   : pid: 17601, tid: 17763, name: pool-4-thread-2  >>> com.synaptic.ai <<<
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #01 pc 00000000000ea53c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #02 pc 00000000000e9b94  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #03 pc 0000000000073324  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #04 pc 00000000000ea058  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #05 pc 000000000010463c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #06 pc 0000000000104618  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #07 pc 000000000462c33c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #08 pc 000000000463f5b8  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #09 pc 0000000004635b74  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #10 pc 000000000007c234  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #11 pc 000000000010d844  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #12 pc 000000000010d474  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:38:12.585 17775 17775 F DEBUG   :       #13 pc 000000000010ed14  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:38:12.586 17775 17775 F DEBUG   :       #14 pc 000000000011477c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:38:12.586 17775 17775 F DEBUG   :       #15 pc 0000000000007924  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllamajni.so (offset 0x6428000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1436) (BuildId: e1d891846337a87f4428bcf4796a9de54b31cddc)
+08-27 10:38:12.586 17775 17775 F DEBUG   :       #21 pc 0000000000003294  [anon:dalvik-classes6.dex extract...com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 10:38:12.586 17775 17775 F DEBUG   :       #26 pc 000000000000230c  [anon:dalvik-classes6.dex extract...com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 10:38:28.822 17847 18019 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 18019 (pool-4-thread-2), pid 17847 (com.synaptic.ai)
+08-27 10:38:29.341 18033 18033 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 10:38:29.341 18033 18033 F DEBUG   : pid: 17847, tid: 18019, name: pool-4-thread-2  >>> com.synaptic.ai <<<
+08-27 10:38:29.341 18033 18033 F DEBUG   :       #01 pc 00000000000ea53c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:29.341 18033 18033 F DEBUG   :       #02 pc 00000000000e9b94  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:29.341 18033 18033 F DEBUG   :       #03 pc 0000000000073324  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:29.341 18033 18033 F DEBUG   :       #04 pc 00000000000ea058  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:29.341 18033 18033 F DEBUG   :       #05 pc 000000000010463c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:29.341 18033 18033 F DEBUG   :       #06 pc 0000000000104618  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:29.341 18033 18033 F DEBUG   :       #07 pc 000000000462c33c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:38:29.341 18033 18033 F DEBUG   :       #08 pc 000000000463f5b8  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:38:29.341 18033 18033 F DEBUG   :       #09 pc 0000000004635b74  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:38:29.341 18033 18033 F DEBUG   :       #10 pc 000000000007c234  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:38:29.342 18033 18033 F DEBUG   :       #11 pc 000000000010d844  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:38:29.342 18033 18033 F DEBUG   :       #12 pc 000000000010d474  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:38:29.342 18033 18033 F DEBUG   :       #13 pc 000000000010ed14  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:38:29.342 18033 18033 F DEBUG   :       #14 pc 000000000011477c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:38:29.342 18033 18033 F DEBUG   :       #15 pc 0000000000007924  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllamajni.so (offset 0x6428000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1436) (BuildId: e1d891846337a87f4428bcf4796a9de54b31cddc)
+08-27 10:38:29.342 18033 18033 F DEBUG   :       #21 pc 0000000000003294  [anon:dalvik-classes6.dex extract...com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 10:38:29.342 18033 18033 F DEBUG   :       #26 pc 000000000000230c  [anon:dalvik-classes6.dex extract...com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 10:41:15.265 18134 18834 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 18834 (pool-4-thread-2), pid 18134 (com.synaptic.ai)
+08-27 10:41:16.457 18847 18847 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 10:41:16.457 18847 18847 F DEBUG   : pid: 18134, tid: 18834, name: pool-4-thread-2  >>> com.synaptic.ai <<<
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #01 pc 00000000000ea53c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #02 pc 00000000000e9b94  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #03 pc 0000000000073324  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #04 pc 00000000000ea058  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #05 pc 000000000010463c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #06 pc 0000000000104618  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (__cxa_throw+88) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #07 pc 000000000462c33c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #08 pc 000000000463f5b8  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #09 pc 0000000004635b74  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-vulkan.so (offset 0x16a8000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #10 pc 000000000007c234  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libggml-base.so (offset 0x12b4000) (ggml_backend_sched_graph_compute_async+1008) (BuildId: 8862b068e49dc75217d4322d0c75ec046bcb7c86)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #11 pc 000000000010d844  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::graph_compute(ggml_cgraph*, bool)+156) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #12 pc 000000000010d474  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&)+784) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #13 pc 000000000010ed14  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_context::decode(llama_batch const&)+1980) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #14 pc 000000000011477c  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllama.so (offset 0x61a4000) (llama_decode+12) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #15 pc 0000000000007924  /data/app/~~4TTXSWHU4MKXZu-y1T6y0w==/com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk!libllamajni.so (offset 0x6428000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+1436) (BuildId: e1d891846337a87f4428bcf4796a9de54b31cddc)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #21 pc 0000000000003294  [anon:dalvik-classes6.dex extract...com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 10:41:16.457 18847 18847 F DEBUG   :       #26 pc 000000000000230c  [anon:dalvik-classes6.dex extract...com.synaptic.ai-3Pb4aKePBq2w88KGc5xCKQ==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 11:53:03.144 14885 15448 F libc    : Fatal signal 7 (SIGBUS), code 2 (BUS_ADRERR), fault addr 0x761891a860 in tid 15448 (pool-4-thread-3), pid 14885 (com.synaptic.ai)
+08-27 11:53:05.579 15468 15468 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 11:53:05.579 15468 15468 F DEBUG   : pid: 14885, tid: 15448, name: pool-4-thread-3  >>> com.synaptic.ai <<<
+08-27 11:53:05.579 15468 15468 F DEBUG   :       #01 pc 000000000462f20c  /data/app/~~aUhQVYVY2IRZTJq9j-kw0Q==/com.synaptic.ai-9w5joXmZQclVgC46gzPurw==/base.apk!libggml-vulkan.so (offset 0x16a0000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 11:53:05.579 15468 15468 F DEBUG   :       #02 pc 0000000004626834  /data/app/~~aUhQVYVY2IRZTJq9j-kw0Q==/com.synaptic.ai-9w5joXmZQclVgC46gzPurw==/base.apk!libggml-vulkan.so (offset 0x16a0000) (BuildId: aaca82a393f80480bf508a5d672c214c2bac69f8)
+08-27 11:53:05.579 15468 15468 F DEBUG   :       #03 pc 0000000000171894  /data/app/~~aUhQVYVY2IRZTJq9j-kw0Q==/com.synaptic.ai-9w5joXmZQclVgC46gzPurw==/base.apk!libllama.so (offset 0x619c000) (llama_model_loader::load_all_data(ggml_context*, std::__ndk1::unordered_map<unsigned int, ggml_backend_buffer*, std::__ndk1::hash<unsigned int>, std::__ndk1::equal_to<unsigned int>, std::__ndk1::allocator<std::__ndk1::pair<unsigned int const, ggml_backend_buffer*>>>&, std::__ndk1::vector<std::__ndk1::unique_ptr<llama_mlock, std::__ndk1::default_delete<llama_mlock>>, std::__ndk1::allocator<std::__ndk1::unique_ptr<llama_mlock, std::__ndk1::default_delete<llama_mlock>>>>*, bool (*)(float, void*), void*)+704) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 11:53:05.579 15468 15468 F DEBUG   :       #04 pc 000000000018a1c4  /data/app/~~aUhQVYVY2IRZTJq9j-kw0Q==/com.synaptic.ai-9w5joXmZQclVgC46gzPurw==/base.apk!libllama.so (offset 0x619c000) (llama_model_base::load_tensors(llama_model_loader&)+12636) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 11:53:05.579 15468 15468 F DEBUG   :       #05 pc 00000000000f0be0  /data/app/~~aUhQVYVY2IRZTJq9j-kw0Q==/com.synaptic.ai-9w5joXmZQclVgC46gzPurw==/base.apk!libllama.so (offset 0x619c000) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 11:53:05.579 15468 15468 F DEBUG   :       #06 pc 00000000000f1480  /data/app/~~aUhQVYVY2IRZTJq9j-kw0Q==/com.synaptic.ai-9w5joXmZQclVgC46gzPurw==/base.apk!libllama.so (offset 0x619c000) (llama_model_load_from_file+220) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 11:53:05.579 15468 15468 F DEBUG   :       #07 pc 000000000000700c  /data/app/~~aUhQVYVY2IRZTJq9j-kw0Q==/com.synaptic.ai-9w5joXmZQclVgC46gzPurw==/base.apk!libllamajni.so (offset 0x6420000) (Java_com_synaptic_ai_llm_LlamaJNI_loadModel+948) (BuildId: bdf4100a566648594c90a6eacefd281c63027c9b)
+08-27 11:53:05.579 15468 15468 F DEBUG   :       #13 pc 0000000000003a60  [anon:dalvik-classes6.dex extract...com.synaptic.ai-9w5joXmZQclVgC46gzPurw==/base.apk] (com.synaptic.ai.llm.LlmManager.loadModel$lambda$2+0)
+08-27 11:53:05.579 15468 15468 F DEBUG   :       #17 pc 0000000000002618  [anon:dalvik-classes6.dex extract...com.synaptic.ai-9w5joXmZQclVgC46gzPurw==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda1.run+0)
+08-27 12:19:40.090 24936 24982 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0 in tid 24982 (pool-4-thread-1), pid 24936 (com.synaptic.ai)
+08-27 12:19:41.107  9909  9909 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 12:19:41.107  9909  9909 F DEBUG   : pid: 24936, tid: 24982, name: pool-4-thread-1  >>> com.synaptic.ai <<<
+08-27 12:19:41.108  9909  9909 F DEBUG   :       #00 pc 00000000001a4b9c  /data/app/~~IFK70MhHe9usAsopPmnCtw==/com.synaptic.ai-h7MxECnfxACidwHvNT6PUw==/base.apk!libllama.so (offset 0x619c000) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 12:19:41.108  9909  9909 F DEBUG   :       #01 pc 00000000001a2014  /data/app/~~IFK70MhHe9usAsopPmnCtw==/com.synaptic.ai-h7MxECnfxACidwHvNT6PUw==/base.apk!libllama.so (offset 0x619c000) (llama_sampler_sample+1136) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 12:19:41.108  9909  9909 F DEBUG   :       #02 pc 0000000000007dec  /data/app/~~IFK70MhHe9usAsopPmnCtw==/com.synaptic.ai-h7MxECnfxACidwHvNT6PUw==/base.apk!libllamajni.so (offset 0x6420000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+2356) (BuildId: 2f8d11d299672a7172e6e116477297fff379de4b)
+08-27 12:19:41.108  9909  9909 F DEBUG   :       #08 pc 0000000000002ef8  [anon:dalvik-classes6.dex extract...com.synaptic.ai-h7MxECnfxACidwHvNT6PUw==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 12:19:41.108  9909  9909 F DEBUG   :       #13 pc 0000000000002290  [anon:dalvik-classes6.dex extract...com.synaptic.ai-h7MxECnfxACidwHvNT6PUw==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 12:20:48.269  9984 10193 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0 in tid 10193 (pool-4-thread-2), pid 9984 (com.synaptic.ai)
+08-27 12:20:48.874 26117 26117 F DEBUG   : Cmdline: com.synaptic.ai
+08-27 12:20:48.874 26117 26117 F DEBUG   : pid: 9984, tid: 10193, name: pool-4-thread-2  >>> com.synaptic.ai <<<
+08-27 12:20:48.874 26117 26117 F DEBUG   :       #00 pc 00000000001a4b9c  /data/app/~~IFK70MhHe9usAsopPmnCtw==/com.synaptic.ai-h7MxECnfxACidwHvNT6PUw==/base.apk!libllama.so (offset 0x619c000) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 12:20:48.874 26117 26117 F DEBUG   :       #01 pc 00000000001a2014  /data/app/~~IFK70MhHe9usAsopPmnCtw==/com.synaptic.ai-h7MxECnfxACidwHvNT6PUw==/base.apk!libllama.so (offset 0x619c000) (llama_sampler_sample+1136) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+08-27 12:20:48.874 26117 26117 F DEBUG   :       #02 pc 0000000000007dec  /data/app/~~IFK70MhHe9usAsopPmnCtw==/com.synaptic.ai-h7MxECnfxACidwHvNT6PUw==/base.apk!libllamajni.so (offset 0x6420000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+2356) (BuildId: 2f8d11d299672a7172e6e116477297fff379de4b)
+08-27 12:20:48.874 26117 26117 F DEBUG   :       #08 pc 0000000000002ef8  [anon:dalvik-classes6.dex extract...com.synaptic.ai-h7MxECnfxACidwHvNT6PUw==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+08-27 12:20:48.874 26117 26117 F DEBUG   :       #13 pc 0000000000002290  [anon:dalvik-classes6.dex extract...com.synaptic.ai-h7MxECnfxACidwHvNT6PUw==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+08-27 12:20:58.919  2838  5933 W PackageConfigPersister: App-specific configuration not found for packageName: com.synaptic.ai and userId: 0
+08-27 12:20:59.556  2838  2902 I ActivityManager: Killing 26235:com.synaptic.ai/u0a582 (adj 905): AL_Kill : over 3 sec
+08-27 12:21:03.314  2838  6048 I ActivityManager: Force stopping com.synaptic.ai appid=10582 user=0: clear data
+08-27 12:21:03.320  2838  2972 I ActivityManager: Force stopping com.synaptic.ai appid=10582 user=0: clearApplicationUserData
+08-27 12:21:03.498  2838  2972 I AppsFilter: interaction: PackageSetting{b6658f com.android.microdroid.empty_payload/10299} -> PackageSetting{5f8d432 com.synaptic.ai/10582} BLOCKED
+08-27 12:21:03.499  2838  2972 I AppsFilter: interaction: PackageSetting{23dcbab com.supersearch.app/10592} -> PackageSetting{5f8d432 com.synaptic.ai/10582} BLOCKED
+08-27 12:21:03.500  2838  2972 I AppsFilter: interaction: PackageSetting{b6658f com.android.microdroid.empty_payload/10299} -> PackageSetting{5f8d432 com.synaptic.ai/10582} BLOCKED
+08-27 12:21:03.501  2838  2972 I AppsFilter: interaction: PackageSetting{23dcbab com.supersearch.app/10592} -> PackageSetting{5f8d432 com.synaptic.ai/10582} BLOCKED
+08-27 12:21:03.539  2838  3292 D ShortcutService: clearing data for package: com.synaptic.ai userId=0
+08-27 12:21:04.796  2838  6205 W PackageConfigPersister: App-specific configuration not found for packageName: com.synaptic.ai and userId: 0
+08-27 12:21:05.226  2838  5920 W PackageConfigPersister: App-specific configuration not found for packageName: com.synaptic.ai and userId: 0
+08-27 12:21:15.477  2838  4559 W PackageConfigPersister: App-specific configuration not found for packageName: com.synaptic.ai and userId: 0
+08-27 12:25:01.622 21097 21097 I Finsky  : [2] VerifyApps: Install-time verification requested for package com.synaptic.ai, PackageManager id = 68, Verifier id = bab33103-4ca3-479d-8da1-b67dfe108338
+08-27 12:25:02.001 27209 27236 I GOS:GameServiceReceiver:  PkgInstallStarted for com.synaptic.ai UserID : 0
+08-27 12:25:02.157 21097 27187 I Finsky  : [17236] VerifyApps: Anti-malware verification task started for package=com.synaptic.ai
+08-27 12:25:02.234 27209 27241 I GOS:GameIntentService: onPackageChanged(). extras: Bundle[{changeType=2, userId=0, type=15, packageName=com.synaptic.ai}]
+08-27 12:25:02.234 27209 27241 I GOS:GameIntentService: onPackageChanged(). changeType(INSTALL_STARTED), pkgName(com.synaptic.ai), UserHandle(0), userId(0), Installed(true)
+08-27 12:25:02.238 27209 27241 W GOS:SystemEventReactor: onPackageInstallStarted(). the pkg data already exists. packageName: com.synaptic.ai
+08-27 12:25:02.993 21097 27187 I Finsky  : [17236] VerifyApps: chooseScanResult for package=com.synaptic.ai with timeout=15000ms
+08-27 12:25:02.998 21097 21186 I Finsky  : [17103] VerifyApps: Starting APK Analysis scan for com.synaptic.ai.
+08-27 12:25:02.999 21097 21186 I Finsky  : [17103] Scanning package com.synaptic.ai contents with client side protections. File: [SPU0o4ZkrpYbL-Rl98WewzRNw4jMQLooqI56EKoUhVY]
+08-27 12:25:02.999 21097 21186 I Finsky  : [17103] VerifyApps: APK Analysis scan finished for com.synaptic.ai. Verdict: 0
+08-27 12:25:03.003 21097 27187 I Finsky  : [17236] VerifyApps: firstScanResult for package=com.synaptic.ai: 0
+08-27 12:25:03.423 21097 27249 I Finsky  : [17239] VerifyApps: Verification package=com.synaptic.ai, id=68, response=0, upload_requested=false, enable_ecm=false
+08-27 12:25:03.426 21097 27249 I Finsky  : [17239] VerifyApps: PAM result saving to datastore delayed for package: com.synaptic.ai
+08-27 12:25:03.428 21097 27187 I Finsky  : [17236] VerifyApps: overallScanResult for package=com.synaptic.ai: 0
+08-27 12:25:03.429 21097 27187 I Finsky  : [17236] VerifyApps: chooseScanResult returning verdict 0 for package=com.synaptic.ai
+08-27 12:25:03.460  2838  3054 I PackageManager:           pkg{com.synaptic.ai}
+08-27 12:25:03.460 21097 21097 I Finsky  : [2] VerifyApps: Install-time verification complete: id=68, package_name=com.synaptic.ai
+08-27 12:25:03.510  2838  2972 I PackageManager: Update package com.synaptic.ai code path from /data/app/~~IFK70MhHe9usAsopPmnCtw==/com.synaptic.ai-h7MxECnfxACidwHvNT6PUw== to /data/app/vmdl1219903037.tmp; Retain data and using new
+08-27 12:25:03.537  2838  2972 I AppsFilter: interaction: PackageSetting{266ae0 com.android.microdroid.empty_payload/10299} -> PackageSetting{278d2c6 com.synaptic.ai/10582} BLOCKED
+08-27 12:25:03.537  2838  2972 I AppsFilter: interaction: PackageSetting{9cac6be com.supersearch.app/10592} -> PackageSetting{278d2c6 com.synaptic.ai/10582} BLOCKED
+08-27 12:25:03.537  2838  2972 I AppsFilter: interaction: PackageSetting{266ae0 com.android.microdroid.empty_payload/10299} -> PackageSetting{ff52471 com.synaptic.ai/10582} BLOCKED
+08-27 12:25:03.538  2838  2972 I AppsFilter: interaction: PackageSetting{9cac6be com.supersearch.app/10592} -> PackageSetting{ff52471 com.synaptic.ai/10582} BLOCKED
+08-27 12:25:03.562  2838  2972 D PermissionService: setAllowlistedRestrictedPermissionsUnchecked called for package - com.synaptic.ai
+08-27 12:25:03.562  2838  2972 D PermissionService: updateAdminPermissionsInternalcom.synaptic.ai
+08-27 12:25:03.606  2838  2913 I ActivityManager: Force stopping com.synaptic.ai appid=10582 user=-1: installPackageLI
+08-27 12:25:03.632  2838  2972 I PackageManager: installation completed for package:com.synaptic.ai. Final code path: /data/app/~~Bdf_r_gORntWBt26J3ZPnw==/com.synaptic.ai-rMJaYP8aKIsbf6WMkRQAJg==
+08-27 12:25:03.633  2838  2972 I AppsFilter: interaction: PackageSetting{b6658f com.android.microdroid.empty_payload/10299} -> PackageSetting{33c4661 com.synaptic.ai/10582} BLOCKED
+08-27 12:25:03.633  2838  2972 I AppsFilter: interaction: PackageSetting{23dcbab com.supersearch.app/10592} -> PackageSetting{33c4661 com.synaptic.ai/10582} BLOCKED
+08-27 12:25:03.635  2838  2972 I PackageManager: 0001/{caller=null, ver=1, pkg=com.synaptic.ai}
+08-27 12:25:03.651  2838  2972 I ActivityManager: Force stopping com.synaptic.ai appid=10582 user=0: pkg removed
+08-27 12:25:03.668  2838  3065 D OverlayManager: reconcileSettingsForPackage pkgName=com.synaptic.ai userId=0
+08-27 12:25:03.668  2838  3065 I OverlayManager: updateOverlaysForTarget() called with: targetPackage = [com.synaptic.ai], userId = [0], flags = [2]
+08-27 12:25:03.689  4876  4974 I PackageInfoManager_FLP: action : ACTION_PACKAGE_REMOVED, packageName = com.synaptic.ai
+08-27 12:25:03.689  5763  5763 W MediaProvider: WorkProfileOwnerApps cache miss for package com.synaptic.ai
+08-27 12:25:03.705  4361  4361 D Navbar.Store: handleEvent(0) OnPackageRemoved(packageName=com.synaptic.ai) [Module] NavBarStoreImpl
+08-27 12:25:03.705  4361  4361 I GoodLockLifecycle: onPackageRemoved: com.synaptic.ai
+08-27 12:25:03.705  4361  4361 I LockStarSupportLifecycle: onPackageRemoved: com.synaptic.ai
+08-27 12:25:03.705  4361  4361 D FaceWidgetMusicViewModel: onPackageRemoved() pkg = com.synaptic.ai, r = true
+08-27 12:25:03.706 21417 21417 I DWBPkgEventReceiver: Received : android.intent.action.PACKAGE_REMOVED, Package : com.synaptic.ai
+08-27 12:25:03.707  3421  3475 I SatelliteAppTracker: onPackageUpdateFinished : com.synaptic.ai
+08-27 12:25:03.707  3421  3475 I SatelliteAppTracker: onPackageModified : com.synaptic.ai
+08-27 12:25:03.710  3421  3475 E SatelliteAppTracker: packageName: com.synaptic.ai, value: null
+08-27 12:25:03.713  3421  3475 E SatelliteAppTracker: packageName: com.synaptic.ai, value: null
+08-27 12:25:03.714  3421  3475 E SatelliteAppTracker: packageName: com.synaptic.ai, value: null
+08-27 12:25:03.716  3421  3475 E SatelliteAppTracker: packageName: com.synaptic.ai, value: null
+08-27 12:25:03.719  4876  4974 I PackageInfoManager_FLP: action : ACTION_PACKAGE_ADDED, packageName = com.synaptic.ai
+08-27 12:25:03.725  4361  4361 D SecSTQuickControlRequestReceiver: onReceiveForPackage action = android.intent.action.PACKAGE_REMOVED, pkgName = com.synaptic.ai
+08-27 12:25:03.727 29090 29206 I ServiceLiveData: Not exempting com.synaptic.ai - not an active AccessibilityService for u0
+08-27 12:25:03.728 21417 21417 I DWBPkgEventReceiver: Received : android.intent.action.PACKAGE_ADDED, Package : com.synaptic.ai
+08-27 12:25:03.729  4361  4512 D BluetoothEventManager: AppPackageChangedHandler: package name = com.synaptic.ai
+08-27 12:25:03.742  2838  2838 I Telecom : CarModeTracker: Package com.synaptic.ai is not tracked.: SSH.oR@N3o
+08-27 12:25:03.744  2838  3427 I Pageboost: remove app @ runtime : com.synaptic.ai
+08-27 12:25:03.745  2838  3242 D LocationManagerService: package com.synaptic.ai reset
+08-27 12:25:03.749  2838  2838 W AlarmManager: Package com.synaptic.ai, uid 10582 lost permission to set exact alarms!
+08-27 12:25:03.750  2838  3292 D ShortcutService: replacing package: com.synaptic.ai userId=0
+08-27 12:25:03.750  3421  3421 I VvmPkgInstalledRcvr: packageName: com.synaptic.ai, systemDialer: com.samsung.android.dialer
+08-27 12:25:03.750  2838  2838 D AS.AudioService: received android.intent.action.PACKAGE_ADDED replacing: true archival: false for package com.synaptic.ai with uid 10582
+08-27 12:25:03.751  2838  3275 I AppWidgetServiceImpl: Received broadcast: android.intent.action.PACKAGE_ADDED, Updates all providers with com.synaptic.ai, userId: 0
+08-27 12:25:03.755  2838  3252 D SGM:GameManager: identifyGamePackage. com.synaptic.ai, mCurrentUserId: 0, callingMethodInfo: com.samsung.android.game.SemGameManager.isGamePackage(SemGameManager.java:106)
+08-27 12:25:03.756  2838  3252 D SGM:SemGameManager: isGamePackage(), pkgName=com.synaptic.ai, ret=false
+08-27 12:25:03.758  4361  4361 I GoodLockLifecycle: onPackageAdded: com.synaptic.ai
+08-27 12:25:03.760  4361  4361 I LockStarSupportLifecycle: onPackageAdded: com.synaptic.ai
+08-27 12:25:03.760  2838  3363 I SdkSandboxManager: No SDKs used. Skipping SDK data reconcilation for CallingInfo{mUid=10582, mPackageName='com.synaptic.ai, mAppProcessToken='null'}
+08-27 12:25:03.789 21417 21417 I DWBPkgEventService: startId : 1, Received : com.samsung.android.forest.PACKAGE_ADDED, Package : com.synaptic.ai
+08-27 12:25:03.800 29090 29205 I ServiceLiveData: Not exempting com.synaptic.ai - not an active AccessibilityService for u0
+08-27 12:25:03.809  2838  2838 I Telecom : SamsungOpenCommunicationPlatformPolicyPackageBroadcastReceiver : action : android.intent.action.PACKAGE_ADDED / packageName : com.synaptic.ai
+08-27 12:25:03.809  2838  4558 I Telecom : SamsungOpenCommunicationPlatformPolicyPackageHandler : handleMessage : { when=0 what=0 obj=com.synaptic.ai target=com.samsung.server.telecom.advancedcall.ocp.policy.broadcast.SamsungOpenCommunicationPlatformPolicyPackageHandler async=false heapIndex=-1 }.what
+08-27 12:25:03.810  2838  3427 D SGM:GameManager: identifyGamePackage. com.synaptic.ai, mCurrentUserId: 0, callingMethodInfo: com.samsung.android.game.SemGameManager.isGamePackage(SemGameManager.java:106)
+08-27 12:25:03.810  2838  3427 D SGM:SemGameManager: isGamePackage(), pkgName=com.synaptic.ai, ret=false
+08-27 12:25:03.810  2838  3427 I Pageboost: appinfo : com.synaptic.ai 0 0 0 0
+08-27 12:25:03.810  2838  3427 D SGM:GameManager: identifyGamePackage. com.synaptic.ai, mCurrentUserId: 0, callingMethodInfo: com.samsung.android.game.SemGameManager.isGamePackage(SemGameManager.java:106)
+08-27 12:25:03.810  2838  3427 D SGM:SemGameManager: isGamePackage(), pkgName=com.synaptic.ai, ret=false
+08-27 12:25:03.810  2838  3427 I Pageboost: Reset this app info : com.synaptic.ai 
+08-27 12:25:03.810  2838  4827 D SGM:GameManager: identifyGamePackage. com.synaptic.ai, mCurrentUserId: 0, callingMethodInfo: com.samsung.android.game.SemGameManager.isGamePackage(SemGameManager.java:106)
+08-27 12:25:03.810  2838  4827 D SGM:SemGameManager: isGamePackage(), pkgName=com.synaptic.ai, ret=false
+08-27 12:25:03.810  2838  3427 I Pageboost: db create : CREATE TABLE IF NOT EXISTS comsynapticai (FILENAME TEXT, OFFSET INTEGER, SIZE INTEGER, FORVRAMDISK INTEGER, BITMAP BLOB, unique (FILENAME, OFFSET) );
+08-27 12:25:03.812  2838  3346 D SGM:GameManager: identifyGamePackage. com.synaptic.ai, mCurrentUserId: 0, callingMethodInfo: com.samsung.android.game.SemGameManager.isGamePackage(SemGameManager.java:106)
+08-27 12:25:03.812  2838  3346 D SGM:SemGameManager: isGamePackage(), pkgName=com.synaptic.ai, ret=false
+08-27 12:25:03.818  2838  3427 I Pageboost: add app to global @ runtime: com.synaptic.ai
+08-27 12:25:03.826  2838  3167 W PackageConfigPersister: App-specific configuration not found for packageName: com.synaptic.ai and userId: 0
+08-27 12:25:03.827  2838  3065 D OverlayManager: reconcileSettingsForPackage pkgName=com.synaptic.ai userId=0
+08-27 12:25:03.827  2838  3065 I OverlayManager: updateOverlaysForTarget() called with: targetPackage = [com.synaptic.ai], userId = [0], flags = [0]
+08-27 12:25:03.831  3421  3421 W VvmPkgInstalledRcvr: carrierVvmPkgAdded: carrier vvm packages doesn't contain com.synaptic.ai
+08-27 12:25:03.831  3421  3421 D CarrierSvcBindHelper: onPackageUpdateFinished: com.synaptic.ai
+08-27 12:25:03.860  3421  3421 D CarrierSvcBindHelper: onPackageModified: com.synaptic.ai
+08-27 12:25:03.861  3421  3558 D ImsResolver: maybeAddedImsService, packageName: com.synaptic.ai
+08-27 12:25:03.861  3421  3558 V ImsResolver: searchForImsServices: package=com.synaptic.ai, users=[UserHandle{0}]
+08-27 12:25:03.861  3421  3558 V ImsResolver: searchForImsServices: package=com.synaptic.ai, users=[UserHandle{0}]
+08-27 12:25:03.872  3421  3421 I VvmPkgInstalledRcvr: packageName: com.synaptic.ai, systemDialer: com.samsung.android.dialer
+08-27 12:25:03.878  3421  3421 W VvmPkgInstalledRcvr: carrierVvmPkgAdded: carrier vvm packages doesn't contain com.synaptic.ai
+08-27 12:25:03.879  2838  3114 D SEP_UNION_SemDeviceInfoManagerService: Package com.synaptic.ai is removed on User 0 
+08-27 12:25:03.906  2838  2912 I SGM:PackageUpdateReceiver: PkgUpdateReceiver, onPackageRemoved(). pkgName=com.synaptic.ai, userId=0
+08-27 12:25:03.906  2838  2912 D SGM:Util: isPkgInstalled(). pkgName=com.synaptic.ai, userId=0, installed=true
+08-27 12:25:03.916  2838  2912 D MetaDataCollector: onReceive: done pkgName=com.synaptic.ai
+08-27 12:25:03.920  2838  2912 D LauncherAppsService: Calling onPackageRemoved: com.synaptic.ai, EXTRA_REPLACING: true
+08-27 12:25:03.925  5763  5763 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.925 25119 25119 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.925 21097 21097 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.926 26877 26877 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.927 15488 15488 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.928 22362 22362 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.928 15527 15527 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.929 20571 20571 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.930 29090 29090 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.931 23751 23751 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.932 26787 26787 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.933 24046 24046 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.934 10936 10936 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.939  8856  8856 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.939 21509 21509 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.942  4249  4249 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.942  4284  4284 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.943  4305  4305 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.944  3500  3500 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.944  5278  5278 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.948  5868  5868 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.949  4350  4350 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.949 21097 21097 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.950  5763  5763 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.950 24046 24046 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.951 10936 10936 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.951 26787 26787 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.951 23751 23751 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.954 29090 29090 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.954 22362 22362 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.955  4361  4361 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.956 15488 15488 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.956 15527 15527 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.957 26877 26877 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.958  8856  8856 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.958 20571 20571 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.960  4305  4305 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.960 21509 21509 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.961  5278  5278 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.962  4249  4249 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.962  5868  5868 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.963  4852  4852 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.963  4284  4284 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.963  4361  4361 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.964  4350  4350 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.965  4852  4852 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.966  3421  3421 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.969  3500  3500 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.970  3421  3421 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.982 25119 25119 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.994  2838  2838 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.994  2838  2838 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.998   649   649 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.999 27264 27264 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:03.999 27264 27264 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.008   649   649 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.008  2838  2838 D AS.AudioService: received android.intent.action.PACKAGE_REPLACED replacing: true archival: false for package com.synaptic.ai with uid 10582
+08-27 12:25:04.012  2838  3363 I SdkSandboxManager: No SDKs used. Skipping SDK data reconcilation for CallingInfo{mUid=10582, mPackageName='com.synaptic.ai, mAppProcessToken='null'}
+08-27 12:25:04.019   649 27294 I ProximityAuth: [RecentAppsMediator] Package added: (user=UserHandle{0}) com.synaptic.ai
+08-27 12:25:04.031 29090 29186 I ServiceLiveData: Not exempting com.synaptic.ai - not an active AccessibilityService for u0
+08-27 12:25:04.040  4361  4361 D SecSTQuickControlRequestReceiver: onReceiveForPackage action = android.intent.action.PACKAGE_REPLACED, pkgName = com.synaptic.ai
+08-27 12:25:04.040  2838  3346 D SGM:GameManager: identifyGamePackage. com.synaptic.ai, mCurrentUserId: 0, callingMethodInfo: com.samsung.android.game.SemGameManager.isGamePackage(SemGameManager.java:106)
+08-27 12:25:04.040  2838  3346 D SGM:SemGameManager: isGamePackage(), pkgName=com.synaptic.ai, ret=false
+08-27 12:25:04.042  3421  3421 D SatelliteController: packageStateChanged: package:com.synaptic.ai defaultSmsPackageName: com.samsung.android.messaging satelliteGatewayServicePackageName: 
+08-27 12:25:04.055 29090 29090 I SafetyLabelChangedBroadcastReceiver: received broadcast packageName: com.synaptic.ai, current user: UserHandle{0}, packageChangeEvent: UPDATE, intent user: UserHandle{0}
+08-27 12:25:04.065 21097 21097 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.synaptic.ai]
+08-27 12:25:04.067 21097 21181 I Finsky  : [17102] AIM: AppInfoManager-Perf > OnDeviceAppInfo > cacheHitCount=0, cacheMissCount=1. Missed  in cache (limit 10) : [com.synaptic.ai]
+08-27 12:25:04.074 15488 15488 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.075 25119 25119 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.075  5763  5763 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.075 26877 26877 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.077  4852  4852 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.077 20571 20571 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.078 22362 22362 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.080 27264 27264 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.080 23751 23751 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.080 26787 26787 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.081 24046 24046 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.082 10936 10936 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.083   649   649 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.084 29090 29090 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.085  8856  8856 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.085  5278  5278 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.086  5868  5868 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.086  4249  4249 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.086  3500  3500 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.086  3421  3421 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.086  4284  4284 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.087  2838  2838 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.087  4305  4305 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.088 21509 21509 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.088  4350  4350 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.091  4361  4361 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.115 29090 29205 I ServiceLiveData: Not exempting com.synaptic.ai - not an active AccessibilityService for u0
+08-27 12:25:04.126 15527 15527 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.131 21097 21097 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.synaptic.ai]
+08-27 12:25:04.141 21097 21173 I Finsky  : [17100] AIM: AppInfoManager-Perf > OnDeviceAppInfo > cacheHitCount=0, cacheMissCount=1. Missed  in cache (limit 10) : [com.synaptic.ai]
+08-27 12:25:04.144 27304 27338 I SWT_ValidatorService: It doesn't support color theme, com.synaptic.ai
+08-27 12:25:04.178 20710 20710 I AccountReloadObserver: [C] received action: android.intent.action.PACKAGE_REMOVED, dat: package:com.synaptic.ai
+08-27 12:25:04.181 20710 20710 I AccountReloadObserver: [C] received action: android.intent.action.PACKAGE_ADDED, dat: package:com.synaptic.ai
+08-27 12:25:04.188 11693 11722 I SSS@search user 0: (PackageBroadcastReceiver) packageName: com.synaptic.ai
+08-27 12:25:04.189 11693 11722 I SSS@search user 0: (PackageBroadcastReceiver) Packages changed: com.synaptic.ai
+08-27 12:25:04.201 11693 11722 I SSS@search user 0: (PackageBroadcastReceiver) packageName: com.synaptic.ai
+08-27 12:25:04.201 11693 11722 I SSS@search user 0: (PackageBroadcastReceiver) Packages changed: com.synaptic.ai
+08-27 12:25:04.203 21097 21097 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.231 15527 27334 W SQLiteLog: (28) double-quoted string literal: "com.synaptic.ai"
+08-27 12:25:04.270 27284 27284 I FILP/PackageIntentReceiver: pkgName : com.synaptic.ai
+08-27 12:25:04.313  8894  8894 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.318  8894  8894 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.319  8894  8894 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.320  7893  7893 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.322  7893  7893 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.322  7893  7893 D ActivityThread: Package [com.synaptic.ai] reported as REPLACED, but missing application info. Assuming REMOVED.
+08-27 12:25:04.360 27284 27284 I FILP/PackageIntentReceiver: pkgName : com.synaptic.ai
+08-27 12:25:04.382 27284 27381 I FILP/FilterInstaller: removeFromFS : com.synaptic.ai, cursor size : 0
+08-27 12:25:04.401 27284 27381 I FILP/FilterInstaller: Delete all filter DB result : com.synaptic.ai, 0
+08-27 12:25:04.402 27284 27381 I FILP/FilterInstaller: Delete filter DB result : com.synaptic.ai, 0
+08-27 12:25:04.406 27284 27381 I FILP/FilterInstaller: Delete my filter DB result : com.synaptic.ai, 0
+08-27 12:25:04.416 27284 27381 I FILP/FilterInstaller: uninstallFilters mPackageName: com.synaptic.ai
+08-27 12:25:05.176  2838  2912 I SGM:PackageUpdateReceiver: PkgUpdateReceiver, onPackageAdded : com.synaptic.ai userId : 0
+08-27 12:25:05.176  2838  2912 D SGM:GosNotifyThread: sendPackageMessage(), changeType=0, pkgName=com.synaptic.ai, userHandleId=0
+08-27 12:25:05.177  2838  3156 D SGM:GosNotifyThread: notifyPackageChangedToGos(), before send intent to GOS. type:15, changeType: 0, pkgName:com.synaptic.ai, userHandleId:0
+08-27 12:25:05.177  2838  3156 D SGM:PmAppCategoryManager: getManifestCategory(), manifestCategory=-1, packageName=com.synaptic.ai
+08-27 12:25:05.177  2838  3156 D SGM:PmAppCategoryManager: getCategoryOverride(), categoryOverride=-1, packageName=com.synaptic.ai
+08-27 12:25:05.177  2838  3156 I SGM:GosNotifyThread: notifyPackageChangedToGos(), category from pm: com.synaptic.ai, [-1/-1]
+08-27 12:25:05.189 27209 27437 I GOS:GameIntentService: onHandleIntent. GameIntentService. type: 15, pkgName: com.synaptic.ai
+08-27 12:25:05.350  2838  2912 D MetaDataCollector: onReceive: done pkgName=com.synaptic.ai
+08-27 12:25:05.354  2838  2912 I AdaptiveAppByDefaultLogger: sendSaBroadcast update:com.synaptic.ai;35;Unspecified;True;False;False
+08-27 12:25:05.355 27209 27437 I GOS:GameIntentService: onPackageChanged(). extras: Bundle[{changeType=0, manifestCategory=-1, userId=0, pkgName=com.synaptic.ai, type=15, packageName=com.synaptic.ai, categoryOverride=-1}]
+08-27 12:25:05.355 27209 27437 I GOS:GameIntentService: onPackageChanged(). changeType(INSTALLED), pkgName(com.synaptic.ai), UserHandle(0), userId(0), Installed(true)
+08-27 12:25:05.356 27209 27437 I GOS:GameIntentService: onPkgInstalled(), appInfoCategory: null, packageName: com.synaptic.ai
+08-27 12:25:05.357  2838  2912 D LauncherApps: onPackageChanged 0,com.synaptic.ai
+08-27 12:25:05.357 22362 22379 D LauncherApps: onPackageChanged 0,com.synaptic.ai
+08-27 12:25:05.358  4684  4684 I HoneySpace.PackageOperationTracker: onPackageChanged - com.synaptic.ai UserHandle{0}
+08-27 12:25:05.359  4361 24504 D LauncherApps: onPackageChanged 0,com.synaptic.ai
+08-27 12:25:05.361  2838  3962 I AppWidgetServiceImpl: getInstalledProvidersForProfiles lock in com.synaptic.ai
+08-27 12:25:05.362  4684 26145 I HoneySpace.IconCache: updateSpecificIconCacheAndDB : com.synaptic.ai UserHandle{0}
+08-27 12:25:05.362  4684 26145 I HoneySpace.IconCache: remove icon cache & DB : com.synaptic.ai UserHandle{0}
+08-27 12:25:05.362  4684 26145 I HoneySpace.IconCache: removeSpecificIconDb: com.synaptic.ai UserHandle{0}
+08-27 12:25:05.373 27209 27437 I GOS:FilteredPmAppCategoryGetter: getCategoryCode(). categoryCode:undefined, packageName:com.synaptic.ai
+08-27 12:25:05.374 27209 27437 I GOS:SystemEventReactor: onPackageInstalled(). categoryByAppInfo=undefined, packageName=com.synaptic.ai
+08-27 12:25:05.377  2838  2912 I SGM:PackageUpdateReceiver: PkgUpdateReceiver, onPackageReplaced : com.synaptic.ai userID : 0
+08-27 12:25:05.377  2838  2912 D SGM:GosNotifyThread: sendPackageMessage(), changeType=8, pkgName=com.synaptic.ai, userHandleId=0
+08-27 12:25:05.377  2838  3156 D SGM:GosNotifyThread: notifyPackageChangedToGos(), before send intent to GOS. type:15, changeType: 8, pkgName:com.synaptic.ai, userHandleId:0
+08-27 12:25:05.377  2838  3156 D SGM:PmAppCategoryManager: getManifestCategory(), manifestCategory=-1, packageName=com.synaptic.ai
+08-27 12:25:05.377  2838  3156 D SGM:PmAppCategoryManager: getCategoryOverride(), categoryOverride=-1, packageName=com.synaptic.ai
+08-27 12:25:05.377  2838  3156 I SGM:GosNotifyThread: notifyPackageChangedToGos(), category from pm: com.synaptic.ai, [-1/-1]
+08-27 12:25:05.377  2838  2912 D MetaDataCollector: onReceive: done pkgName=com.synaptic.ai
+08-27 12:25:05.378  4684 26145 I AppIconSolution: getThemeIconWithBG called with public API, pkg = com.synaptic.ai, mode = 48
+08-27 12:25:05.378  4684 26145 I AppIconSolution: return adaptive icon for com.synaptic.ai, isNight = true
+08-27 12:25:05.378  4684 26145 I LauncherActivityInfo: packageName: com.synaptic.ai, useThemeIcon: false, height: 172, width: 172, density: 480
+08-27 12:25:05.384  4684  4684 I HoneySpace.HoneySpaceManagerContainer: refreshHoneyPlugin, packageName: com.synaptic.ai
+08-27 12:25:05.384  4684 23326 I HoneySpace.HoneySpacePackageSourceImpl: Package changed : com.synaptic.ai
+08-27 12:25:05.385  4684 23326 I SearchableManager: invalidate: com.synaptic.ai
+08-27 12:25:05.389  4684 26678 I HoneySpace.IconCache: add icon DB: [com.synaptic.ai/.ui.chat.ChatActivity#UserHandle{0}] - IconAndLabel(icon=android.graphics.Bitmap@3f83075, label=Synaptic) | false | 480 | false |true | -10944041
+08-27 12:25:05.400  2838  6035 D SGM:PackageConfigurationManager: setPackageConfigurations(). category=-1, pkgName=com.synaptic.ai
+08-27 12:25:05.400  2838  6035 D SGM:PackageConfigurationManager: setPackageConfiguration(). configuration: packageName: com.synaptic.ai, performancePolicyForSsrm: null, optimalAspectRatio: 1.7777778, dynamicSurfaceScaling: 1.0, category: -1, categoryByUser: -1, fillBlackSurfaceOnMargins: false, userId: null
+08-27 12:25:05.400  2838  6035 D SGM:PackageConfigurationManager: setPackageConfiguration(). pkgName=com.synaptic.ai
+08-27 12:25:05.400  2838  6035 D SGM:Util: isPkgInstalled(). pkgName=com.synaptic.ai, userId=0, installed=true
+08-27 12:25:05.400  2838  6035 D SGM:PackageConfigurationManager: handleNonGamePackage(). pkgName=com.synaptic.ai, userId=0
+08-27 12:25:05.400  2838  6035 D SGM:PackageConfigurationManager: handleNonGamePackage(). Removed package from DSS controller. package=com.synaptic.ai
+08-27 12:25:05.406 27209 27437 I GOS:GameIntentService: onHandleIntent. GameIntentService. type: 15, pkgName: com.synaptic.ai
+08-27 12:25:05.406 27209 27437 I GOS:GameIntentService: onPackageChanged(). extras: Bundle[{changeType=8, manifestCategory=-1, userId=0, pkgName=com.synaptic.ai, type=15, packageName=com.synaptic.ai, categoryOverride=-1}]
+08-27 12:25:05.407 27209 27437 I GOS:GameIntentService: onPackageChanged(). changeType(REPLACED), pkgName(com.synaptic.ai), UserHandle(0), userId(0), Installed(true)
+08-27 12:25:05.789  4684  9946 I SearchEngineAppSuggestion: package changed: com.synaptic.ai
+

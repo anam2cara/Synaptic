@@ -57,6 +57,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private val _sessionSummaries = MutableLiveData<List<ChatMessage>>()
     val sessionSummaries: LiveData<List<ChatMessage>> = _sessionSummaries
 
+    private val _llmInfo = MutableStateFlow<LlmManager.ModelInfo?>(null)
+    val llmInfo: StateFlow<LlmManager.ModelInfo?> = _llmInfo
+
     val messages: LiveData<List<ChatMessage>> = _sessionId.switchMap { id ->
         db.chatDao().getMessagesLive(id)
     }
@@ -146,37 +149,19 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 cleaned.contains("app") ||
                 cleaned.contains("foreground") ||
                 cleaned.contains("background") ||
-                cleaned.contains("berjalan") ||
-                cleaned.contains("membebani") ||
-                cleaned.contains("boros") ||
-                cleaned.contains("lemot") ||
-                cleaned.contains("lambat") -> {
-                    if (cleaned.contains("proses") || cleaned.contains("jalan") || 
-                        cleaned.contains("foreground") || cleaned.contains("background") ||
-                        cleaned.contains("boros") || cleaned.contains("membebani")) {
-                        "list_processes"
-                    } else if (cleaned.contains("lambat") || cleaned.contains("lemot")) {
-                        "device_analysis"
-                    } else {
-                        null
-                    }
-                }
+                cleaned.contains("berjalan") -> "list_processes"
 
-            cleaned.contains("device status") ||
-                cleaned.contains("status device") ||
-                cleaned.contains("cek status") ||
-                cleaned.contains("cek kondisi") ||
-                cleaned.contains("ram") ||
-                cleaned.contains("suhu") ||
-                cleaned.contains("storage") ||
-                cleaned.contains("penyimpanan") -> "device_status"
+            cleaned.contains("cek ram") ||
+                cleaned.contains("status ram") ||
+                cleaned.contains("cek suhu") ||
+                cleaned.contains("status suhu") ||
+                cleaned.contains("cek storage") ||
+                cleaned.contains("cek penyimpanan") -> "device_status"
 
             cleaned.contains("diagnosa") ||
                 cleaned.contains("diagnosis") ||
                 cleaned.contains("analisis") ||
                 cleaned.contains("analis") ||
-                cleaned.contains("lambat") ||
-                cleaned.contains("lemot") ||
                 cleaned.contains("device health") -> "device_analysis"
 
             cleaned.contains("layar") ||
@@ -238,6 +223,29 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             text.contains("suhu") -> "thermal"
             else -> "all"
         }
+    }
+
+    /**
+     * Menentukan apakah permintaan cukup sederhana untuk bypass LLM.
+     * Jika mengandung kata tanya atau instruksi detil, biarkan LLM yang berpikir.
+     */
+    private fun isVerySimpleRequest(text: String): Boolean {
+        val complexKeywords = listOf(
+            "apa", "kenapa", "mengapa", "bagaimana", "gimana", "tampilkan", 
+            "detail", "analisis", "analisa", "aplikasi", "app", "yang mana",
+            "siapa", "kapan", "jelaskan", "info lengkap"
+        )
+        val textLower = text.lowercase(Locale("id"))
+        
+        // Jika ada kata tanya/analisis, bukan permintaan sederhana
+        if (complexKeywords.any { textLower.contains(it) }) return false
+        
+        // Contoh permintaan sederhana: "cek ram", "status batre", "suhu hp"
+        val simplePatterns = listOf(
+            "cek ", "status ", "kondisi ", "info "
+        )
+        
+        return textLower.length < 25 && (simplePatterns.any { textLower.contains(it) } || textLower.split(" ").size <= 2)
     }
 
     private fun shouldBypassLlmForTool(toolName: String): Boolean {
@@ -445,9 +453,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private var lastSanitizedLength = 0
     private var cachedSanitizedOutput = ""
     
-    // Timer untuk membebaskan RAM model jika tidak digunakan (3 menit)
+    // Timer untuk membebaskan RAM model jika tidak digunakan (1 menit)
     private var lastActivityTime = System.currentTimeMillis()
-    private val INACTIVITY_TIMEOUT = 15 * 60 * 1000L
+    private val INACTIVITY_TIMEOUT = 1 * 60 * 1000L
 
     init {
         val app = application as SynapticApp
@@ -470,6 +478,11 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                         Log.i(TAG, "Inactivity timeout: Freeing LLM RAM")
                         llmManager.freeModel()
                     }
+                }
+
+                // Update LLM Info real-time
+                if (_llmInfo.value != llmManager.loadedModelInfo) {
+                    _llmInfo.value = llmManager.loadedModelInfo
                 }
                 
                 synchronized(tokenBuffer) {
@@ -494,10 +507,19 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        // PENTING: Bebaskan model saat ViewModel dihancurkan
+        if (llmManager.isLoaded()) {
+            Log.i(TAG, "ViewModel cleared: Freeing LLM RAM")
+            llmManager.freeModel()
+        }
+        backgroundExecutor.shutdown()
+    }
+
     fun clearError() { _errorMessage.value = null }
 
     fun initModel() {
-        if (llmManager.isLoaded()) { _uiState.postValue(UiState.IDLE); return }
         _uiState.postValue(UiState.LOADING_MODEL)
         llmManager.loadModel(object : LlmManager.LoadCallback {
             override fun onSuccess() { _uiState.postValue(UiState.IDLE) }
@@ -593,56 +615,32 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
-        // HYBRID ROUTER: Cek apakah bisa dijawab instan dengan Expert Template
-        val expertResponse = ExpertResponseEngine.generateExpertResponse(text, toolExecutor.getDeviceMonitor().getSnapshot())
-        if (expertResponse != null) {
-            val userMsg = ChatMessage(currentId, "user", text.trim())
-            backgroundExecutor.execute {
-                db.chatDao().insert(userMsg)
-                saveAssistantMessage(expertResponse)
-                refreshSessions()
-            }
-            return
-        }
-
-        // HYBRID ROUTER: Cek apakah bisa dijawab instan via tool (Lama)
-        val directTool = routeRequest(text)
-        if (directTool != null) {
-            val userMsg = ChatMessage(currentId, "user", text.trim())
-            backgroundExecutor.execute {
-                db.chatDao().insert(userMsg)
-                refreshSessions()
-                executeToolDirect(directTool, currentId, text)
-            }
-            return
-        }
+        /* 
+           JALUR CEPAT DINONAKTIFKAN TOTAL:
+           Kami tidak lagi menggunakan ExpertResponseEngine atau executeToolDirect 
+           untuk status perangkat. Semuanya harus diproses oleh LLM agar jawaban 
+           tidak kaku dan berbasis template.
+        */
 
         synchronized(tokenBuffer) { tokenBuffer.setLength(0); _outputFlow.value = "" }
         _uiState.value = UiState.GENERATING
         
         backgroundExecutor.execute {
-            // RELOAD ON DEMAND: Pastikan model dimuat jika sebelumnya dibebaskan
-            if (!llmManager.isLoaded()) {
-                _uiState.postValue(UiState.LOADING_MODEL)
-                llmManager.loadModel(object : LlmManager.LoadCallback {
-                    override fun onSuccess() {
-                        _uiState.postValue(UiState.GENERATING)
-                        val userMsg = ChatMessage(currentId, "user", text.trim())
-                        db.chatDao().insert(userMsg)
-                        refreshSessions()
-                        generateAiResponse(currentId, text)
-                    }
-                    override fun onError(msg: String) {
-                        _uiState.postValue(UiState.ERROR)
-                        _errorMessage.postValue("Gagal memuat ulang model: $msg")
-                    }
-                })
-            } else {
-                val userMsg = ChatMessage(currentId, "user", text.trim())
-                db.chatDao().insert(userMsg)
-                refreshSessions()
-                generateAiResponse(currentId, text)
-            }
+            // Panggil loadModel() untuk memastikan model terbaru sesuai Settings aktif
+            _uiState.postValue(UiState.LOADING_MODEL)
+            llmManager.loadModel(object : LlmManager.LoadCallback {
+                override fun onSuccess() {
+                    _uiState.postValue(UiState.GENERATING)
+                    val userMsg = ChatMessage(currentId, "user", text.trim())
+                    db.chatDao().insert(userMsg)
+                    refreshSessions()
+                    generateAiResponse(currentId, text)
+                }
+                override fun onError(msg: String) {
+                    _uiState.postValue(UiState.ERROR)
+                    _errorMessage.postValue("Gagal memuat model: $msg")
+                }
+            })
         }
     }
 

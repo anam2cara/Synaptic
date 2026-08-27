@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -32,15 +33,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.synaptic.ai.AppPreferences
 import com.synaptic.ai.SynapticApp
 import com.synaptic.ai.tools.ShizukuHelper
 import com.synaptic.ai.ui.SynapticColors
 import com.synaptic.ai.ui.SynapticTheme
 import com.synaptic.ai.ui.logcat.LogcatActivity
 import com.synaptic.ai.ui.shell.ShellScreen
-import com.synaptic.ai.ui.overview.OverviewScreen
-import com.synaptic.ai.ui.features.FeaturesScreen
 import com.synaptic.ai.ui.settings.SettingsScreen
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -64,9 +62,92 @@ const val EXTRA_DEMO_MODE = "demoMode"
 sealed class Screen(val label: String, val icon: ImageVector) {
     object Chat : Screen("Chat", Icons.Default.ChatBubble)
     object Shell : Screen("Shell", Icons.Default.Terminal)
-    object Overview : Screen("Overview", Icons.Default.ScreenshotMonitor)
-    object Features : Screen("Features", Icons.Default.Apps)
     object Settings : Screen("Settings", Icons.Default.Settings)
+}
+
+@Composable
+fun LlmStatusBadge(viewModel: ChatViewModel) {
+    val info by viewModel.llmInfo.collectAsState()
+    val uiState by viewModel.uiState.observeAsState(ChatViewModel.UiState.IDLE)
+
+    val isLoading = uiState == ChatViewModel.UiState.LOADING_MODEL
+    
+    // Logika "Toaster": Tampil melayang dengan background tegas ala System Toast
+    if (info != null || isLoading) {
+        Surface(
+            color = if (isLoading) Color(0xFF1B5E20) // Hijau Tua (Loading)
+                    else Color(0xFF121212).copy(alpha = 0.95f), // Hitam Gahar (Ready)
+            shape = RoundedCornerShape(12.dp), // Sudut lebih tegas
+            border = BorderStroke(1.5.dp, if (isLoading) Color(0xFF4CAF50) else Color(0xFF37474F)),
+            shadowElevation = 10.dp,
+            modifier = Modifier
+                .height(42.dp) // Lebih tinggi agar font bisa besar
+                .padding(vertical = 2.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        strokeWidth = 3.dp,
+                        color = Color.White
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        "SEDANG MEMUAT...", 
+                        fontSize = 14.sp, // Ukuran font lebih besar
+                        fontWeight = FontWeight.Black,
+                        color = Color.White,
+                        letterSpacing = 1.2.sp
+                    )
+                } else info?.let {
+                    // Ikon Status Dinamis (Lebih besar)
+                    Icon(
+                        imageVector = if (it.useGpu) Icons.Default.Bolt else Icons.Default.Memory,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp),
+                        tint = if (it.useGpu) Color(0xFFFFEA00) else Color(0xFF03A9F4)
+                    )
+                    
+                    Spacer(Modifier.width(12.dp))
+                    
+                    // Teks Model (Font BESAR & TEBAL)
+                    val modelDisplayName = it.name.substringAfterLast("/")
+                                           .replace(".gguf", "", ignoreCase = true)
+                                           .replace("-", " ")
+                                           .uppercase()
+                    
+                    Text(
+                        text = modelDisplayName,
+                        fontSize = 15.sp, // Font jauh lebih besar
+                        fontWeight = FontWeight.Black,
+                        color = Color.White,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    
+                    // Pemisah Vertikal
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp)
+                            .width(2.dp)
+                            .height(20.dp)
+                            .background(Color.White.copy(alpha = 0.2f))
+                    )
+                    
+                    // Backend Tag (Font Besar)
+                    Text(
+                        text = if (it.useGpu) "VULKAN" else "CPU",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = if (it.useGpu) Color(0xFFFFEA00) else Color(0xFF03A9F4)
+                    )
+                }
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -91,20 +172,26 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                 
                 result.onSuccess { path ->
                     Toast.makeText(context, "Model berhasil diimpor: ${File(path).name}", Toast.LENGTH_LONG).show()
-                    viewModel.initModel() // Reload model
+                    viewModel.initModel() // Force reload after import
                 }.onFailure { e ->
                     Toast.makeText(context, "Gagal impor: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
+
+    // Auto-sync model status when returning to app or changing settings
+    LaunchedEffect(currentScreen) {
+        if (currentScreen == Screen.Chat) {
+            viewModel.initModel() 
+        }
+    }
+
     val sessions by viewModel.sessionSummaries.observeAsState(emptyList())
-    
     val isKeyboardVisible = WindowInsets.isImeVisible
 
     var sessionToRename by remember { mutableStateOf<String?>(null) }
     var newSessionName by remember { mutableStateOf("") }
-    var showSettingsDialog by remember { mutableStateOf(false) }
     
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -114,17 +201,14 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                 if (ShizukuHelper.isShizukuAvailable() && !ShizukuHelper.hasPermission()) {
                     ShizukuHelper.requestPermission()
                 }
+                // Refresh model info on resume
+                viewModel.initModel()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
-    }
-    
-    LaunchedEffect(demoMode) {
-        // LLM sengaja tidak dipreload. Model hanya dimuat saat router tidak bisa
-        // menjawab dengan telemetry/rule lokal.
     }
 
     if (sessionToRename != null) {
@@ -152,34 +236,61 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
         )
     }
 
-    if (showSettingsDialog) {
-        SettingsDialog(onDismiss = { showSettingsDialog = false })
-    }
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(
-                drawerContainerColor = SynapticColors.Surface1,
-                drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
+                drawerContainerColor = MaterialTheme.colorScheme.surface,
+                drawerShape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp),
+                modifier = Modifier.width(300.dp)
             ) {
-                Spacer(Modifier.height(24.dp))
-                Text(
-                    "RIWAYAT CHAT", 
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 14.dp), 
-                    fontSize = 13.sp, 
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 1.2.sp,
-                    color = SynapticColors.Accent
-                )
-                HorizontalDivider(color = Color.White.copy(alpha = 0.05f))
-                
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Spacer(Modifier.height(32.dp))
+                    
+                    Surface(
+                        onClick = { 
+                            viewModel.startNewSession()
+                            currentScreen = Screen.Chat
+                            scope.launch { drawerState.close() }
+                        },
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Default.Add, null, tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                "Chat Baru", 
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+                    Text(
+                        "RIWAYAT", 
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp), 
+                        fontSize = 12.sp, 
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
                 if (sessions.isEmpty()) {
                     Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        Text("Belum ada chat", color = SynapticColors.Text3, fontSize = 15.sp)
+                        Text("Belum ada riwayat", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                     }
                 } else {
-                    LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 12.dp)) {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
                         items(sessions, key = { it.sessionId }) { msg ->
                             var showMenu by remember { mutableStateOf(false) }
                             NavigationDrawerItem(
@@ -188,15 +299,14 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                                         Column(modifier = Modifier.weight(1f)) {
                                             Text(
                                                 text = msg.sessionTitle ?: msg.content, 
-                                                fontSize = 15.sp, 
+                                                fontSize = 14.sp, 
                                                 maxLines = 1, 
                                                 overflow = TextOverflow.Ellipsis, 
-                                                fontWeight = FontWeight.SemiBold
+                                                fontWeight = FontWeight.Medium
                                             )
-                                            Text("ID: ${msg.sessionId}", fontSize = 11.sp, color = SynapticColors.Text3)
                                         }
                                         IconButton(onClick = { showMenu = true }) {
-                                            Icon(Icons.Default.MoreVert, null, modifier = Modifier.size(20.dp))
+                                            Icon(Icons.Default.MoreVert, null, modifier = Modifier.size(18.dp))
                                         }
                                         DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                                             DropdownMenuItem(
@@ -214,7 +324,7 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                                                     viewModel.deleteSession(msg.sessionId)
                                                     showMenu = false 
                                                 },
-                                                leadingIcon = { Icon(Icons.Default.Delete, null, tint = SynapticColors.Danger) }
+                                                leadingIcon = { Icon(Icons.Default.Delete, null, tint = MaterialTheme.colorScheme.error) }
                                             )
                                         }
                                     }
@@ -226,29 +336,25 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                                     scope.launch { drawerState.close() } 
                                 },
                                 icon = { Icon(Icons.AutoMirrored.Filled.Message, null, modifier = Modifier.size(20.dp)) },
-                                colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent)
+                                shape = RoundedCornerShape(12.dp),
+                                colors = NavigationDrawerItemDefaults.colors(
+                                    unselectedContainerColor = Color.Transparent,
+                                    selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
                             )
                         }
                     }
                 }
                 
-                HorizontalDivider(color = Color.White.copy(alpha = 0.05f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
                 
-                NavigationDrawerItem(
-                    label = { Text("Pengaturan Model GGUF", fontSize = 16.sp) },
-                    selected = false,
-                    onClick = { scope.launch { drawerState.close() }; showSettingsDialog = true },
-                    icon = { Icon(Icons.Default.Settings, null, modifier = Modifier.size(24.dp)) },
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent)
-                )
-
                 NavigationDrawerItem(
                     label = { 
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(if (isImporting) "Sedang mengimpor..." else "Import Model GGUF", fontSize = 16.sp)
+                            Text(if (isImporting) "Mengimpor..." else "Import Model GGUF", fontSize = 14.sp)
                             if (isImporting) {
                                 Spacer(Modifier.width(12.dp))
-                                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = SynapticColors.Accent)
+                                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
                             }
                         }
                     },
@@ -259,7 +365,9 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                             modelPicker.launch("application/octet-stream")
                         }
                     },
-                    icon = { Icon(Icons.Default.CloudUpload, null, modifier = Modifier.size(24.dp)) },
+                    icon = { Icon(Icons.Default.CloudUpload, null, modifier = Modifier.size(20.dp)) },
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.padding(8.dp),
                     colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent)
                 )
             }
@@ -268,33 +376,43 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Synaptic", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
+                    title = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("Synaptic", fontSize = 20.sp, fontWeight = FontWeight.Black)
+                            Spacer(Modifier.width(12.dp))
+                            LlmStatusBadge(viewModel)
+                        }
+                    },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = SynapticColors.Text2, modifier = Modifier.size(24.dp))
+                            Icon(Icons.Default.Menu, contentDescription = "Menu")
                         }
                     },
                     actions = {
                         if (currentScreen == Screen.Chat) {
                             IconButton(onClick = { viewModel.startNewSession() }) {
-                                Icon(Icons.Default.Edit, contentDescription = "New Chat", tint = SynapticColors.Text2, modifier = Modifier.size(24.dp))
+                                Icon(Icons.Default.Edit, contentDescription = "New Chat")
                             }
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        scrolledContainerColor = MaterialTheme.colorScheme.background
+                    )
                 )
             },
             bottomBar = {
                 if (!isKeyboardVisible) {
-                    Column(modifier = Modifier.navigationBarsPadding()) {
-                        HorizontalDivider(color = SynapticColors.Border, thickness = 0.5.dp)
+                    Surface(
+                        color = MaterialTheme.colorScheme.surface,
+                        tonalElevation = 8.dp
+                    ) {
                         NavigationBar(
                             containerColor = Color.Transparent,
-                            modifier = Modifier.height(50.dp),
-                            tonalElevation = 0.dp,
+                            modifier = Modifier.navigationBarsPadding().height(64.dp),
                             windowInsets = WindowInsets(0, 0, 0, 0)
                         ) {
-                            listOf(Screen.Chat, Screen.Shell, Screen.Features, Screen.Overview, Screen.Settings).forEach { screen ->
+                            listOf(Screen.Chat, Screen.Shell, Screen.Settings).forEach { screen ->
                                 val selected = currentScreen == screen
                                 NavigationBarItem(
                                     selected = selected,
@@ -303,24 +421,22 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                                         Icon(
                                             imageVector = screen.icon,
                                             contentDescription = null,
-                                            modifier = Modifier.size(20.dp),
-                                            tint = if (selected) SynapticColors.Accent else SynapticColors.Text1.copy(alpha = 0.38f)
+                                            modifier = Modifier.size(24.dp)
                                         )
                                     },
                                     label = {
                                         Text(
                                             text = screen.label,
-                                            fontSize = 9.sp,
-                                            maxLines = 1,
-                                            color = if (selected) SynapticColors.Accent else SynapticColors.Text2.copy(alpha = 0.38f)
+                                            fontSize = 11.sp,
+                                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
                                         )
                                     },
                                     colors = NavigationBarItemDefaults.colors(
-                                        indicatorColor = Color.Transparent,
-                                        selectedIconColor = SynapticColors.Accent,
-                                        unselectedIconColor = SynapticColors.Text1.copy(alpha = 0.38f),
-                                        selectedTextColor = SynapticColors.Accent,
-                                        unselectedTextColor = SynapticColors.Text2.copy(alpha = 0.38f)
+                                        indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                                        selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                     )
                                 )
                             }
@@ -329,50 +445,13 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                 }
             }
         ) { padding ->
-                Box(modifier = Modifier.padding(padding).fillMaxSize().background(SynapticColors.Background)) {
-                    when (currentScreen) {
-                        Screen.Chat -> ChatScreen(viewModel, demoMode = demoMode)
-                        Screen.Shell -> ShellScreen()
-                        Screen.Overview -> OverviewScreen()
-                        Screen.Features -> FeaturesScreen()
-                        Screen.Settings -> SettingsScreen()
-                    }
+            Box(modifier = Modifier.padding(padding).fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+                when (currentScreen) {
+                    Screen.Chat -> ChatScreen(viewModel, demoMode = demoMode)
+                    Screen.Shell -> ShellScreen()
+                    Screen.Settings -> SettingsScreen()
                 }
             }
+        }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SettingsDialog(onDismiss: () -> Unit) {
-    val context = LocalContext.current
-    val prefs = remember { AppPreferences(context) }
-    var modelPath by remember { mutableStateOf(prefs.modelPath) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = SynapticColors.Surface1,
-        title = { Text("Pengaturan Synaptic", color = SynapticColors.Text1, fontWeight = FontWeight.Bold) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("Path Model GGUF", color = SynapticColors.Accent, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                OutlinedTextField(
-                    value = modelPath, onValueChange = { modelPath = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White, unfocusedTextColor = Color.White,
-                        focusedBorderColor = SynapticColors.Accent, unfocusedBorderColor = SynapticColors.Text3
-                    )
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = { prefs.modelPath = modelPath; onDismiss() },
-                colors = ButtonDefaults.buttonColors(containerColor = SynapticColors.Accent),
-                shape = RoundedCornerShape(10.dp)
-            ) { Text("Simpan") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Batal", color = SynapticColors.Text3) } }
-    )
 }

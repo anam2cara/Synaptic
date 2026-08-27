@@ -519,21 +519,20 @@ class ToolExecutor(context: Context) {
 
     fun getDeviceDiagnosticContext(): String {
         val s = deviceMonitor.getSnapshot()
-        val analysis = performanceAnalyzer.analyze(s)
-
-        // Ultra-compact format untuk mempercepat prefill LLM
+        // Menggunakan field yang ada di DeviceSnapshot
+        val ramUsedGb = (s.ramTotalBytes - s.ramFreeBytes) / 1e9f
+        val ramTotalGb = s.ramTotalBytes / 1e9f
+        val storageFreeGb = s.storageFreeBytes / 1e9f
+        val storageTotalGb = s.storageTotalBytes / 1e9f
+        
         return """
-[SYS]
-SEV=${analysis.severity}
-SUM=${analysis.summary}
-REC=${analysis.recommendations.joinToString("|")}
-[DATA]
-RAM=${s.ramUsedPercent}%|${String.format("%.1f", s.ramFreeBytes/1e9f)}G free
-CPU=${s.cpuUsagePercent}%|${s.cpuTempCelsius}C
-BAT=${s.batteryLevel}%|${s.batteryTempCelsius}C|CHG=${s.isCharging}
-STO=${String.format("%.1f", s.storageFreeBytes/1e9f)}G free
-GPU=${s.gpuModel}|${s.gpuBusyPercent}%|${s.gpuTemperatureCelsius}C
-UP=${s.uptimeMs}ms|PROC=${s.runningProcessCount}|APP=${s.foregroundApp}
+[REALTIME_SYSTEM_EVIDENCE]
+BATERAI: ${s.batteryLevel}% (Charging=${s.isCharging})
+MEMORI: ${"%.1f".format(ramUsedGb)}GB/${"%.1f".format(ramTotalGb)}GB (${"%.1f".format(s.ramUsedPercent)}%)
+STORAGE: ${"%.1f".format(storageFreeGb)}GB/${"%.1f".format(storageTotalGb)}GB free
+CPU_SUHU: ${s.cpuTempCelsius}°C
+GPU_LOAD: ${if (s.gpuBusyPercent >= 0) "${s.gpuBusyPercent}%" else "N/A"} (${s.gpuTemperatureCelsius}°C)
+AKTIF: ${s.foregroundApp}
 """.trimIndent()
     }
 

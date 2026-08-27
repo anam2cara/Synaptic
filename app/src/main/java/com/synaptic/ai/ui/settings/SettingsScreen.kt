@@ -2,6 +2,7 @@ package com.synaptic.ai.ui.settings
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -27,35 +28,40 @@ fun SettingsScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SynapticColors.Background)
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Text("Pengaturan", color = SynapticColors.Text1, fontWeight = FontWeight.Black, fontSize = 24.sp)
+        Text(
+            "Pengaturan", 
+            color = MaterialTheme.colorScheme.onBackground, 
+            fontWeight = FontWeight.Black, 
+            fontSize = 28.sp
+        )
 
-        Section("Kecerdasan Buatan (LLM)") {
+        Section("KECERDASAN BUATAN") {
             SettingToggle(
-                "Gunakan Akselerasi GPU",
-                "Mempercepat jawaban menggunakan Vulkan",
+                "System Graphics Driver",
+                "Gunakan GPU (Vulkan) untuk respon lebih cepat. Matikan jika aplikasi sering keluar sendiri.",
                 useGpu,
                 onCheckedChange = { useGpu = it; prefs.useGpuBackend = it }
             )
-            SettingItem("Path Model GGUF", prefs.modelPath, Icons.Default.Terminal) {}
         }
 
-        Section("Keamanan & Sistem") {
+        Section("KEAMANAN & SISTEM") {
             SettingToggle(
-                "Konfirmasi Sebelum Eksekusi",
-                "Tanya sebelum menjalankan perintah shell",
+                "Konfirmasi Eksekusi",
+                "Minta izin sebelum menjalankan perintah shell otomatis",
                 confirmExec,
                 onCheckedChange = { confirmExec = it; prefs.isConfirmBeforeExec = it }
             )
-            SettingItem("Bersihkan Riwayat Chat", "Hapus semua pesan lokal", Icons.Default.DeleteForever) {}
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f), thickness = 0.5.dp)
+            SettingItem("Bersihkan Riwayat", "Hapus semua sesi chat dari penyimpanan lokal", Icons.Default.DeleteForever) {}
         }
 
-        Section("Informasi") {
-            SettingItem("Versi Aplikasi", "0.6.0 (Stable)", Icons.Default.Info) {}
+        Section("TENTANG") {
+            SettingItem("Versi", "0.6.5 (Pro) - Stable", Icons.Default.Info) {}
             SettingItem("Lisensi", "Apache License 2.0", Icons.Default.Description) {}
         }
     }
@@ -64,10 +70,18 @@ fun SettingsScreen() {
 @Composable
 private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(title, color = SynapticColors.Accent, fontSize = 12.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 4.dp))
-        Card(
-            colors = CardDefaults.cardColors(containerColor = SynapticColors.Surface1),
-            shape = RoundedCornerShape(12.dp)
+        Text(
+            title, 
+            color = MaterialTheme.colorScheme.primary, 
+            fontSize = 11.sp, 
+            fontWeight = FontWeight.Bold, 
+            letterSpacing = 1.2.sp,
+            modifier = Modifier.padding(start = 4.dp)
+        )
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            shape = RoundedCornerShape(16.dp),
+            tonalElevation = 1.dp
         ) {
             Column(content = content)
         }
@@ -77,17 +91,24 @@ private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) 
 @Composable
 private fun SettingToggle(title: String, desc: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
     Row(
-        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(title, color = SynapticColors.Text1, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-            Text(desc, color = SynapticColors.Text3, fontSize = 12.sp)
+            Text(title, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(desc, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f), fontSize = 13.sp, lineHeight = 18.sp)
         }
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(checkedThumbColor = SynapticColors.Accent, checkedTrackColor = SynapticColors.Accent.copy(alpha = 0.5f))
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = MaterialTheme.colorScheme.primary,
+                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                uncheckedTrackColor = MaterialTheme.colorScheme.surface
+            )
         )
     }
 }
@@ -95,15 +116,26 @@ private fun SettingToggle(title: String, desc: String, checked: Boolean, onCheck
 @Composable
 private fun SettingItem(title: String, value: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit) {
     Row(
-        modifier = Modifier.clickable { onClick() }.padding(16.dp).fillMaxWidth(),
+        modifier = Modifier
+            .clickable { onClick() }
+            .padding(16.dp)
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Icon(icon, null, tint = SynapticColors.Text3, modifier = Modifier.size(20.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(title, color = SynapticColors.Text1, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-            Text(value, color = SynapticColors.Text3, fontSize = 12.sp, maxLines = 1)
+        Surface(
+            modifier = Modifier.size(36.dp),
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(icon, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+            }
         }
-        Icon(Icons.Default.ChevronRight, null, tint = SynapticColors.Text3)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(value, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f), fontSize = 13.sp, maxLines = 1)
+        }
+        Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
     }
 }

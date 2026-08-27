@@ -15,7 +15,7 @@ class LlamaJNI {
         }
     }
 
-    external fun loadModel(modelPath: String, tryGpu: Boolean): Boolean
+    external fun loadModel(modelPath: String, tryGpu: Boolean, nCtx: Int): Boolean
     external fun generateStream(prompt: String, grammar: String?, maxTokens: Int, callback: StreamCallback)
     external fun freeModel()
     external fun isLoaded(): Boolean

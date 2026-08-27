@@ -1,0 +1,47 @@
+********** Crash dump: **********
+Build fingerprint: 'samsung/a36xqnaxx/a36xq:16/BP4A.251205.006/A366BXXSBCZG1_OLMBCZG1:user/release-keys'
+#00 0x00000000001a4b9c /data/app/~~Bdf_r_gORntWBt26J3ZPnw==/com.synaptic.ai-rMJaYP8aKIsbf6WMkRQAJg==/base.apk!libllama.so (offset 0x619c000) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+                                                                                                                           llama_sampler_chain_apply(llama_sampler*, llama_token_data_array*)
+                                                                                                                           D:/Documents/projek_build_apk_saya/llama-b9592-src/src/llama-sampler.cpp:656:23
+#01 0x00000000001a2014 /data/app/~~Bdf_r_gORntWBt26J3ZPnw==/com.synaptic.ai-rMJaYP8aKIsbf6WMkRQAJg==/base.apk!libllama.so (offset 0x619c000) (llama_sampler_sample+1136) (BuildId: 0d61f455218c4eec7e231b49f9499be584dc8756)
+                                                                                                                           llama_sampler_apply
+                                                                                                                           D:/Documents/projek_build_apk_saya/llama-b9592-src/src/llama-sampler.cpp:384:5
+                                                                                                                           llama_sampler_sample
+                                                                                                                           D:/Documents/projek_build_apk_saya/llama-b9592-src/src/llama-sampler.cpp:864:5
+#02 0x0000000000007dec /data/app/~~Bdf_r_gORntWBt26J3ZPnw==/com.synaptic.ai-rMJaYP8aKIsbf6WMkRQAJg==/base.apk!libllamajni.so (offset 0x6420000) (Java_com_synaptic_ai_llm_LlamaJNI_generateStream+2356) (BuildId: 2f8d11d299672a7172e6e116477297fff379de4b)
+                                                                                                                              Java_com_synaptic_ai_llm_LlamaJNI_generateStream
+                                                                                                                              D:/Documents/projek_build_apk_saya/Synaptic/llm/src/main/cpp/llama_jni.cpp:355:30
+#03 0x00000000002b03a0 /apex/com.android.art/lib64/libart.so (art_quick_generic_jni_trampoline+144) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#04 0x0000000000298f94 /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+612) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#05 0x000000000087ba64 /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+1620) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#06 0x00000000006fda90 /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+580) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#07 0x00000000002fcc98 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#08 0x0000000000002ef8 [anon:dalvik-classes6.dex extract...com.synaptic.ai-rMJaYP8aKIsbf6WMkRQAJg==/base.apk] (com.synaptic.ai.llm.LlmManager.generate$lambda$0+0)
+#09 0x0000000000278dc4 /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+372) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#10 0x00000000002c3c18 /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<true>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+1992) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#11 0x0000000000700220 /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+10708) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#12 0x00000000002fcc98 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#13 0x0000000000002290 [anon:dalvik-classes6.dex extract...com.synaptic.ai-rMJaYP8aKIsbf6WMkRQAJg==/base.apk] (com.synaptic.ai.llm.LlmManager$$ExternalSyntheticLambda0.run+0)
+#14 0x000000000087bd10 /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2304) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#15 0x00000000006fde94 /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+1608) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#16 0x00000000002fcc98 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#17 0x0000000000263c20 /apex/com.android.art/javalib/core-oj.jar (java.util.concurrent.ThreadPoolExecutor.runWorker+0)
+#18 0x000000000087bd10 /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2304) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#19 0x00000000006fda90 /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+580) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#20 0x00000000002fcc98 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#21 0x0000000000262ac4 /apex/com.android.art/javalib/core-oj.jar (java.util.concurrent.ThreadPoolExecutor$Worker.run+0)
+#22 0x000000000087bd10 /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2304) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#23 0x00000000006fde94 /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+1608) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#24 0x00000000002fcc98 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+8) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#25 0x000000000011e1a0 /apex/com.android.art/javalib/core-oj.jar (java.lang.Thread.run+0)
+#26 0x00000000002fc8d0 /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238.llvm.6848007882488385806)+360) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#27 0x00000000002fc254 /apex/com.android.art/lib64/libart.so (artQuickToInterpreterBridge+916) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#28 0x00000000002b04d8 /apex/com.android.art/lib64/libart.so (art_quick_to_interpreter_bridge+88) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#29 0x0000000000298f94 /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+612) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#30 0x000000000029738c /apex/com.android.art/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+148) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#31 0x00000000004d5fd0 /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallback(void*)+1384) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#32 0x00000000004d5a54 /apex/com.android.art/lib64/libart.so (art::Thread::CreateCallbackWithUffdGc(void*)+12) (BuildId: 1f156fc62660d075a8d675db850b95d5)
+#33 0x00000000000866ec /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*) (.__uniq.67847048707805468364044055584648682506)+184) (BuildId: 1253948024ce7eda9f9634b60ccd7f4b)
+#34 0x000000000007900c /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+68) (BuildId: 1253948024ce7eda9f9634b60ccd7f4b)
+Crash dump is completed
+

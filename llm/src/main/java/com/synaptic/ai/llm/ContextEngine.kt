@@ -8,8 +8,8 @@ import com.synaptic.ai.data.model.ChatMessage
  */
 object ContextEngine {
 
-    private const val MAX_TOOL_OUTPUT_CHARS = 1200
-    private const val MAX_HISTORY_RELEVANT_TURNS = 6
+    private const val MAX_TOOL_OUTPUT_CHARS = 800
+    private const val MAX_HISTORY_RELEVANT_TURNS = 4
 
     // Daftar kata kunci "sampah" yang sering muncul di Accessibility Service
     private val SCREEN_JUNK_KEYWORDS = setOf(

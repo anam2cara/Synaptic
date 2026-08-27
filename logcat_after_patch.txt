@@ -1,0 +1,2 @@
+
+08-27 13:00:00.024 D/QSClockBellTower( 4361): Everyone heard the bell. run(currentTime:1787810400019, getTime():Thu Aug 27 13:00:00 GMT+07:00 2026, getTimeZone():libcore.util.ZoneInfo[mDstSavings=0,mUseDst=false,mDelegate=[id="Asia/Jakarta",mRawOffset=25200000,mEarliestRawOffset=25632000,transitions=8]])

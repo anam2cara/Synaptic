@@ -44,7 +44,7 @@ class AppPreferences(context: Context) {
         }
 
     var useGpuBackend: Boolean
-        get() = prefs?.getBoolean(KEY_USE_GPU_BACKEND, true) ?: true
+        get() = prefs?.getBoolean(KEY_USE_GPU_BACKEND, false) ?: false
         set(value) {
             prefs?.edit()?.putBoolean(KEY_USE_GPU_BACKEND, value)?.apply()
         }
