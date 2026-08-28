@@ -1,0 +1,38 @@
+name: Build MLC native for Android
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-mlc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Set up Java (needed by Gradle)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Install Android SDK tools
+        uses: android-actions/setup-sdk@v1
+        with:
+          api-level: 26
+          components: tools;platform-tools;cmdline-tools
+      - name: Install NDK
+        run: |
+          sdkmanager --install "ndk;25.2.9519653"
+      - name: Export ANDROID_NDK
+        run: echo "ANDROID_NDK=$HOME/Android/Sdk/ndk/25.2.9519653" >> $GITHUB_ENV
+      - name: Run build script
+        run: |
+          chmod +x llm/tools/build_mlc_android.sh
+          llm/tools/build_mlc_android.sh
+      - name: Archive lib
+        uses: actions/upload-artifact@v4
+        with:
+          name: libmlcjni
+          path: llm/src/main/jniLibs/arm64-v8a/libmlcjni.so
