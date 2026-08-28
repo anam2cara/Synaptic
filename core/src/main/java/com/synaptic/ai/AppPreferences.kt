@@ -14,8 +14,8 @@ class AppPreferences(context: Context) {
         const val KEY_PGVECTOR_API_KEY = "pgvector_api_key"
         const val KEY_N8N_WEBHOOK_URL = "n8n_webhook_url"
         const val KEY_N8N_API_KEY = "n8n_api_key"
-        // Default model dipindahkan ke folder app agar selalu bisa dibaca Synaptic
-        const val DEFAULT_MODEL_PATH = "/storage/emulated/0/Android/data/com.synaptic.ai/files/models/Qwen3-0.6B-Q4_K_M.gguf"
+        // Default model untuk MLC berupa direktori folder
+        const val DEFAULT_MODEL_PATH = "/storage/emulated/0/Documents/Berkas_lain/LLM_model/Qwen3-4B-q4f16_1-MLC"
     }
 
     private val prefs: SharedPreferences? = context.getSharedPreferences("synaptic_prefs", Context.MODE_PRIVATE)
