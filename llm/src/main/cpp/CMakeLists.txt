@@ -76,12 +76,30 @@ else()
     )
 endif()
 
-# If a prebuilt libmlcjni exists in jniLibs, prefer that. Otherwise build the stub mlcjni target we added above.
-set(MLC_LIB "${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libmlcjni.so")
-if (EXISTS "${MLC_LIB}")
-    add_library(mlc SHARED IMPORTED)
-    set_target_properties(mlc PROPERTIES IMPORTED_LOCATION "${MLC_LIB}")
-    target_link_libraries(mlcjni mlc ${log-lib} ${android-lib})
+# Prefer building/linking a native MLC engine if source is available in mlc_src.
+# If a submodule with source was added at llm/src/main/cpp/mlc_src and contains a CMakeLists.txt,
+# include it and link the produced target (if present) to mlcjni.
+if (EXISTS "${CMAKE_SOURCE_DIR}/mlc_src/CMakeLists.txt")
+    message(STATUS "MLC source found at mlc_src; adding subdirectory")
+    add_subdirectory("${CMAKE_SOURCE_DIR}/mlc_src" "${CMAKE_BINARY_DIR}/mlc_src_build")
+    # Common possible exported target names: mlc, mlc_runtime, mlc_engine. Link if any exists.
+    if (TARGET mlc)
+        target_link_libraries(mlcjni mlc ${log-lib} ${android-lib})
+    elseif (TARGET mlc_runtime)
+        target_link_libraries(mlcjni mlc_runtime ${log-lib} ${android-lib})
+    elseif (TARGET mlc_engine)
+        target_link_libraries(mlcjni mlc_engine ${log-lib} ${android-lib})
+    else()
+        message(WARNING "MLC source added but no known target (mlc/mlc_runtime/mlc_engine) found. Will attempt to link prebuilt lib if present.")
+    endif()
 else()
-    target_link_libraries(mlcjni ${log-lib} ${android-lib})
+    # If a prebuilt libmlcjni exists in jniLibs, prefer that. Otherwise build the stub mlcjni target we added above.
+    set(MLC_LIB "${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libmlcjni.so")
+    if (EXISTS "${MLC_LIB}")
+        add_library(mlc SHARED IMPORTED)
+        set_target_properties(mlc PROPERTIES IMPORTED_LOCATION "${MLC_LIB}")
+        target_link_libraries(mlcjni mlc ${log-lib} ${android-lib})
+    else()
+        target_link_libraries(mlcjni ${log-lib} ${android-lib})
+    endif()
 endif()
