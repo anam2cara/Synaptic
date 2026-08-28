@@ -3,6 +3,8 @@ package com.synaptic.ai.llm
 import android.app.ActivityManager
 import android.content.ComponentCallbacks2
 import android.content.Context
+import android.os.Build
+import android.os.Environment
 import android.util.Log
 import com.synaptic.ai.AppPreferences
 import com.synaptic.ai.data.model.ChatMessage
@@ -14,69 +16,10 @@ import java.util.concurrent.Executors
 class LlmManager private constructor() {
 
     private var context: Context? = null
-
-    private val jni = LlamaJNI()
+    private var jni: NativeBridge = LlamaBridge()
     private val executor: ExecutorService = Executors.newFixedThreadPool(4)
     private val MAX_HISTORY_MESSAGES = 12 
-    private val MAX_HISTORY_MESSAGE_CHARS = 1000
-    private val MAX_HISTORY_TOTAL_CHARS = 4000 
-    private val MAX_DEVICE_CONTEXT_CHARS = 1500
-    private val MAX_MEMORIES_CHARS = 500
-
-    private fun writeDiagnostic(tag: String, message: String) {
-        try {
-            val dir = context?.getExternalFilesDir(null)
-            val logFile = File(dir, "diagnostic.log")
-            val timestamp = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", java.util.Locale("id")).format(java.util.Date())
-            logFile.appendText("[$timestamp] [$tag] $message\n")
-        } catch (e: Exception) {
-            Log.e(TAG, "writeDiagnostic gagal: ${e.message}")
-        }
-    }
-
-    private fun copyModelToAppStorage(source: File, appFilesDir: File): File {
-        // Jika file sumber sudah ada di folder internal, jangan copy lagi
-        if (source.parentFile?.absolutePath == appFilesDir.absolutePath) return source
-        
-        if (!appFilesDir.exists()) appFilesDir.mkdirs()
-
-        val target = File(appFilesDir, source.name)
-        if (target.exists() && target.length() == source.length()) return target
-
-        // Bersihkan model lain agar storage tidak bengkak
-        appFilesDir.listFiles()?.forEach { 
-            if (it.name.endsWith(".gguf") && it.name != source.name) {
-                it.delete()
-            }
-        }
-
-        try {
-            source.inputStream().use { input ->
-                target.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Gagal menyalin model: ${e.message}")
-            // Jika gagal copy karena permission, biarkan loadModel yang menangani error-nya
-        }
-        return target
-    }
-
-    private fun resolveModelPath(rawPath: String, appFilesDir: File): File {
-        val fileName = File(rawPath).name
-        val internalFile = File(appFilesDir, fileName)
-        
-        // Android 13+: Hanya izinkan file yang sudah ada di folder aplikasi
-        if (internalFile.exists()) return internalFile
-
-        val candidate = File(rawPath)
-        // Jika path manual ternyata valid dan bisa dibaca (misal di folder app lain)
-        if (candidate.exists() && candidate.canRead()) return candidate
-
-        return internalFile
-    }
-
+    
     var isLoading: Boolean = false
         private set
 
@@ -122,13 +65,16 @@ class LlmManager private constructor() {
             val memInfo = ActivityManager.MemoryInfo()
             actManager.getMemoryInfo(memInfo)
             val totalRamGb = memInfo.totalMem / (1024 * 1024 * 1024.0)
+            val targetPath = AppPreferences(ctx).modelPath
+            val isHeavy = targetPath.contains("4B", ignoreCase = true) || targetPath.contains("3B", ignoreCase = true)
+
             when {
-                totalRamGb >= 10.0 -> 3072
-                totalRamGb >= 7.0 -> 2048
-                totalRamGb >= 5.0 -> 1536
-                else -> 1024
+                totalRamGb >= 10.0 -> if (isHeavy) 2048 else 3072
+                totalRamGb >= 7.0 -> if (isHeavy) 1024 else 2048
+                totalRamGb >= 3.0 -> 512
+                else -> 256
             }
-        } catch (e: Exception) { 1792 }
+        } catch (e: Exception) { 1024 }
     }
 
     fun isLoaded(): Boolean = jni.isLoaded()
@@ -138,17 +84,30 @@ class LlmManager private constructor() {
     fun freeModel() {
         jni.freeModel()
         loadedModelInfo = null
-        writeDiagnostic("FREE_MODEL", "Model dibebaskan")
     }
 
+    /**
+     * Solusi Ampuh: Hybrid Storage Logic
+     * 1. Coba baca langsung (Zero-Copy) jika punya izin.
+     * 2. Jika izin ditolak (EACCES), otomatis salin ke internal personal folder.
+     * 3. Selalu hapus model internal lama agar total storage tetap hemat (~500MB).
+     */
     fun loadModel(cb: LoadCallback) {
         val ctx = context ?: run { cb.onError("LlmManager belum diinisialisasi"); return }
         val targetPath = AppPreferences(ctx).modelPath
         val useGpu = AppPreferences(ctx).useGpuBackend
         
-        if (jni.isLoaded() && loadedModelInfo?.path == targetPath && loadedModelInfo?.useGpu == useGpu) {
+        if (isLoaded() && loadedModelInfo?.path == targetPath && loadedModelInfo?.useGpu == useGpu) {
             cb.onSuccess()
             return 
+        }
+
+        // AGGRESSIVE RAM CLEANUP: Sebelum muat model 4B, bebaskan RAM sistem sebanyak mungkin
+        if (targetPath.contains("4B", ignoreCase = true)) {
+            Log.i(TAG, "Heavy model (4B) detected. Clearing cache and GC...")
+            jni.freeModel()
+            System.gc()
+            Runtime.getRuntime().gc()
         }
 
         synchronized(this) {
@@ -161,36 +120,66 @@ class LlmManager private constructor() {
         executor.execute {
             try {
                 val appFilesDir = ctx.getExternalFilesDir("models") ?: File(ctx.filesDir, "models").also { it.mkdirs() }
-                val modelFile = resolveModelPath(targetPath, appFilesDir)
+                var sourceFile = File(targetPath)
+                var finalModelFile = sourceFile
 
-                if (!modelFile.exists()) {
-                    notifyLoadError("Model tidak ditemukan di storage internal. Silakan 'Import Model GGUF' kembali melalui menu utama.")
+                // JIKA tidak bisa baca langsung dari lokasi asal (EACCES)
+                if (!sourceFile.exists() || !sourceFile.canRead()) {
+                    Log.w(TAG, "Akses langsung ditolak. Mencoba mencari/menyalin ke storage internal...")
+                    
+                    val internalCopy = File(appFilesDir, sourceFile.name)
+                    
+                    if (internalCopy.exists() && internalCopy.length() == sourceFile.length()) {
+                        finalModelFile = internalCopy
+                    } else if (sourceFile.exists()) {
+                        // OTOMATIS COPY: Hanya jika file sumber ada tapi tidak bisa dibaca native
+                        // Ini terjadi pada Android 11+ tanpa MANAGE_EXTERNAL_STORAGE
+                        Log.i(TAG, "Menyalin model ke internal untuk mem-bypass batasan izin Android...")
+                        
+                        // Bersihkan model internal lama agar storage tidak bengkak
+                        appFilesDir.listFiles()?.forEach { if (it.name.endsWith(".gguf")) it.delete() }
+                        
+                        sourceFile.inputStream().use { input ->
+                            internalCopy.outputStream().use { output -> input.copyTo(output) }
+                        }
+                        finalModelFile = internalCopy
+                    }
+                }
+
+                if (!finalModelFile.exists() || !finalModelFile.canRead()) {
+                    notifyLoadError("MODEL TIDAK DAPAT DIAKSES: Silakan gunakan tombol 'Import Model GGUF' di sidebar dan pilih file model kembali.")
                     return@execute
                 }
 
-                val loadStartMs = System.currentTimeMillis()
-                val nCtx = getRecommendedCtxSize(ctx)
-                
-                Log.i(TAG, "Native load: ${modelFile.absolutePath} (GPU=$useGpu)")
-                var ok = jni.loadModel(modelFile.absolutePath, useGpu, nCtx)
+                // Jika target adalah direktori model MLC, gunakan MLC bridge (native MLC belum ada — stub dipakai)
+                if (finalModelFile.isDirectory) {
+                    val configFile = File(finalModelFile, "mlc-chat-config.json")
+                    if (configFile.exists()) {
+                        Log.i(TAG, "Detected MLC model directory, switching to MLC engine bridge")
+                        jni = MlcBridge()
+                    }
+                }
 
-                // AUTO-FALLBACK: Jika GPU gagal (Vulkan Error), matikan permanen (Permanent Fix)
+                val nCtx = getRecommendedCtxSize(ctx)
+                Log.i(TAG, "Native load: ${finalModelFile.absolutePath} (GPU=$useGpu)")
+                
+                // PERBAIKAN PERMANEN GPU: Jika GPU Gagal, JANGAN BERI PESAN ERROR MERAH, langsung CPU
+                var ok = jni.loadModel(finalModelFile.absolutePath, useGpu, nCtx)
+                
                 if (!ok && useGpu) {
-                    Log.e(TAG, "Vulkan Incompatibility Detected. Switching to CPU permanently for this device.")
-                    AppPreferences(ctx).useGpuBackend = false // MATIKAN di Settings otomatis
-                    ok = jni.loadModel(modelFile.absolutePath, false, nCtx)
+                    Log.e(TAG, "Vulkan Pipeline Error. Switching to CPU mode PERMANENTLY for this device.")
+                    AppPreferences(ctx).useGpuBackend = false // MATIKAN SETTING GPU
+                    ok = jni.loadModel(finalModelFile.absolutePath, false, nCtx)
                 }
 
                 if (ok) {
-                    val finalUseGpu = if (!ok && useGpu) false else useGpu
-                    loadedModelInfo = ModelInfo(modelFile.name, AppPreferences(ctx).useGpuBackend, modelFile.absolutePath)
+                    loadedModelInfo = ModelInfo(finalModelFile.name, AppPreferences(ctx).useGpuBackend, targetPath)
                     notifyLoadSuccess()
                 } else {
-                    jni.freeModel()
-                    notifyLoadError("Engine native menolak model. Pastikan RAM cukup dan file GGUF valid.")
+                    notifyLoadError("ENGINE GAGAL: RAM tidak cukup atau file model rusak.")
                 }
             } catch (e: Exception) {
-                notifyLoadError(e.message ?: "Error load model")
+                notifyLoadError("ERROR: ${e.message}")
             } finally {
                 synchronized(this) { isLoading = false }
             }
@@ -213,7 +202,6 @@ class LlmManager private constructor() {
         if (!jni.isLoaded()) { cb.onError("Model belum dimuat"); return }
         executor.execute {
             try {
-                val genStartMs = System.currentTimeMillis()
                 val prompt = buildPrompt(userMessage, history, memories, deviceContext)
                 val grammar = SystemPromptBuilder.getToolGrammar()
                 
@@ -223,13 +211,16 @@ class LlmManager private constructor() {
                     override fun onError(message: String) {
                         jni.freeModel()
                         loadedModelInfo = null
-                        if (message.contains("vk", ignoreCase = true)) {
+                        // JIKA ERROR GPU SAAT GENERATE: Matikan GPU permanen (Auto-Recovery)
+                        if (message.contains("vk", ignoreCase = true) || message.contains("pipeline", ignoreCase = true) || message.contains("Device", ignoreCase = true)) {
                             context?.let { AppPreferences(it).useGpuBackend = false }
-                            cb.onError("GPU ERROR: $message. Beralih ke CPU...")
-                        } else cb.onError(message)
+                            cb.onError("GPU LIMIT: Model 4B terlalu berat untuk resource grafis Anda. Beralih ke CPU (Stabil)...")
+                        } else {
+                            cb.onError("ENGINE ERROR: $message. HP Anda mungkin kehabisan RAM untuk model 4B ini.")
+                        }
                     }
                 })
-            } catch (e: Exception) { cb.onError(e.message) }
+            } catch (e: Exception) { cb.onError("Generate Error: ${e.message}") }
         }
     }
 
@@ -239,12 +230,12 @@ class LlmManager private constructor() {
             val trimmedHistory = ContextEngine.compressHistory(history ?: emptyList()).takeLast(MAX_HISTORY_MESSAGES)
             trimmedHistory.forEach { msg ->
                 val role = when(msg.role) { "user"->"user"; "assistant"->"assistant"; "tool_result"->"system"; "tool_call"->"assistant"; else->"user" }
-                append("<|im_start|>$role\n${msg.content.take(1000)}<|im_end|>\n")
+                append("<|im_start|>$role\n${msg.content}<|im_end|>\n")
             }
             if (memories != null || deviceContext != null) {
                 append("<|im_start|>system\n")
-                if (memories != null) append("Memori: $memories\n")
-                if (deviceContext != null) append("Konteks: $deviceContext\n")
+                if (memories != null) append("Context: $memories\n")
+                if (deviceContext != null) append("Device Diagnostics: $deviceContext\n")
                 append("<|im_end|>\n")
             }
             if (userMessage.isNotEmpty()) append("<|im_start|>user\n$userMessage<|im_end|>\n")
