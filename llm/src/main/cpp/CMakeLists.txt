@@ -12,6 +12,18 @@ add_library(
     llama_jni.cpp
 )
 
+# MLC JNI bridge (prebuilt or stub)
+add_library(
+    mlcjni
+    SHARED
+    mlc_jni_stub.cpp
+)
+
+target_include_directories(mlcjni PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_options(mlcjni PRIVATE "-Wl,-z,max-page-size=16384")
+
+
 # Wajib agar compiler menemukan llama.h, ggml.h, dll
 target_include_directories(llamajni PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -62,4 +74,14 @@ else()
         ${log-lib}
         ${android-lib}
     )
+endif()
+
+# If a prebuilt libmlcjni exists in jniLibs, prefer that. Otherwise build the stub mlcjni target we added above.
+set(MLC_LIB "${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libmlcjni.so")
+if (EXISTS "${MLC_LIB}")
+    add_library(mlc SHARED IMPORTED)
+    set_target_properties(mlc PROPERTIES IMPORTED_LOCATION "${MLC_LIB}")
+    target_link_libraries(mlcjni mlc ${log-lib} ${android-lib})
+else()
+    target_link_libraries(mlcjni ${log-lib} ${android-lib})
 endif()
