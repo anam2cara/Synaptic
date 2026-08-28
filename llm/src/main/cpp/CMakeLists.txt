@@ -76,11 +76,11 @@ else()
     )
 endif()
 
-# Prefer building/linking a native MLC engine if source is available in mlc_src.
-# If a submodule with source was added at llm/src/main/cpp/mlc_src and contains a CMakeLists.txt,
-# include it and link the produced target (if present) to mlcjni.
-if (EXISTS "${CMAKE_SOURCE_DIR}/mlc_src/CMakeLists.txt")
-    message(STATUS "MLC source found at mlc_src; adding subdirectory")
+# Prefer building/linking a native MLC engine if a prepared Android build is present in mlc_src.
+# To avoid pulling in heavy/unconfigured thirdparty builds during normal Gradle configure,
+# require a marker file 'mlc_src/ANDROID_BUILD' to enable add_subdirectory.
+if (EXISTS "${CMAKE_SOURCE_DIR}/mlc_src/ANDROID_BUILD")
+    message(STATUS "MLC Android build marker found; adding mlc_src subdirectory for native build")
     add_subdirectory("${CMAKE_SOURCE_DIR}/mlc_src" "${CMAKE_BINARY_DIR}/mlc_src_build")
     # Common possible exported target names: mlc, mlc_runtime, mlc_engine. Link if any exists.
     if (TARGET mlc)
@@ -90,7 +90,7 @@ if (EXISTS "${CMAKE_SOURCE_DIR}/mlc_src/CMakeLists.txt")
     elseif (TARGET mlc_engine)
         target_link_libraries(mlcjni mlc_engine ${log-lib} ${android-lib})
     else()
-        message(WARNING "MLC source added but no known target (mlc/mlc_runtime/mlc_engine) found. Will attempt to link prebuilt lib if present.")
+        message(WARNING "MLC source added and marker present but no known target found. Falling back to prebuilt lib or stub.")
     endif()
 else()
     # If a prebuilt libmlcjni exists in jniLibs, prefer that. Otherwise build the stub mlcjni target we added above.
