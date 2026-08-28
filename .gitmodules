@@ -1,0 +1,3 @@
+[submodule "llm/src/main/cpp/mlc_src"]
+	path = llm/src/main/cpp/mlc_src
+	url = https://github.com/mlc-ai/mlc-llm
