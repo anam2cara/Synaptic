@@ -20,7 +20,8 @@ class MlcJNI {
         }
     }
 
-    external fun loadModel(modelPath: String, tryGpu: Boolean, nCtx: Int): Boolean
+    external fun getModelMetadata(modelPath: String): LlamaJNI.ModelMetadata?
+    external fun loadModel(modelPath: String, nGpuLayers: Int, nCtx: Int): Boolean
     external fun generateStream(prompt: String, grammar: String?, maxTokens: Int, callback: MlcJNI.StreamCallback)
     external fun freeModel()
     external fun isLoaded(): Boolean

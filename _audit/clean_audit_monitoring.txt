@@ -1,0 +1,322 @@
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\SynapticApp.kt:31: override fun onTrimMemory(level: Int) {
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\SynapticApp.kt:32: super.onTrimMemory(level)
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\SynapticApp.kt:33: LlmManager.getInstance().onTrimMemory(level)
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\SynapticApp.kt:36: override fun onLowMemory() {
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\SynapticApp.kt:37: super.onLowMemory()
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\SynapticApp.kt:49: database?.memoryDao()?.pruneOldLowImportance(cutoff)
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:108: imageVector = if (it.useGpu) Icons.Default.Bolt else Icons.Default.Memory,
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:142: text = if (it.useGpu) "VULKAN" else "CPU",
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:16: import com.synaptic.ai.data.model.Memory
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:123: "batre", "baterai", "battery", "ram", "memori", "memory",
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:124: "cpu", "prosesor", "processor", "gpu", "vulkan", "grafik",
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:125: "suhu", "panas", "thermal", "storage", "penyimpanan", "ruang",
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:126: "berjalan", "proses", "process", "app", "aplikasi", "lemot",
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:142: val asksBattery = containsAny(cleaned, "batre", "baterai", "battery", "daya")
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:143: val asksRam = containsAny(cleaned, "ram", "memori", "memory")
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:145: val asksThermal = containsAny(cleaned, "suhu", "thermal", "temperatur", "temperature", "panas")
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:149: asksStatus && (asksBattery || asksRam || asksStorage || asksThermal || asksWholeDevice) -> "device_status"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:152: cleaned.contains("process") ||
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:222: text.contains("batre") || text.contains("baterai") || text.contains("battery") -> "battery"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:223: text.contains("ram") -> "ram"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:225: text.contains("suhu") || text.contains("thermal") || text.contains("temperatur") || text.contains("temperature") || text.contains("panas") -> "thermal"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:245: // Contoh permintaan sederhana: "cek ram", "status batre", "suhu hp"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:310: "instagram" to listOf("com.instagram.android"),
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:311: "ig" to listOf("com.instagram.android"),
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:316: "telegram" to listOf("org.telegram.messenger"),
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:426: "battery" -> "Status baterai realtime:"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:427: "ram" -> "Status RAM realtime:"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:429: "thermal" -> "Status suhu realtime:"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:480: // Timer untuk membebaskan RAM model jika tidak digunakan (1 menit)
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:499: // Cek Inaktivitas: Jika idle terlalu lama, bebaskan RAM
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:502: Log.i(TAG, "Inactivity timeout: Freeing LLM RAM")
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:538: Log.i(TAG, "ViewModel cleared: Freeing LLM RAM")
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:784: saveAssistantMessage("Model tidak menghasilkan jawaban. Coba ulangi dengan pertanyaan yang lebih spesifik, atau gunakan pertanyaan realtime seperti status baterai/RAM.")
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatViewModel.kt:919: val memories = db.memoryDao().getTopMemories(5)
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\logcat\LogcatScreen.kt:56: val process = Runtime.getRuntime().exec("logcat -d -v time --pid=" + android.os.Process.myPid())
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\logcat\LogcatScreen.kt:57: val reader = process.inputStream.bufferedReader()
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\shell\ShellScreen.kt:62: listOf("pm trim-caches 999G", "dumpsys battery", "top -n 1 -b").forEach {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:4: var ramFreeBytes: Long = 0
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:5: var ramTotalBytes: Long = 0
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:6: var ramUsedPercent: Float = 0f
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:7: var cpuUsagePercent: Float = 0f
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:8: var cpuPerCoreUsage: List<Float> = emptyList()
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:9: var cpuTempCelsius: Float = 0f
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:10: var batteryLevel: Int = 0
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:11: var batteryTempCelsius: Float = 0f
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:22: var gpuTemperatureCelsius: Float = -1f
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:29: "RAM: %.1f%% terpakai (%.1f/%.1f GB)\n" +
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:30: "CPU Load: %s | Suhu: %s\n" +
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:37: ramUsedPercent,
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:38: (ramTotalBytes - ramFreeBytes) / 1e9f,
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:39: ramTotalBytes / 1e9f,
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:40: formatPercent(cpuUsagePercent),
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:41: formatTemp(cpuTempCelsius),
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:42: batteryLevel,
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:43: batteryTempCelsius,
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:49: formatTemp(gpuTemperatureCelsius),
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:56: fun toBatteryString(): String {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:59: batteryLevel,
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:61: batteryTempCelsius
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:65: fun toRamString(): String {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:67: "RAM: %.1f%% terpakai (%.1f/%.1f GB)",
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:68: ramUsedPercent,
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:69: (ramTotalBytes - ramFreeBytes) / 1e9f,
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:70: ramTotalBytes / 1e9f
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:82: fun toThermalString(): String {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:84: "Suhu CPU: %s | Suhu GPU: %s",
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:85: formatTemp(cpuTempCelsius),
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\core\model\DeviceSnapshot.kt:86: formatTemp(gpuTemperatureCelsius)
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\model\Memory.kt:7: * Memory: konteks yang diingat LLM antar sesi.
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\model\Memory.kt:8: * Contoh: "User biasanya minta cek RAM", "App berat = com.berat.app"
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\model\Memory.kt:11: class Memory(
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\model\Memory.kt:13: var value: String,     // isi memory
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:7: import com.synaptic.ai.data.model.Memory
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:10: interface MemoryDao {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:12: fun insert(memory: Memory): Long
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:15: fun update(memory: Memory)
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:18: fun getTopMemories(limit: Int): List<Memory>
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:21: fun getByKey(key: String): Memory?
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\SynapticDatabase.kt:9: import com.synaptic.ai.data.model.Memory
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\SynapticDatabase.kt:12: entities = [ChatMessage::class, Memory::class, ActionLog::class],
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\SynapticDatabase.kt:19: abstract fun memoryDao(): MemoryDao
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\DiagnosticContextBuilder.kt:11: RAM_USED_PERCENT=${snapshot.ramUsedPercent}
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\DiagnosticContextBuilder.kt:13: CPU_LOAD_NORMALIZED_PERCENT=${snapshot.cpuUsagePercent}
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\DiagnosticContextBuilder.kt:14: NOTE_CPU=Normalized load, bukan CPU utilization langsung.
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\DiagnosticContextBuilder.kt:16: CPU_TEMPERATURE_C=${snapshot.cpuTempCelsius}
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\DiagnosticContextBuilder.kt:18: BATTERY_LEVEL_PERCENT=${snapshot.batteryLevel}
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\DiagnosticContextBuilder.kt:19: BATTERY_TEMPERATURE_C=${snapshot.batteryTempCelsius}
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\DiagnosticContextBuilder.kt:27: GPU_TEMPERATURE_C=${snapshot.gpuTemperatureCelsius}
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\DiagnosticContextBuilder.kt:39: - Jangan menyatakan overheat hanya berdasarkan angka suhu tanpa mengetahui sensor/thermal zone.
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\DiagnosticContextBuilder.kt:40: - Jangan mengubah CPU load menjadi klaim CPU utilization.
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\DiagnosticManager.kt:115: out.println("\n=== MEMORY & RESOURCES ===")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:25: if (snapshot.ramUsedPercent >= 90f) {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:27: issues += "RAM sangat tinggi (${snapshot.ramUsedPercent.toInt()}%)"
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:28: fixes += "Periksa proses/aplikasi dengan penggunaan RAM tinggi"
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:29: } else if (snapshot.ramUsedPercent >= 75f) {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:31: issues += "RAM tinggi (${snapshot.ramUsedPercent.toInt()}%)"
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:34: if (snapshot.cpuUsagePercent >= 80f) {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:36: issues += "CPU utilization tinggi (${snapshot.cpuUsagePercent.toInt()}%)"
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:37: fixes += "Periksa proses yang membebani CPU"
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:38: } else if (snapshot.cpuUsagePercent >= 60f) {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:40: issues += "CPU utilization meningkat (${snapshot.cpuUsagePercent.toInt()}%)"
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:49: if (snapshot.batteryLevel in 0..10 && !snapshot.isCharging) {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:51: issues += "Baterai kritis (${snapshot.batteryLevel}%)"
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:55: if (snapshot.batteryTempCelsius >= 45f) {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\diagnostic\PerformanceAnalyzer.kt:57: issues += "Suhu baterai tinggi (${snapshot.batteryTempCelsius}°C)"
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\tools\ToolRegistry.kt:33: description = "Cek baterai, suhu, RAM, CPU, storage dan status device.",
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\tools\ToolRegistry.kt:88: name = "save_memory",
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\mlc4j\src\main\java\ai\mlc\mlcllm\MLCEngine.kt:164: temperature: Float? = null,
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\mlc4j\src\main\java\ai\mlc\mlcllm\MLCEngine.kt:188: temperature = temperature,
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\mlc4j\src\main\java\ai\mlc\mlcllm\OpenAIProtocol.kt:47: val parameters: Map<String, String>
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\mlc4j\src\main\java\ai\mlc\mlcllm\OpenAIProtocol.kt:213: val temperature: Float? = null,
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:54: const val ParamsConfigFilename = "tensor-cache.json"
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:114: modelConfig.estimatedVramBytes = modelRecord.estimatedVramBytes
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:149: modelConfig.estimatedVramBytes,
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:204: modelConfig.estimatedVramBytes = modelRecord.estimatedVramBytes
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:241: private var paramsConfig = ParamsConfig(emptyList())
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:256: val paramsConfigFile = File(modelDirFile, ParamsConfigFilename)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:257: if (paramsConfigFile.exists()) {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:258: loadParamsConfig()
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:261: downloadParamsConfig()
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:265: private fun loadParamsConfig() {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:266: val paramsConfigFile = File(modelDirFile, ParamsConfigFilename)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:267: require(paramsConfigFile.exists())
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:268: val jsonString = paramsConfigFile.readText()
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:269: paramsConfig = gson.fromJson(jsonString, ParamsConfig::class.java)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:272: private fun downloadParamsConfig() {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:274: val url = URL("${modelUrl}${ModelUrlSuffix}${ParamsConfigFilename}")
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:285: val paramsConfigFile = File(modelDirFile, ParamsConfigFilename)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:286: tempFile.renameTo(paramsConfigFile)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:287: require(paramsConfigFile.exists())
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:289: loadParamsConfig()
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:356: total.value = modelConfig.tokenizerFiles.size + paramsConfig.paramsRecords.size
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:370: for (paramsRecord in paramsConfig.paramsRecords) {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:371: val file = File(modelDirFile, paramsRecord.dataPath)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:377: URL("${modelUrl}${ModelUrlSuffix}${paramsRecord.dataPath}"),
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:679: report.value = "Image process is done, ask any question."
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:833: @SerializedName("estimated_vram_bytes") val estimatedVramBytes: Long?,
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:840: @SerializedName("estimated_vram_bytes") var estimatedVramBytes: Long?,
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:846: data class ParamsRecord(
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:850: data class ParamsConfig(
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:851: @SerializedName("records") val paramsRecords: List<ParamsRecord>
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\MainActivity.kt:71: @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\MainActivity.kt:93: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\ContextEngine.kt:7: * untuk mengurangi beban CPU dan mempercepat TTFT.
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\ContextEngine.kt:33: !line.contains("Choreographer") // UI skip frame noise
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\ContextEngine.kt:100: result.add(ChatMessage("", "system", "[... konteks riwayat disederhanakan untuk efisiensi RAM ...]"))
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlamaBridge.kt:9: override fun generateStream(prompt: String, grammar: String?, maxTokens: Int, callback: LlamaJNI.StreamCallback) = impl.generateStream(prompt, grammar, maxTokens, callback)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlamaJNI.kt:25: val nParams: Long,
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlamaJNI.kt:33: external fun generateStream(prompt: String, grammar: String?, maxTokens: Int, callback: StreamCallback)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:75: fun onTrimMemory(level: Int) {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:76: DiagnosticManager.addBreadcrumb("TRIM_MEMORY", "level=$level")
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:77: if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL ||
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:78: level >= ComponentCallbacks2.TRIM_MEMORY_COMPLETE) {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:103: Log.i("LlmManager", "Model dibebaskan dari RAM")
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:148: val memInfo = ActivityManager.MemoryInfo()
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:149: actManager.getMemoryInfo(memInfo)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:151: val totalRamGb = memInfo.totalMem / 1e9
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:152: val availRamGb = memInfo.availMem / 1e9
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:155: Log.i("AutoModelManager", "Probing Model: ${meta.description}, Size: ${"%.2f".format(modelSizeGb)}GB, Total RAM: ${"%.1f".format(totalRamGb)}GB")
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:158: if (modelSizeGb > totalRamGb - 2.5) {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:159: return ModelConfig(false, "Model (${"%.1f".format(modelSizeGb)}GB) terlalu besar untuk RAM HP Anda.", 256, 0)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:167: recommendedCtx = if (availRamGb > 1.2) 512 else 256
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:171: recommendedCtx = if (availRamGb > 1.8) 1024 else 512
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:175: recommendedCtx = if (availRamGb > 2.2) 2048 else 1024
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:273: Log.w("LlmManager", "GPU load failed for ${profile.label}, falling back to CPU.")
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:274: DiagnosticManager.addBreadcrumb("NATIVE_LOAD_FALLBACK", "role=${profile.role} cpu")
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:342: val grammar = SystemPromptBuilder.getToolGrammar()
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:345: jni.generateStream(prompt, grammar, profile.defaultMaxTokens, object : LlamaJNI.StreamCallback {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:368: cb.onError("GPU LIMIT: Beralih ke CPU (Stabil)...")
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:370: cb.onError("HP KRITIS: RAM sisa sedikit. Tutup aplikasi lain.")
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\LlmManager.kt:386: // Gunakan riwayat minimal untuk hemat RAM
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\MlcBridge.kt:9: override fun generateStream(prompt: String, grammar: String?, maxTokens: Int, callback: LlamaJNI.StreamCallback) {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\MlcBridge.kt:16: impl.generateStream(prompt, grammar, maxTokens, cb)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\MlcJNI.kt:25: external fun generateStream(prompt: String, grammar: String?, maxTokens: Int, callback: MlcJNI.StreamCallback)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\NativeBridge.kt:6: fun generateStream(prompt: String, grammar: String?, maxTokens: Int, callback: LlamaJNI.StreamCallback)
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\SystemPromptBuilder.kt:9: val memorySection = if (!memories.isNullOrBlank()) {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\SystemPromptBuilder.kt:24: 2. **Analisis Mendalam**: Jika sistem melambat, cari tahu penyebabnya (CPU, RAM, atau Thermal) menggunakan `device_status` atau `list_processes`.
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\SystemPromptBuilder.kt:27: 5. **Memori Jangka Panjang**: Jika user menyebutkan preferensi, kebiasaan, atau fakta penting yang berguna diingat di sesi berikutnya, simpan dengan `save_memory` (contoh: `TOOL:save_memory|{"key":"device_habit","value":"...","importance":0.7}`). Jangan menyimpan data sensitif (password, OTP, dsb).
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\SystemPromptBuilder.kt:28: $memorySection
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\SystemPromptBuilder.kt:37: fun getToolGrammar(): String {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\SystemPromptBuilder.kt:38: // Redesign Grammar: Jauh lebih fleksibel, hanya memandu format TOOL jika terdeteksi
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:31: val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:32: readProcessOutput(process, timeoutMs)
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:44: val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:45: readProcessOutput(process, resolveTimeout(command))
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:54: "dumpsys battery" in lower -> 2000L
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:62: private fun readProcessOutput(process: Process, timeoutMs: Long): Result {
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:69: process.inputStream.bufferedReader().useLines { lines ->
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:77: process.errorStream.bufferedReader().useLines { lines ->
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:91: exitCode = process.exitValue()
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:99: exitCode = process.exitValue()
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:101: try { process.destroyForcibly() } catch (_: Exception) {}
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:133: try { process.destroyForcibly() } catch (_: Exception) {}
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:134: return Result(e.message ?: "process error", false, -1)
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShellExecutor.kt:136: try { process.destroy() } catch (_: Exception) {}
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ShizukuHelper.kt:61: * @param force Lewati guard userDenied -- pakai ini HANYA dari aksi eksplisit user
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:8: import com.synaptic.ai.monitor.DeviceMonitor
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:11: import com.synaptic.ai.data.model.Memory
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:21: private val deviceMonitor = DeviceMonitor(
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:26: fun getDeviceMonitor(): DeviceMonitor = deviceMonitor
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:73: "save_memory" -> executeSaveMemory(args)
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:140: private fun executeSaveMemory(args: String): ToolResult {
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:144: return makeResult(false, "save_memory butuh field 'key' dan 'value'.", "", -1)
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:151: val dao = SynapticDatabase.getInstance(context).memoryDao()
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:160: dao.insert(Memory(key, value, importance))
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:162: Log.d(TAG, "MEMORY SAVED key=$key")
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:218: val snap = deviceMonitor.getSnapshot()
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:222: "battery" -> snap.toBatteryString()
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:223: "ram" -> snap.toRamString()
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:225: "thermal" -> snap.toThermalString()
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:279: * - ActivityManager: proses yang terlihat oleh framework Android.
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:330: for (process in runningProcesses) {
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:331: val packages = userPackagesByUid[process.uid]
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:339: val state = when (process.importance) {
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:362: val key = "${process.uid}:${process.pid}"
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:365: pid = process.pid,
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:366: uid = process.uid,
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:367: processName = process.processName,
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:377: "ActivityManager process query gagal: ${e.message}"
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:417: Log.w(TAG, "Shizuku process fallback gagal: ${e.message}")
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:447: sortedEvidence.forEach { process ->
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:449: "PID=${process.pid} " +
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:450: "UID=${process.uid} " +
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:451: "PROCESS=${process.processName} " +
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:452: "PACKAGES=${process.packageNames.joinToString(",")} " +
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:453: "STATE=${process.state} " +
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:454: "SOURCE=${process.source}"
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:510: val snapshot = deviceMonitor.getSnapshot()
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:553: val s = deviceMonitor.getSnapshot()
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:555: val ramUsedGb = (s.ramTotalBytes - s.ramFreeBytes) / 1e9f
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:556: val ramTotalGb = s.ramTotalBytes / 1e9f
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:562: BATERAI: ${s.batteryLevel}% (Charging=${s.isCharging})
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:563: MEMORI: ${"%.1f".format(ramUsedGb)}GB/${"%.1f".format(ramTotalGb)}GB (${"%.1f".format(s.ramUsedPercent)}%)
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:565: CPU_SUHU: ${s.cpuTempCelsius}°C
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:566: GPU_LOAD: ${if (s.gpuBusyPercent >= 0) "${s.gpuBusyPercent}%" else "N/A"} (${s.gpuTemperatureCelsius}°C)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:1: package com.synaptic.ai.monitor
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:11: private val deviceMonitor = DeviceMonitor(context)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:19: val snap = deviceMonitor.getSnapshot()
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:20: val ramUsedGB = (snap.ramTotalBytes - snap.ramFreeBytes) / 1e9f
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:21: val ramTotalGB = snap.ramTotalBytes / 1e9f
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:27: append("• RAM: ${String.format("%.1f%%", snap.ramUsedPercent)} terpakai (${"%.1f".format(ramUsedGB)}/${"%.1f".format(ramTotalGB)} GB)\n")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:28: append("• CPU: ${String.format("%.1f%%", snap.cpuUsagePercent)}\n")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:29: append("• Baterai: ${snap.batteryLevel}%${if (snap.isCharging) " (charging)" else ""}\n")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:45: val snap = deviceMonitor.getSnapshot()
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:49: snap.ramUsedPercent > 80 -> append("⚠️ RAM tinggi (>80%), pertimbangkan tutup aplikasi yang tidak perlu\n")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:50: snap.ramUsedPercent > 60 -> append("• RAM sedang (60-80%), performa masih baik\n")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:51: else -> append("✅ RAM baik (<60%), performa optimal\n")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:54: snap.cpuUsagePercent > 70 -> append("⚠️ CPU tinggi (>70%), ada proses berat berjalan\n")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:55: else -> append("✅ CPU normal\n")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:58: snap.batteryLevel < 20 -> append("🔋 Baterai rendah (<20%), charging segera\n")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceDataProvider.kt:59: snap.batteryLevel < 50 && !snap.isCharging -> append("🔋 Baterai medium, recommended charging\n")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:1: package com.synaptic.ai.monitor
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:8: import android.os.BatteryManager
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:16: class DeviceMonitor(
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:26: private var lastCpuStats: Map<String, LongArray>? = null
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:27: private var lastCpuStatsTime: Long = 0
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:32: readRam(snap)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:33: readCpuLoad(snap)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:34: readTemperature(snap)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:35: readBattery(snap)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:47: private fun readRam(snap: DeviceSnapshot) {
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:52: val info = ActivityManager.MemoryInfo()
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:53: am.getMemoryInfo(info)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:55: snap.ramFreeBytes = info.availMem
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:56: snap.ramTotalBytes = info.totalMem
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:57: snap.ramUsedPercent =
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:60: Log.w(TAG, "RAM read gagal: ${e.message}")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:69: * Nilai ini adalah normalized load, BUKAN CPU utilization.
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:85: private fun readCpuLoad(snap: DeviceSnapshot) {
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:88: val currentCpuStats = readProcStat()
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:90: if (lastCpuStats != null && currentCpuStats.isNotEmpty()) {
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:94: currentCpuStats.filter { it.key.startsWith("cpu") && it.key.length > 3 }.keys.sorted().forEach { core ->
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:95: val cur = currentCpuStats[core]!!
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:96: val prev = lastCpuStats!![core] ?: longArrayOf(0, 0, 0, 0, 0, 0, 0)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:108: snap.cpuPerCoreUsage = perCoreUsage
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:110: // Calculate total CPU usage
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:111: val curTotal = currentCpuStats["cpu"]!!
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:112: val prevTotal = lastCpuStats!!["cpu"] ?: longArrayOf(0, 0, 0, 0, 0, 0, 0)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:116: snap.cpuUsagePercent = (1.0f - (idleDiffTotal.toFloat() / totalDiffTotal.toFloat())) * 100f
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:120: lastCpuStats = currentCpuStats
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:121: lastCpuStatsTime = now
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:124: if (snap.cpuUsagePercent <= 0f) {
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:133: snap.cpuUsagePercent = ((loadAvg / cores) * 100f).coerceIn(0f, 100f)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:138: Log.w(TAG, "CPU utilization gagal: ${e.message}")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:139: snap.cpuUsagePercent = 0.0f
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:146: val output = shellRunner?.invoke("cat /proc/stat | grep '^cpu'")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:161: private fun readTemperature(snap: DeviceSnapshot) {
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:162: val shellThermal = readThermalZonesViaShell()
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:163: if (shellThermal.isNotEmpty()) {
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:164: val cpuCandidates = shellThermal.filter { (name, temp) ->
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:166: !name.contains("battery", ignoreCase = true) &&
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:170: name.contains("cpu", ignoreCase = true) ||
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:177: val fallbackCandidates = shellThermal.filter { (name, temp) ->
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:179: !name.contains("battery", ignoreCase = true) &&
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:184: val selected = (cpuCandidates.ifEmpty { fallbackCandidates })
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:188: snap.cpuTempCelsius = selected.second
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:189: writeDiagnostic("THERMAL_CPU", "sensor=${selected.first} temp=${selected.second}")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:195: "/sys/class/thermal/thermal_zone0/temp",
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:196: "/sys/class/thermal/thermal_zone1/temp",
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:197: "/sys/class/thermal/thermal_zone2/temp"
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:207: snap.cpuTempCelsius = temp
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:216: private fun readThermalZonesViaShell(): List<Pair<String, Float>> {
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:219: val thermalDir = File("/sys/class/thermal/")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:220: if (thermalDir.exists() && thermalDir.isDirectory) {
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:221: val zones = thermalDir.listFiles { f -> f.name.startsWith("thermal_zone") }
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:237: Log.w(TAG, "Gagal baca thermal zone via JFM: ${e.message}")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:244: "for z in /sys/class/thermal/thermal_zone*; do " +
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:265: private fun readBattery(snap: DeviceSnapshot) {
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:269: IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:272: snap.batteryLevel =
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:273: intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:275: snap.batteryTempCelsius =
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:276: intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) / 10f
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:279: intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:282: status == BatteryManager.BATTERY_STATUS_CHARGING ||
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:283: status == BatteryManager.BATTERY_STATUS_FULL
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:285: Log.w(TAG, "Battery read gagal: ${e.message}")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:322: snap.gpuTemperatureCelsius =
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:375: Log.w(TAG, "Process info gagal: ${e.message}")
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\DeviceMonitor.kt:380: private const val TAG = "DeviceMonitor"
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\ProcessInfo.kt:1: package com.synaptic.ai.monitor
+D:\Documents\projek_build_apk_saya\Synaptic\monitor\src\main\java\com\synaptic\ai\monitor\ProcessInfo.kt:6: val memoryKb: Long

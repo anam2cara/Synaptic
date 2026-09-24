@@ -8,6 +8,8 @@ import com.synaptic.ai.AppPreferences
 import com.synaptic.ai.monitor.DeviceMonitor
 import com.synaptic.ai.diagnostic.PerformanceAnalyzer
 import com.synaptic.ai.accessibility.SynapticAccessibilityService
+import com.synaptic.ai.data.model.Memory
+import com.synaptic.ai.data.repo.SynapticDatabase
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.Executors
@@ -68,6 +70,7 @@ class ToolExecutor(context: Context) {
             "read_screen" -> executeReadScreen()
             "read_logs" -> executeReadLogs()
             "native_backend_status" -> executeNativeBackendStatus()
+            "save_memory" -> executeSaveMemory(args)
             "pgvector_status" -> executePgVectorStatus()
             "n8n_status" -> executeN8nStatus()
             "n8n_trigger" -> executeN8nTrigger(extractJsonString(args, "payload"))
@@ -132,6 +135,35 @@ class ToolExecutor(context: Context) {
             appendLine("Catatan: integrasi ini opsional dan hanya dipakai saat diminta, bukan background service.")
         }
         return makeResult(true, output, "", 0)
+    }
+
+    private fun executeSaveMemory(args: String): ToolResult {
+        val key = extractJsonString(args, "key").trim()
+        val value = extractJsonString(args, "value").trim()
+        if (key.isBlank() || value.isBlank()) {
+            return makeResult(false, "save_memory butuh field 'key' dan 'value'.", "", -1)
+        }
+        val importance = try {
+            org.json.JSONObject(args).optDouble("importance", 0.5)
+        } catch (_: Exception) { 0.5 }.toFloat().coerceIn(0f, 1f)
+
+        return try {
+            val dao = SynapticDatabase.getInstance(context).memoryDao()
+            val existing = dao.getByKey(key)
+            if (existing != null) {
+                existing.value = value
+                existing.importance = importance
+                existing.lastUsedAt = System.currentTimeMillis()
+                existing.useCount += 1
+                dao.update(existing)
+            } else {
+                dao.insert(Memory(key, value, importance))
+            }
+            Log.d(TAG, "MEMORY SAVED key=$key")
+            makeResult(true, "Memori disimpan: $key = $value", "", 0)
+        } catch (e: Exception) {
+            makeResult(false, "Gagal menyimpan memori: ${e.message}", e.stackTraceToString(), 1)
+        }
     }
 
     private fun executeN8nStatus(): ToolResult {

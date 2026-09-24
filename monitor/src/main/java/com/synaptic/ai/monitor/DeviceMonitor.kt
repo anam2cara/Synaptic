@@ -38,6 +38,9 @@ class DeviceMonitor(
         readProcessInfo(snap)
 
         snap.uptimeMs = SystemClock.elapsedRealtime()
+        
+        com.synaptic.ai.diagnostic.DiagnosticManager.setDeviceSnapshot(snap)
+        
         return snap
     }
 

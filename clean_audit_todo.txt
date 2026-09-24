@@ -1,0 +1,11 @@
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\ShellScreen.kt:8: fun ShellScreen() { Box(Modifier.fillMaxSize()) { Text("Shell Placeholder") } }
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:213: placeholder = { Text("Masukkan nama baru...") },
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:606: placeholder = {
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\logcat\LogcatScreen.kt:174: placeholder = { Text("Cari keyword atau tag...") },
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\res\values\strings.xml:26: <string name="settings_placeholder">Opsi pengaturan akan muncul di sini.</string>
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:296: switchToDownloading()
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\AppViewModel.kt:390: private fun switchToDownloading() {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\res\xml\data_extraction_rules.xml:8: <!-- TODO: Use <include> and <exclude> to control what is backed up.
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCEngineExample\app\src\main\res\xml\data_extraction_rules.xml:8: <!-- TODO: Use <include> and <exclude> to control what is backed up.
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\ContextEngine.kt:99: // 3. Tambahkan placeholder ringkasan jika gap masih besar
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\MlcJNI.kt:14: // Placeholder: native library for MLC should be named "mlcjni" and provided later

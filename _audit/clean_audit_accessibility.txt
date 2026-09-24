@@ -1,0 +1,25 @@
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\AndroidManifest.xml:33: <service android:name=".accessibility.SynapticAccessibilityService"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\AndroidManifest.xml:34: android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\AndroidManifest.xml:37: <action android:name="android.accessibilityservice.AccessibilityService" />
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\AndroidManifest.xml:39: <meta-data android:name="android.accessibilityservice"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\AndroidManifest.xml:40: android:resource="@xml/accessibility_service_config" />
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\res\values\strings.xml:28: <string name="accessibility_service_description">Synaptic AI Administrator</string>
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\res\xml\accessibility_service_config.xml:2: <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\res\xml\accessibility_service_config.xml:3: android:accessibilityEventTypes="typeAllMask"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\res\xml\accessibility_service_config.xml:4: android:accessibilityFeedbackType="feedbackGeneric"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\res\xml\accessibility_service_config.xml:5: android:accessibilityFlags="flagDefault|flagRetrieveInteractiveWindows|flagIncludeNotImportantViews|flagReportViewIds"
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\res\xml\accessibility_service_config.xml:7: android:description="@string/accessibility_service_description" />
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\accessibility\SynapticAccessibilityService.kt:1: package com.synaptic.ai.accessibility
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\accessibility\SynapticAccessibilityService.kt:3: import android.accessibilityservice.AccessibilityService
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\accessibility\SynapticAccessibilityService.kt:4: import android.view.accessibility.AccessibilityEvent
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\accessibility\SynapticAccessibilityService.kt:5: import android.view.accessibility.AccessibilityNodeInfo
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\accessibility\SynapticAccessibilityService.kt:7: class SynapticAccessibilityService : AccessibilityService() {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\accessibility\SynapticAccessibilityService.kt:9: override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\accessibility\SynapticAccessibilityService.kt:29: fun walk(node: AccessibilityNodeInfo?) {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\accessibility\SynapticAccessibilityService.kt:57: var instance: SynapticAccessibilityService? = null
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\tools\ToolRegistry.kt:54: description = "Baca isi/tampilan layar menggunakan Accessibility Service.",
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\java\com\synaptic\ai\llm\ContextEngine.kt:14: // Daftar kata kunci "sampah" yang sering muncul di Accessibility Service
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:10: import com.synaptic.ai.accessibility.SynapticAccessibilityService
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:487: val service = SynapticAccessibilityService.instance
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:490: Log.d("SynapticA11y", "Accessibility Service NULL")
+D:\Documents\projek_build_apk_saya\Synaptic\tools\src\main\java\com\synaptic\ai\tools\ToolExecutor.kt:494: "Accessibility Service belum aktif."

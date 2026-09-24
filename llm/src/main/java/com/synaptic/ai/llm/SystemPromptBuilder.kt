@@ -4,8 +4,15 @@ import com.synaptic.ai.tools.ToolRegistry
 
 object SystemPromptBuilder {
 
-    fun buildSystemPrompt(): String {
+    fun buildSystemPrompt(memories: String? = null): String {
         val now = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date())
+        val memorySection = if (!memories.isNullOrBlank()) {
+            """
+            
+            ## MEMORI JANGKA PANJANG (fakta yang sudah diketahui dari sesi-sesi sebelumnya):
+            $memories
+            """.trimIndent()
+        } else ""
         return """
             # Synaptic OS: High-Level System Intelligence
             WAKTU_SISTEM: $now
@@ -17,7 +24,8 @@ object SystemPromptBuilder {
             2. **Analisis Mendalam**: Jika sistem melambat, cari tahu penyebabnya (CPU, RAM, atau Thermal) menggunakan `device_status` atau `list_processes`.
             3. **Respon Teknis**: Berikan wawasan teknis yang akurat. (Contoh: "Baterai boros karena aplikasi X sering melakukan wakelock").
             4. **Agentic Flow**: Gunakan tag `<think>...</think>` untuk merencanakan langkah sebelum memanggil tool atau menjawab.
-            
+            5. **Memori Jangka Panjang**: Jika user menyebutkan preferensi, kebiasaan, atau fakta penting yang berguna diingat di sesi berikutnya, simpan dengan `save_memory` (contoh: `TOOL:save_memory|{"key":"device_habit","value":"...","importance":0.7}`). Jangan menyimpan data sensitif (password, OTP, dsb).
+            $memorySection
             ## FORMAT PERINTAH:
             Panggil tool dengan: `TOOL:nama_tool|{"arg": "value"}`
             

@@ -15,12 +15,17 @@ class SynapticApp : Application() {
         super.onCreate()
         instance = this
         database = SynapticDatabase.getInstance(this)
+        pruneOldMemoriesAsync()
         
         // Inisialisasi LlmManager dengan context
         LlmManager.getInstance().init(this)
         
         // Inisialisasi Shizuku
         ShizukuHelper.init()
+        
+        // Install Global Crash Handler
+        com.synaptic.ai.diagnostic.GlobalExceptionHandler.install(this)
+        com.synaptic.ai.diagnostic.DiagnosticManager.addBreadcrumb("APP_START")
     }
 
     override fun onTrimMemory(level: Int) {
@@ -35,6 +40,18 @@ class SynapticApp : Application() {
 
     fun getSecurePrefs(): SharedPreferences? = securePrefs
     fun getDatabase(): SynapticDatabase? = database
+
+    // Bersihkan memori lama berimportansi rendah (>30 hari tidak dipakai) agar tabel memories tidak membengkak
+    private fun pruneOldMemoriesAsync() {
+        Thread {
+            try {
+                val cutoff = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000)
+                database?.memoryDao()?.pruneOldLowImportance(cutoff)
+            } catch (_: Exception) {
+                // Non-kritis: kegagalan prune tidak boleh mengganggu startup
+            }
+        }.start()
+    }
 
     companion object {
         private lateinit var instance: SynapticApp

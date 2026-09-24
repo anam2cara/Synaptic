@@ -180,13 +180,6 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
         }
     }
 
-    // Auto-sync model status when returning to app or changing settings
-    LaunchedEffect(currentScreen) {
-        if (currentScreen == Screen.Chat) {
-            viewModel.initModel() 
-        }
-    }
-
     val sessions by viewModel.sessionSummaries.observeAsState(emptyList())
     val isKeyboardVisible = WindowInsets.isImeVisible
 
@@ -201,8 +194,6 @@ fun MainNavigation(viewModel: ChatViewModel = viewModel(), demoMode: Boolean = f
                 if (ShizukuHelper.isShizukuAvailable() && !ShizukuHelper.hasPermission()) {
                     ShizukuHelper.requestPermission()
                 }
-                // Refresh model info on resume
-                viewModel.initModel()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)

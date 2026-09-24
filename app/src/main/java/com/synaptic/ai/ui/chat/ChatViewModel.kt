@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import com.synaptic.ai.diagnostic.DiagnosticManager
 import java.util.*
 import java.util.concurrent.Executors
 
@@ -134,29 +135,26 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private fun routeRequest(userMessage: String): RoutedRequest? {
         val text = userMessage.lowercase(Locale("id"))
         val cleaned = text.trim()
+        val asksStatus = containsAny(
+            cleaned,
+            "berapa", "sisa", "status", "cek", "info", "kondisi", "berapa persen"
+        )
+        val asksBattery = containsAny(cleaned, "batre", "baterai", "battery", "daya")
+        val asksRam = containsAny(cleaned, "ram", "memori", "memory")
+        val asksStorage = containsAny(cleaned, "storage", "penyimpanan", "ruang", "disk")
+        val asksThermal = containsAny(cleaned, "suhu", "thermal", "temperatur", "temperature", "panas")
+        val asksWholeDevice = containsAny(cleaned, "device", "android", "hp", "perangkat", "sistem")
 
         val routedTool = when {
-            cleaned.contains("batre") ||
-                cleaned.contains("baterai") ||
-                cleaned.contains("battery") ||
-                cleaned.contains("sisa batre") ||
-                cleaned.contains("sisa baterai") ||
-                cleaned.contains("berapa persen") -> "device_status"
+            asksStatus && (asksBattery || asksRam || asksStorage || asksThermal || asksWholeDevice) -> "device_status"
 
             cleaned.contains("proses") ||
                 cleaned.contains("process") ||
-                cleaned.contains("aplikasi") ||
-                cleaned.contains("app") ||
+                cleaned.contains("aplikasi berjalan") ||
+                cleaned.contains("app berjalan") ||
                 cleaned.contains("foreground") ||
                 cleaned.contains("background") ||
                 cleaned.contains("berjalan") -> "list_processes"
-
-            cleaned.contains("cek ram") ||
-                cleaned.contains("status ram") ||
-                cleaned.contains("cek suhu") ||
-                cleaned.contains("status suhu") ||
-                cleaned.contains("cek storage") ||
-                cleaned.contains("cek penyimpanan") -> "device_status"
 
             cleaned.contains("diagnosa") ||
                 cleaned.contains("diagnosis") ||
@@ -214,13 +212,17 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         return routedRequest
     }
 
+    private fun containsAny(text: String, vararg needles: String): Boolean {
+        return needles.any { text.contains(it) }
+    }
+
     private fun resolveDeviceStatusScope(userMessage: String): String {
         val text = userMessage.lowercase(Locale("id"))
         return when {
             text.contains("batre") || text.contains("baterai") || text.contains("battery") -> "battery"
             text.contains("ram") -> "ram"
-            text.contains("storage") || text.contains("penyimpanan") -> "storage"
-            text.contains("suhu") -> "thermal"
+            text.contains("storage") || text.contains("penyimpanan") || text.contains("ruang") || text.contains("disk") -> "storage"
+            text.contains("suhu") || text.contains("thermal") || text.contains("temperatur") || text.contains("temperature") || text.contains("panas") -> "thermal"
             else -> "all"
         }
     }
@@ -401,6 +403,41 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private fun formatRealtimeToolResponse(request: RoutedRequest, result: com.synaptic.ai.tools.ToolExecutor.ToolResult): String {
+        if (!result.isSuccess) {
+            return buildString {
+                appendLine("Gagal mengambil data realtime.")
+                appendLine(result.output)
+                if (result.stderr.isNotEmpty()) {
+                    appendLine()
+                    appendLine(result.stderr)
+                }
+            }.trim()
+        }
+
+        val scope = try {
+            JSONObject(request.argsJson).optString("scope", "")
+        } catch (_: Exception) {
+            ""
+        }
+
+        val prefix = when (request.toolName) {
+            "device_status" -> when (scope) {
+                "battery" -> "Status baterai realtime:"
+                "ram" -> "Status RAM realtime:"
+                "storage" -> "Status storage realtime:"
+                "thermal" -> "Status suhu realtime:"
+                else -> "Status perangkat realtime:"
+            }
+            "native_backend_status" -> "Status backend realtime:"
+            "pgvector_status" -> "Status pgVector:"
+            "n8n_status" -> "Status n8n:"
+            else -> "Hasil realtime:"
+        }
+
+        return "$prefix\n${result.output.trim()}"
+    }
+
     // Execute tool directly without LLM roundtrip
     private fun executeToolDirect(request: RoutedRequest, currentId: String, userMessage: String) {
         Log.d(TAG, "HYBRID ROUTE: Direct execution of ${request.toolName}")
@@ -411,6 +448,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 "DIRECT_TOOL_START",
                 "tool=${request.toolName} userMessage=$userMessage"
             )
+
+            db.chatDao().insert(ChatMessage(currentId, "user", userMessage.trim()))
+            refreshSessions()
 
             val result = toolExecutor.execute(request.toolName, request.argsJson)
 
@@ -425,23 +465,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             val log = ActionLog("${request.toolName}: ${request.argsJson}", result.output, result.isSuccess, currentId)
             db.actionLogDao().insert(log)
             
-            val responseText = if (result.isSuccess) {
-                buildString {
-                    appendLine("Berikut hasilnya:")
-                    appendLine()
-                    appendLine(result.output)
-                }
-            } else {
-                buildString {
-                    appendLine("Gagal mengambil data (exit ${result.exitCode}):")
-                    appendLine(result.output)
-                    if (result.stderr.isNotEmpty()) {
-                        appendLine()
-                        appendLine("Detail error:")
-                        appendLine(result.stderr)
-                    }
-                }
-            }
+            val responseText = formatRealtimeToolResponse(request, result)
             
             saveAssistantMessage(responseText)
             _uiState.postValue(UiState.IDLE)
@@ -565,6 +589,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         if (text.isBlank()) return
         if (_uiState.value == UiState.GENERATING) return
         
+        DiagnosticManager.addBreadcrumb("USER_SEND_MESSAGE", "len=${text.length}")
         lastActivityTime = System.currentTimeMillis()
         
         // Point 9: Cek Shizuku jika user minta perintah admin
@@ -615,12 +640,13 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
-        /* 
-           JALUR CEPAT DINONAKTIFKAN TOTAL:
-           Kami tidak lagi menggunakan ExpertResponseEngine atau executeToolDirect 
-           untuk status perangkat. Semuanya harus diproses oleh LLM agar jawaban 
-           tidak kaku dan berbasis template.
-        */
+        routeRequest(text)?.let { request ->
+            if (shouldBypassLlmForTool(request.toolName)) {
+                synchronized(tokenBuffer) { tokenBuffer.setLength(0); _outputFlow.value = "" }
+                executeToolDirect(request, currentId, text)
+                return
+            }
+        }
 
         synchronized(tokenBuffer) { tokenBuffer.setLength(0); _outputFlow.value = "" }
         _uiState.value = UiState.GENERATING
@@ -754,6 +780,8 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
         if (response.contains("\"tool\"") && iteration >= MAX_TOOL_ITERATIONS) {
             saveAssistantMessage("Maaf, saya tidak berhasil menyelesaikan permintaan ini setelah beberapa percobaan.")
+        } else if (response.isBlank()) {
+            saveAssistantMessage("Model tidak menghasilkan jawaban. Coba ulangi dengan pertanyaan yang lebih spesifik, atau gunakan pertanyaan realtime seperti status baterai/RAM.")
         } else {
             saveAssistantMessage(response)
         }
@@ -809,6 +837,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     fun confirmAction() {
         val ctx = pendingAgenticContext
         if (ctx != null) {
+            DiagnosticManager.addBreadcrumb("USER_CONFIRM_ACTION", "tool=${ctx.toolName}")
             pendingAgenticContext = null
             _pendingAction.value = null
             _uiState.value = UiState.GENERATING
@@ -828,6 +857,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun rejectAction() {
+        DiagnosticManager.addBreadcrumb("USER_REJECT_ACTION")
         pendingAgenticContext = null
         _pendingAction.value = null
         saveAssistantMessage("Oke, saya batalkan tindakan tersebut.")
@@ -849,7 +879,10 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun saveAssistantMessage(content: String) {
         val currentId = _sessionId.value ?: ""
-        val msg = ChatMessage(currentId, "assistant", sanitizeLlmOutput(content))
+        val sanitized = sanitizeLlmOutput(content).ifBlank {
+            "Tidak ada output yang bisa ditampilkan."
+        }
+        val msg = ChatMessage(currentId, "assistant", sanitized)
         backgroundExecutor.execute {
             db.chatDao().insert(msg)
             synchronized(tokenBuffer) { tokenBuffer.setLength(0) }
@@ -863,7 +896,10 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         
         // Sembunyikan isi <think> jika belum ditutup
         if (clean.contains("<think>") && !clean.contains("</think>")) {
-            return "..." 
+            val before = clean.substringBefore("<think>").trim()
+            return before.ifBlank {
+                "Jawaban terpotong sebelum selesai (kemungkinan batas token tercapai). Coba pertanyaan yang lebih singkat/spesifik."
+            }
         }
         
         // Buang isi <think>...</think> sepenuhnya jika sudah ditutup

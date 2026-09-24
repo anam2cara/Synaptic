@@ -1,0 +1,82 @@
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\CommonComposables.kt:17: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\CommonComposables.kt:30: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\CommonComposables.kt:44: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\CommonComposables.kt:56: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\ShellScreen.kt:7: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\SynapticTheme.kt:73: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\SynapticTheme.kt:76: content: @Composable () -> Unit
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:68: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:154: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:157: val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:230: ModalNavigationDrawer(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:231: drawerState = drawerState,
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:232: drawerContent = {
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:233: ModalDrawerSheet(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:234: drawerContainerColor = MaterialTheme.colorScheme.surface,
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:235: drawerShape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp),
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:245: scope.launch { drawerState.close() }
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:287: NavigationDrawerItem(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:327: scope.launch { drawerState.close() }
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:331: colors = NavigationDrawerItemDefaults.colors(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:342: NavigationDrawerItem(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:355: scope.launch { drawerState.close() }
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:362: colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent)
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:367: Scaffold(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:378: IconButton(onClick = { scope.launch { drawerState.open() } }) {
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:401: NavigationBar(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:403: modifier = Modifier.navigationBarsPadding().height(64.dp),
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:408: NavigationBarItem(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatActivity.kt:425: colors = NavigationBarItemDefaults.colors(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:58: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:204: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:243: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:330: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:516: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:566: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:674: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:721: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:723: Column(modifier = Modifier.navigationBarsPadding()) {
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:725: NavigationBar(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:737: NavigationBarItem(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\chat\ChatScreen.kt:756: colors = NavigationBarItemDefaults.colors(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\logcat\LogcatScreen.kt:103: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\logcat\LogcatScreen.kt:122: Scaffold(
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\settings\SettingsScreen.kt:21: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\settings\SettingsScreen.kt:70: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\settings\SettingsScreen.kt:71: private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) {
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\settings\SettingsScreen.kt:91: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\settings\SettingsScreen.kt:116: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\shell\ShellScreen.kt:36: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\shell\ShellScreen.kt:108: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\shell\ShellScreen.kt:171: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\app\src\main\java\com\synaptic\ai\ui\shell\ShellScreen.kt:188: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\ChatView.kt:38: import androidx.compose.material3.Scaffold
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\ChatView.kt:58: import androidx.navigation.NavController
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\ChatView.kt:63: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\ChatView.kt:65: navController: NavController, chatState: AppViewModel.ChatState, activity: Activity
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\ChatView.kt:69: Scaffold(topBar = {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\ChatView.kt:80: onClick = { navController.popBackStack() },
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\ChatView.kt:150: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\ChatView.kt:263: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\ChatView.kt:331: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\NavView.kt:7: import androidx.navigation.compose.NavHost
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\NavView.kt:9: import androidx.navigation.compose.rememberNavController
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\NavView.kt:12: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\NavView.kt:14: val navController = rememberNavController()
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\NavView.kt:15: NavHost(navController = navController, startDestination = "home") {
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\NavView.kt:16: composable("home") { StartView(navController, appViewModel) }
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\NavView.kt:17: composable("chat") { ChatView(navController, appViewModel.chatState, activity) }
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\StartView.kt:31: import androidx.compose.material3.Scaffold
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\StartView.kt:47: import androidx.navigation.NavController
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\StartView.kt:51: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\StartView.kt:53: navController: NavController,
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\StartView.kt:57: Scaffold(
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\StartView.kt:83: navController = navController,
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\StartView.kt:101: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\StartView.kt:120: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\StartView.kt:122: navController: NavController,
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\StartView.kt:178: navController.navigate("chat")
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\ui\theme\Theme.kt:77: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCChat\app\src\main\java\ai\mlc\mlcchat\ui\theme\Theme.kt:82: content: @Composable () -> Unit
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCEngineExample\app\src\main\java\ai\mlc\mlcengineexample\ui\theme\Theme.kt:77: @Composable
+D:\Documents\projek_build_apk_saya\Synaptic\llm\src\main\cpp\mlc_src\android\MLCEngineExample\app\src\main\java\ai\mlc\mlcengineexample\ui\theme\Theme.kt:82: content: @Composable () -> Unit

@@ -1,0 +1,32 @@
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\model\ActionLog.kt:7: @Entity(tableName = "action_logs")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\model\ChatMessage.kt:6: @Entity(tableName = "messages")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\model\Memory.kt:10: @Entity(tableName = "memories")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ActionLogDao.kt:9: @Dao
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ActionLogDao.kt:11: @Insert
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ActionLogDao.kt:14: @Query("SELECT * FROM action_logs ORDER BY executedAt DESC LIMIT 100")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ActionLogDao.kt:17: @Query("SELECT * FROM action_logs ORDER BY executedAt DESC LIMIT 100")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ActionLogDao.kt:20: @Query("DELETE FROM action_logs WHERE executedAt < :cutoffTime")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ActionLogDao.kt:23: @Query("DELETE FROM action_logs")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ChatDao.kt:11: @Dao
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ChatDao.kt:13: @Insert
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ChatDao.kt:16: @Update
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ChatDao.kt:19: @Query("SELECT * FROM messages WHERE sessionId = :sessionId ORDER BY timestamp ASC")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ChatDao.kt:22: @Query("SELECT * FROM messages WHERE sessionId = :sessionId ORDER BY timestamp ASC")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ChatDao.kt:25: @Query("SELECT DISTINCT sessionId FROM messages ORDER BY sessionId DESC")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ChatDao.kt:29: @Query("SELECT * FROM messages GROUP BY sessionId ORDER BY timestamp DESC")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ChatDao.kt:32: @Query("UPDATE messages SET sessionTitle = :newTitle WHERE sessionId = :sessionId")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ChatDao.kt:35: @Query("DELETE FROM messages WHERE sessionId = :sessionId")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ChatDao.kt:38: @Query("DELETE FROM messages WHERE sessionId = :sessionId AND timestamp >= :afterTimestamp")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\ChatDao.kt:41: @Query("DELETE FROM messages")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:9: @Dao
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:11: @Insert
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:14: @Update
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:17: @Query("SELECT * FROM memories ORDER BY importance DESC, lastUsedAt DESC LIMIT :limit")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:20: @Query("SELECT * FROM memories WHERE key = :key LIMIT 1")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:23: @Query("UPDATE memories SET useCount = useCount + 1, lastUsedAt = :now WHERE id = :id")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:26: @Query("DELETE FROM memories WHERE importance < 0.3 AND lastUsedAt < :cutoffTime")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\MemoryDao.kt:29: @Query("DELETE FROM memories")
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\SynapticDatabase.kt:6: import androidx.room.RoomDatabase
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\SynapticDatabase.kt:11: @Database(
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\SynapticDatabase.kt:16: abstract class SynapticDatabase : RoomDatabase() {
+D:\Documents\projek_build_apk_saya\Synaptic\core\src\main\java\com\synaptic\ai\data\repo\SynapticDatabase.kt:28: instance ?: Room.databaseBuilder(

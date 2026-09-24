@@ -85,6 +85,15 @@ object ToolRegistry {
         ),
 
         ToolDefinition(
+            name = "save_memory",
+            description = "Simpan fakta jangka panjang yang layak diingat lintas sesi (preferensi/kebiasaan user, karakteristik device, dsb).",
+            argumentExample = """{"key":"...","value":"...","importance":0.5}""",
+            permission = Permission.NONE,
+            requiresConfirmation = false,
+            directRoute = false
+        ),
+
+        ToolDefinition(
             name = "n8n_trigger",
             description = "Trigger webhook n8n yang sudah dikonfigurasi.",
             argumentExample = """{"payload":"..."}""",

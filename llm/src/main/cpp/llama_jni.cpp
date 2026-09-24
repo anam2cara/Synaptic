@@ -1,4 +1,5 @@
 #include <jni.h>
+#include <sys/stat.h>
 #include <string>
 #include <vector>
 #include <thread>
@@ -11,10 +12,51 @@
 #include "llama.h"
 #include "ggml.h"
 #include "ggml-backend.h"
+#include <sched.h>
 
 #define TAG "SynapticJNI"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
+
+// Redirect logging internal ggml/llama.cpp (default-nya fprintf ke stderr, muncul di
+// logcat tanpa tag/format yang konsisten) ke __android_log_print dengan TAG yang sama
+// supaya seluruh log inferensi LLM murni lewat satu jalur logcat yang rapi.
+static void ggmlAndroidLogCallback(enum ggml_log_level level, const char * text, void * /*user_data*/) {
+    if (!text) return;
+    size_t len = strlen(text);
+    while (len > 0 && (text[len - 1] == '\n' || text[len - 1] == '\r')) len--;
+    if (len == 0) return;
+
+    android_LogPriority prio;
+    switch (level) {
+        case GGML_LOG_LEVEL_ERROR: prio = ANDROID_LOG_ERROR; break;
+        case GGML_LOG_LEVEL_WARN:  prio = ANDROID_LOG_WARN;  break;
+        case GGML_LOG_LEVEL_INFO:  prio = ANDROID_LOG_INFO;  break;
+        case GGML_LOG_LEVEL_DEBUG: prio = ANDROID_LOG_DEBUG; break;
+        default: return; // GGML_LOG_LEVEL_NONE / GGML_LOG_LEVEL_CONT diabaikan
+    }
+    __android_log_print(prio, TAG, "%.*s", (int) len, text);
+}
+
+static std::once_flag g_nativeLogInitFlag;
+static void ensureNativeLoggingInstalled() {
+    std::call_once(g_nativeLogInitFlag, []() {
+        llama_log_set(ggmlAndroidLogCallback, nullptr);
+        ggml_log_set(ggmlAndroidLogCallback, nullptr);
+    });
+}
+
+static void nativeBreadcrumb(JNIEnv* env, const char* event, const char* metadata = nullptr) {
+    jclass cls = env->FindClass("com/synaptic/ai/llm/LlamaJNI");
+    if (!cls) return;
+    jmethodID mid = env->GetStaticMethodID(cls, "addBreadcrumb", "(Ljava/lang/String;Ljava/lang/String;)V");
+    if (!mid) return;
+    jstring jevent = env->NewStringUTF(event);
+    jstring jmeta = metadata ? env->NewStringUTF(metadata) : nullptr;
+    env->CallStaticVoidMethod(cls, mid, jevent, jmeta);
+    if (jevent) env->DeleteLocalRef(jevent);
+    if (jmeta) env->DeleteLocalRef(jmeta);
+}
 
 struct LlamaState {
     llama_model   * model   = nullptr;
@@ -25,12 +67,8 @@ struct LlamaState {
 };
 
 static LlamaState g_state;
-static std::mutex g_stateMutex;
+static std::recursive_mutex g_stateMutex;
 static std::atomic<bool> g_abort{false};
-
-// Stored model path & requested GPU preference (used for CPU fallback)
-static std::string g_model_path;
-static bool g_try_gpu_requested = false;
 
 static void freeStateLocked() {
     if (g_state.sampler) { llama_sampler_free(g_state.sampler); g_state.sampler = nullptr; }
@@ -38,41 +76,6 @@ static void freeStateLocked() {
     if (g_state.model)   { llama_model_free(g_state.model);     g_state.model   = nullptr; }
     g_state.loaded = false;
     g_state.n_past = 0;
-}
-
-static bool reloadModelCPU(int nCtx) {
-    try {
-        std::lock_guard<std::mutex> lock(g_stateMutex);
-        freeStateLocked();
-
-        llama_backend_init();
-        ggml_backend_load_all();
-
-        llama_model_params mparams = llama_model_default_params();
-        mparams.use_mmap = true;
-        mparams.n_gpu_layers = 0; // force CPU
-
-        g_state.model = llama_model_load_from_file(g_model_path.c_str(), mparams);
-        if (!g_state.model) return false;
-
-        llama_context_params cparams = llama_context_default_params();
-        cparams.n_ctx = nCtx > 0 ? nCtx : 1792;
-        cparams.n_threads = 4;
-        cparams.n_threads_batch = 4;
-
-        g_state.ctx = llama_init_from_model(g_state.model, cparams);
-        if (!g_state.ctx) { freeStateLocked(); return false; }
-
-        g_state.loaded = true;
-        LOGI("[FALLBACK] Model reloaded on CPU (n_gpu_layers=0)");
-        return true;
-    } catch (const std::exception &e) {
-        LOGE("[FALLBACK] reloadModelCPU exception: %s", e.what());
-        return false;
-    } catch (...) {
-        LOGE("[FALLBACK] reloadModelCPU unknown exception");
-        return false;
-    }
 }
 
 // Filter UTF-8 Tanpa Typo
@@ -187,64 +190,158 @@ static size_t utf8SafePrefixLen(std::string & s) {
 
 extern "C" {
 
+JNIEXPORT jobject JNICALL
+Java_com_synaptic_ai_llm_LlamaJNI_getModelMetadata(JNIEnv* env, jobject, jstring modelPath) {
+    nativeBreadcrumb(env, "GET_METADATA_START");
+
+    if (modelPath == nullptr) {
+        nativeBreadcrumb(env, "GET_METADATA_ERROR", "null model path");
+        return nullptr;
+    }
+
+    const char* path = env->GetStringUTFChars(modelPath, nullptr);
+
+    if (path == nullptr) {
+        nativeBreadcrumb(env, "GET_METADATA_ERROR", "GetStringUTFChars failed");
+        return nullptr;
+    }
+
+    struct stat st {};
+    const int statResult = stat(path, &st);
+
+    env->ReleaseStringUTFChars(modelPath, path);
+
+    if (statResult != 0 || st.st_size < 0) {
+        nativeBreadcrumb(env, "GET_METADATA_ERROR", "cannot stat model file");
+        return nullptr;
+    }
+
+    jclass cls = env->FindClass("com/synaptic/ai/llm/LlamaJNI$ModelMetadata");
+    if (!cls) {
+        nativeBreadcrumb(env, "GET_METADATA_ERROR", "ModelMetadata class not found");
+        return nullptr;
+    }
+
+    jmethodID constructor = env->GetMethodID(
+        cls,
+        "<init>",
+        "(JJLjava/lang/String;II)V"
+    );
+
+    if (!constructor) {
+        nativeBreadcrumb(env, "GET_METADATA_ERROR", "ModelMetadata constructor not found");
+        return nullptr;
+    }
+
+    jstring jdesc = env->NewStringUTF("Local model");
+
+    if (!jdesc) {
+        nativeBreadcrumb(env, "GET_METADATA_ERROR", "NewStringUTF failed");
+        return nullptr;
+    }
+
+    jobject obj = env->NewObject(
+        cls,
+        constructor,
+        static_cast<jlong>(st.st_size),
+        static_cast<jlong>(0),
+        jdesc,
+        static_cast<jint>(0),
+        static_cast<jint>(0)
+    );
+
+    env->DeleteLocalRef(jdesc);
+
+    if (!obj) {
+        nativeBreadcrumb(env, "GET_METADATA_ERROR", "NewObject failed");
+        return nullptr;
+    }
+
+    nativeBreadcrumb(env, "GET_METADATA_SUCCESS");
+    return obj;
+}
 JNIEXPORT jboolean JNICALL
-Java_com_synaptic_ai_llm_LlamaJNI_loadModel(JNIEnv* env, jobject, jstring modelPath, jboolean tryGpu, jint nCtx) {
+Java_com_synaptic_ai_llm_LlamaJNI_loadModel(JNIEnv* env, jobject, jstring modelPath, jint nGpuLayers, jint nCtx) {
+    nativeBreadcrumb(env, "LOAD_START");
     try {
-        std::lock_guard<std::mutex> lock(g_stateMutex);
+        std::lock_guard<std::recursive_mutex> lock(g_stateMutex);
         const char* path = env->GetStringUTFChars(modelPath, nullptr);
         freeStateLocked();
-                // Store model path and requested GPU preference for possible fallback
-                g_model_path = std::string(path);
-                g_try_gpu_requested = tryGpu ? true : false;
 
-        LOGI("[STAGE: LOAD] JNI_SAFE_MODE_4.0 - Adaptive Ctx: %d", nCtx);
+        ensureNativeLoggingInstalled();
+        LOGI("[STAGE: LOAD] JNI_DEVICE_AWARE_1.0 - Ctx: %d, GPU Layers: %d", nCtx, nGpuLayers);
         llama_backend_init();
 
         ggml_backend_load_all();
 
         llama_model_params mparams = llama_model_default_params();
         mparams.use_mmap = true;
+        mparams.use_mlock = false;
 
-        // Restore GPU enable path: tryGpu controls GPU usage. Keep conservative default layers.
-        if (tryGpu) {
-             LOGI("[VULKAN] Mencoba inisialisasi GPU...");
-             // Beberapa chip mid-range mungkin bermasalah; gunakan sedikit layer terlebih dahulu
-             mparams.n_gpu_layers = 4; // minimal layer untuk tes stabilitas
-        } else {
-             mparams.n_gpu_layers = 0;
+        mparams.n_gpu_layers = nGpuLayers;
+
+        if (nGpuLayers > 0) {
+             LOGI("[VULKAN] Probing for GPU device...");
+             ggml_backend_dev_t vulkanDevice = nullptr;
+             for (size_t i = 0; i < ggml_backend_reg_count() && vulkanDevice == nullptr; ++i) {
+                ggml_backend_reg_t reg = ggml_backend_reg_get(i);
+                if (!reg) continue;
+                const char * backendName = ggml_backend_reg_name(reg);
+                if (!backendName || std::string(backendName) != "Vulkan") continue;
+                if (ggml_backend_reg_dev_count(reg) > 0) {
+                    vulkanDevice = ggml_backend_reg_dev_get(reg, 0);
+                    break;
+                }
+            }
+            if (vulkanDevice) {
+                ggml_backend_dev_t devices[] = { vulkanDevice, nullptr };
+                mparams.devices = devices;
+                LOGI("[VULKAN] Explicitly using device: %s", ggml_backend_dev_name(vulkanDevice));
+            }
         }
 
         g_state.model = llama_model_load_from_file(path, mparams);
         env->ReleaseStringUTFChars(modelPath, path);
-        if (!g_state.model) return JNI_FALSE;
+        if (!g_state.model) {
+            LOGE("[ERROR] llama_model_load_from_file failed");
+            return JNI_FALSE;
+        }
 
         llama_context_params cparams = llama_context_default_params();
-        cparams.n_ctx   = nCtx > 0 ? nCtx : 1792;
+        cparams.n_ctx   = nCtx > 0 ? nCtx : 512;
         cparams.n_threads = 4;
         cparams.n_threads_batch = 4;
+        cparams.offload_kqv = true;
 
+        cpu_set_t perfMask; CPU_ZERO(&perfMask); CPU_SET(4,&perfMask); CPU_SET(5,&perfMask); CPU_SET(6,&perfMask); CPU_SET(7,&perfMask);
+        if (sched_setaffinity(0, sizeof(perfMask), &perfMask) != 0) { LOGE("[WARN] sched_setaffinity perf-core pin failed"); }
         g_state.ctx = llama_init_from_model(g_state.model, cparams);
         if (!g_state.ctx) {
+            LOGE("[ERROR] llama_init_from_model failed");
             freeStateLocked();
             return JNI_FALSE;
         }
 
         g_state.loaded = true;
-        LOGI("[STAGE: LOAD] Success. gpu_layers=%d", mparams.n_gpu_layers);
+        LOGI("[STAGE: LOAD] Success.");
+        nativeBreadcrumb(env, "LOAD_SUCCESS");
         return JNI_TRUE;
     } catch (const std::exception& e) {
         LOGE("[CRITICAL] Native exception in loadModel: %s", e.what());
+        nativeBreadcrumb(env, "LOAD_EXCEPTION", e.what());
         return JNI_FALSE;
     } catch (...) {
         LOGE("[CRITICAL] Unknown native error in loadModel");
+        nativeBreadcrumb(env, "LOAD_ERROR_UNKNOWN");
         return JNI_FALSE;
     }
 }
 
 JNIEXPORT void JNICALL
 Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring prompt, jstring grammar, jint maxTokens, jobject callback) {
+    nativeBreadcrumb(env, "GENERATE_START");
     try {
-        std::unique_lock<std::mutex> lock(g_stateMutex);
+        std::unique_lock<std::recursive_mutex> lock(g_stateMutex);
         jclass cbClass = env->GetObjectClass(callback);
         jmethodID onToken = env->GetMethodID(cbClass, "onToken", "(Ljava/lang/String;)V");
         jmethodID onComplete = env->GetMethodID(cbClass, "onComplete", "()V");
@@ -291,43 +388,9 @@ Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring p
 
         // Buat sampler chain yang jauh lebih cerdas (Robus Sampling)
         llama_sampler_chain_params sparams = llama_sampler_chain_default_params();
-        g_state.sampler = llama_sampler_chain_init(sparams);
-        if (!g_state.sampler) {
-            LOGE("[CRITICAL] sampler init failed");
-            emitError("Native sampler init failed");
-            env->DeleteLocalRef(cbClass);
-            return;
-        }
-
-        // 1. Repeat Penalty (Pencegah loop/kacau)
-        llama_sampler_chain_add(g_state.sampler, llama_sampler_init_penalties(
-            64,   // last_n_tokens
-            1.1f, // penalty_repeat
-            0.0f, // penalty_freq
-            0.0f  // penalty_present
-        ));
-
-        // 2. Top-K, Top-P, Min-P (Filter probabilitas)
-        llama_sampler_chain_add(g_state.sampler, llama_sampler_init_top_k(40));
-        llama_sampler_chain_add(g_state.sampler, llama_sampler_init_top_p(0.95f, 1));
-        llama_sampler_chain_add(g_state.sampler, llama_sampler_init_min_p(0.05f, 1));
-
-        // 3. Temperature
+        // Sampler Sederhana (Paling Stabil untuk Android)
+        g_state.sampler = llama_sampler_chain_init(llama_sampler_chain_default_params());
         llama_sampler_chain_add(g_state.sampler, llama_sampler_init_temp(0.7f));
-
-        // 4. Grammar Enforcement (Jika ada)
-        if (grammar != nullptr) {
-            const char* g_str = env->GetStringUTFChars(grammar, nullptr);
-            if (strlen(g_str) > 0) {
-                // Catatan: llama_sampler_init_grammar_simple tersedia di API terbaru llama.cpp
-                // Jika tidak ada, kita bisa memakai llama_grammar_init secara manual.
-                // Untuk stabilitas, kita pakai sampler grammar jika didukung.
-                llama_sampler_chain_add(g_state.sampler, llama_sampler_init_grammar(vocab, g_str, "root"));
-            }
-            env->ReleaseStringUTFChars(grammar, g_str);
-        }
-
-        // 5. Terakhir: Distribusi/Seed
         llama_sampler_chain_add(g_state.sampler, llama_sampler_init_dist(time(NULL)));
 
         llama_memory_clear(llama_get_memory(g_state.ctx), true);
@@ -351,44 +414,7 @@ Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring p
                 batch.logits[i] = (tokenIndex == n_tokens - 1);
             }
 
-            int decodeResult = 0;
-            try {
-                decodeResult = llama_decode(g_state.ctx, batch);
-            } catch (const std::exception &e) {
-                std::string why = e.what();
-                LOGE("[CRITICAL] llama_decode threw: %s", why.c_str());
-                if (why.find("DeviceLost") != std::string::npos || why.find("vk::DeviceLost") != std::string::npos) {
-                    LOGE("[FALLBACK] Vulkan DeviceLost detected — attempting CPU reload");
-                    // try reload on CPU
-                    if (reloadModelCPU(n_ctx)) {
-                        LOGI("[FALLBACK] Reloaded model on CPU, retrying decode");
-                        // retry decode on CPU
-                        try {
-                            decodeResult = llama_decode(g_state.ctx, batch);
-                        } catch (const std::exception &e2) {
-                            LOGE("[FALLBACK] retry llama_decode failed: %s", e2.what());
-                            emitError("Native decode failed after CPU fallback");
-                            llama_batch_free(batch);
-                            env->DeleteLocalRef(cbClass);
-                            return;
-                        }
-                    } else {
-                        LOGE("[FALLBACK] reloadModelCPU failed");
-                        emitError("DeviceLost and CPU reload failed");
-                        llama_batch_free(batch);
-                        env->DeleteLocalRef(cbClass);
-                        return;
-                    }
-                } else {
-                    // propagate as native error
-                    LOGE("[CRITICAL] Non-Vulkan exception in llama_decode: %s", why.c_str());
-                    emitError("Native decode exception: check logs");
-                    llama_batch_free(batch);
-                    env->DeleteLocalRef(cbClass);
-                    return;
-                }
-            }
-
+            const int decodeResult = llama_decode(g_state.ctx, batch);
             llama_batch_free(batch);
 
             if (decodeResult != 0) {
@@ -406,6 +432,7 @@ Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring p
 
         g_state.n_past = n_tokens;
         g_abort.store(false);
+        nativeBreadcrumb(env, "PREFILL_SUCCESS");
         std::string pending;
         llama_batch s_batch = llama_batch_init(1, 0, 1);
         s_batch.n_tokens = 1;
@@ -440,46 +467,21 @@ Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring p
             }
             s_batch.token[0] = id;
             s_batch.pos[0] = g_state.n_past++;
-            try {
-                if (llama_decode(g_state.ctx, s_batch) != 0) {
-                    emitError("Native decode gagal saat generate");
-                    llama_batch_free(s_batch);
-                    env->DeleteLocalRef(cbClass);
-                    return;
-                }
-            } catch (const std::exception &e) {
-                std::string why = e.what();
-                LOGE("[CRITICAL] llama_decode threw during generate: %s", why.c_str());
-                if (why.find("DeviceLost") != std::string::npos || why.find("vk::DeviceLost") != std::string::npos) {
-                    LOGE("[FALLBACK] Vulkan DeviceLost detected during generate — attempting CPU reload");
-                    if (reloadModelCPU(n_ctx)) {
-                        LOGI("[FALLBACK] Reloaded model on CPU — aborting this generate call, please retry");
-                        emitError("Device lost: switched to CPU, retry generate");
-                        llama_batch_free(s_batch);
-                        env->DeleteLocalRef(cbClass);
-                        return;
-                    } else {
-                        LOGE("[FALLBACK] reloadModelCPU failed during generate");
-                        emitError("DeviceLost and CPU reload failed");
-                        llama_batch_free(s_batch);
-                        env->DeleteLocalRef(cbClass);
-                        return;
-                    }
-                } else {
-                    LOGE("[CRITICAL] Non-Vulkan exception in llama_decode during generate: %s", why.c_str());
-                    emitError("Native decode exception during generate: check logs");
-                    llama_batch_free(s_batch);
-                    env->DeleteLocalRef(cbClass);
-                    return;
-                }
+            if (llama_decode(g_state.ctx, s_batch) != 0) {
+                emitError("Native decode gagal saat generate");
+                llama_batch_free(s_batch);
+                env->DeleteLocalRef(cbClass);
+                return;
             }
         }
         llama_batch_free(s_batch);
         LOGI("[STAGE: GEN] Selesai.");
+        nativeBreadcrumb(env, "GENERATE_SUCCESS");
         env->CallVoidMethod(callback, onComplete);
         env->DeleteLocalRef(cbClass);
     } catch (const std::exception& e) {
         LOGE("[CRITICAL] Native exception in generateStream: %s", e.what());
+        nativeBreadcrumb(env, "GENERATE_EXCEPTION", e.what());
         // Emit error via callback if possible
         jclass cbClass = env->GetObjectClass(callback);
         jmethodID onError = env->GetMethodID(cbClass, "onError", "(Ljava/lang/String;)V");
@@ -494,7 +496,7 @@ Java_com_synaptic_ai_llm_LlamaJNI_generateStream(JNIEnv* env, jobject, jstring p
 }
 
 JNIEXPORT void JNICALL Java_com_synaptic_ai_llm_LlamaJNI_stopGeneration(JNIEnv*, jobject) { g_abort.store(true); }
-JNIEXPORT void JNICALL Java_com_synaptic_ai_llm_LlamaJNI_freeModel(JNIEnv*, jobject) { std::lock_guard<std::mutex> lock(g_stateMutex); freeStateLocked(); }
+JNIEXPORT void JNICALL Java_com_synaptic_ai_llm_LlamaJNI_freeModel(JNIEnv*, jobject) { std::lock_guard<std::recursive_mutex> lock(g_stateMutex); freeStateLocked(); }
 JNIEXPORT jboolean JNICALL Java_com_synaptic_ai_llm_LlamaJNI_isLoaded(JNIEnv*, jobject) { return g_state.loaded; }
 JNIEXPORT void JNICALL Java_com_synaptic_ai_llm_LlamaJNI_clearCache(JNIEnv*, jobject) { if (g_state.ctx) llama_memory_clear(llama_get_memory(g_state.ctx), true); g_state.n_past = 0; }
 

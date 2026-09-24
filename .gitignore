@@ -42,3 +42,6 @@ tree_source.txt
 _vulkan_rebuild_log.txt
 full_log.txt
 last_log.txt
+
+tombstone*
+logcat_*.txt

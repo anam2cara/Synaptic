@@ -4,7 +4,8 @@ package com.synaptic.ai.llm
 class MlcBridge : NativeBridge {
     private val impl = MlcJNI()
 
-    override fun loadModel(modelPath: String, tryGpu: Boolean, nCtx: Int): Boolean = impl.loadModel(modelPath, tryGpu, nCtx)
+    override fun getModelMetadata(modelPath: String) = impl.getModelMetadata(modelPath)
+    override fun loadModel(modelPath: String, nGpuLayers: Int, nCtx: Int): Boolean = impl.loadModel(modelPath, nGpuLayers, nCtx)
     override fun generateStream(prompt: String, grammar: String?, maxTokens: Int, callback: LlamaJNI.StreamCallback) {
         // adapt callback types between MlcJNI and Llama-style StreamCallback
         val cb = object : MlcJNI.StreamCallback {
