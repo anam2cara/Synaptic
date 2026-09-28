@@ -46,3 +46,14 @@ last_log.txt
 tombstone*
 logcat_*.txt
 
+
+# Local artifacts
+/audit_*.txt
+/caches/
+/daemon/
+/kotlin-profile/
+/native/0.2.8/
+/.tmp/
+/synaptic_check_package*/
+/synaptic_db_wal_pull/
+/synaptic_debug_*.db

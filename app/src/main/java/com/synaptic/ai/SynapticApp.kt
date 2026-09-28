@@ -16,6 +16,8 @@ class SynapticApp : Application() {
         instance = this
         database = SynapticDatabase.getInstance(this)
         pruneOldMemoriesAsync()
+        com.synaptic.ai.system.SystemEventReceiver.register(this)
+        com.synaptic.ai.system.NetworkObserver.register(this)
         
         // Inisialisasi LlmManager dengan context
         LlmManager.getInstance().init(this)

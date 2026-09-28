@@ -763,7 +763,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             val args = finalToolCall.argsJson
             Log.d(TAG, "Detected TOOL: call: name=$toolName args=$args")
 
-            if (prefs.isConfirmBeforeExec && iteration == 0) {
+            if (com.synaptic.ai.tools.ToolRegistry.get(toolName)?.requiresConfirmation == true || (prefs.isConfirmBeforeExec && iteration == 0)) {
                 pendingAgenticContext = AgenticContext(
                     currentId, userMessage, history, memories, response, toolName, args, iteration
                 )

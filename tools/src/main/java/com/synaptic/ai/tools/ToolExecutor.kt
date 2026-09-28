@@ -9,6 +9,7 @@ import com.synaptic.ai.monitor.DeviceMonitor
 import com.synaptic.ai.diagnostic.PerformanceAnalyzer
 import com.synaptic.ai.accessibility.SynapticAccessibilityService
 import com.synaptic.ai.data.model.Memory
+import com.synaptic.ai.data.model.SystemEvent
 import com.synaptic.ai.data.repo.SynapticDatabase
 import java.net.HttpURLConnection
 import java.net.URL
@@ -74,6 +75,7 @@ class ToolExecutor(context: Context) {
             "pgvector_status" -> executePgVectorStatus()
             "n8n_status" -> executeN8nStatus()
             "n8n_trigger" -> executeN8nTrigger(extractJsonString(args, "payload"))
+            "deep_snapshot" -> executeDeepSnapshot()
             else -> makeResult(false, "Tool belum memiliki executor: $normalizedName", "", -1)
         }
     }
@@ -532,6 +534,39 @@ class ToolExecutor(context: Context) {
                 false,
                 "Analisis gagal: ${e.message}"
             )
+        }
+    }
+
+    private fun executeDeepSnapshot(): ToolResult {
+        if (!ShizukuHelper.isShizukuAvailable() || !ShizukuHelper.hasPermission()) {
+            return makeResult(false, "Deep snapshot butuh izin Shizuku yang belum aktif.", "", -1)
+        }
+
+        val sections = linkedMapOf(
+            "BATTERY" to "dumpsys battery",
+            "MEMINFO" to "dumpsys meminfo",
+            "CPUINFO" to "dumpsys cpuinfo",
+            "PROCESSES" to "dumpsys activity processes",
+            "NETSTATS" to "dumpsys netstats detail",
+            "PACKAGES" to "pm list packages -f -u"
+        )
+
+        val combined = buildString {
+            for ((label, cmd) in sections) {
+                appendLine("=== $label ===")
+                val res = ShellExecutor.runWithResult(cmd)
+                appendLine(if (res.output.isNotBlank()) res.output else "(kosong)")
+                appendLine()
+            }
+        }.trim()
+
+        return try {
+            val event = SystemEvent(type = "DEEP_SNAPSHOT", value = combined)
+            SynapticDatabase.getInstance(context).systemEventDao().insert(event)
+            makeResult(true, "Snapshot tersimpan (${combined.length} karakter).\n\n$combined")
+        } catch (e: Exception) {
+            Log.e(TAG, "Gagal simpan deep snapshot", e)
+            makeResult(false, "Snapshot dijalankan tapi gagal disimpan ke database: ${e.message}", "", -1)
         }
     }
 

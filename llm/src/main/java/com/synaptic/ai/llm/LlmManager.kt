@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 import com.synaptic.ai.diagnostic.DiagnosticManager
 import com.synaptic.ai.diagnostic.DiagnosticManager.LlmState
 
-private const val SYNAPTIC_MODEL_PATH = "/storage/emulated/0/Documents/Berkas_lain/LLM_model/Llama-3.2-1B-Instruct-Q4_K_M.gguf"
+    private const val SYNAPTIC_MODEL_PATH = "/storage/emulated/0/Documents/Berkas_lain/LLM_model/Qwen3-0.6B-Q4_K_M.gguf"
     private const val IDLE_UNLOAD_TIMEOUT_MS = 120_000L // 2 menit
 
 class LlmManager private constructor() {
@@ -64,7 +64,7 @@ class LlmManager private constructor() {
     private val activeModel = ModelProfile(
         role = "reasoning",
         path = SYNAPTIC_MODEL_PATH,
-        label = "Llama-3.2-1B-Instruct Q4_K_M",
+        label = "Qwen3-0.6B Q4_K_M",
         defaultMaxTokens = 768
     )
 
@@ -182,40 +182,33 @@ class LlmManager private constructor() {
     }
 
     fun loadModel(cb: LoadCallback) {
-        Log.i("LlmManager", "Preloading primary agent model: ${primaryModel.path}")
+        Log.i("LlmManager", "Preloading model: ${activeModel.path}")
         val ctx = context ?: run { cb.onError("LlmManager belum diinisialisasi"); return }
-        val targetPath = primaryModel.path
+        val targetPath = activeModel.path
         val useGpu = AppPreferences(ctx).useGpuBackend
-        
+
         DiagnosticManager.addBreadcrumb("MODEL_LOAD_REQUEST", "path=$targetPath gpu=$useGpu")
 
         if (isLoaded() && loadedModelInfo?.path == targetPath && loadedModelInfo?.useGpu == useGpu) {
             DiagnosticManager.addBreadcrumb("MODEL_LOAD_SKIPPED", "Already loaded")
             cb.onSuccess()
-            return 
+            return
         }
 
         synchronized(this) {
             pendingLoadCallbacks.add(cb)
             if (isLoading) return
             isLoading = true
-            loadedModelInfo = null 
+            loadedModelInfo = null
         }
 
         executor.execute {
             try {
-                val result = loadProfileInternal(ctx, primaryModel, useGpu)
+                val result = loadProfileInternal(ctx, activeModel, useGpu)
                 if (result.success) {
                     notifyLoadSuccess()
                 } else {
-                    Log.w("LlmManager", "Primary model preload failed, trying fast fallback: ${result.message}")
-                    DiagnosticManager.addBreadcrumb("MODEL_PRELOAD_FAST_FALLBACK", result.message)
-                    val fallbackResult = loadProfileInternal(ctx, fastModel, useGpu)
-                    if (fallbackResult.success) {
-                        notifyLoadSuccess()
-                    } else {
-                        notifyLoadError("${result.message}; fallback gagal: ${fallbackResult.message}")
-                    }
+                    notifyLoadError(result.message)
                 }
             } catch (e: Exception) {
                 DiagnosticManager.addBreadcrumb("MODEL_LOAD_EXCEPTION", e.message)

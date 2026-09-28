@@ -118,6 +118,14 @@ object ToolRegistry {
             permission = Permission.SHIZUKU,
             requiresConfirmation = true,
             directRoute = false
+        ),
+
+        ToolDefinition(
+            name = "deep_snapshot",
+            description = "Ambil snapshot mendalam kondisi device saat ini (baterai, memori, CPU, proses, jaringan, daftar package) dan simpan ke histori.",
+            permission = Permission.SHIZUKU,
+            requiresConfirmation = false,
+            directRoute = false
         )
     )
 
