@@ -38,3 +38,12 @@ jobs:
         with:
           name: libmlcjni
           path: llm/src/main/jniLibs/arm64-v8a/libmlcjni.so
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install NDK
+        run: |
+          sdkmanager --install "ndk;25.2.9519653"
+
+      - name: Export ANDROID_NDK
+        run: echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk/25.2.9519653" >> "$GITHUB_ENV"
