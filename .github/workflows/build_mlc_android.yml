@@ -1,0 +1,7 @@
+- name: Install NDK
+  run: |
+    yes | sdkmanager --licenses || true
+    sdkmanager "ndk;25.2.9519653"
+
+- name: Export ANDROID_NDK
+  run: echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk/25.2.9519653" >> "$GITHUB_ENV"
